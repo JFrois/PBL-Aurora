@@ -1,32 +1,3 @@
-
-temperatura_interna = 40
-temperatura_externa = 25
-integridade_estrutural = 1
-niveis_energia = 20
-pressao_tanque = 20
-status_modulos_criticos = True #True = OK, False = Problema
-
-
-if temperatura_interna >= 35:
-    print("Alerta: Temperatura interna alta!\nEstado crítico.")
-elif temperatura_interna >= 30:
-    print("Alerta: Temperatura interna alta!")
-elif temperatura_interna <= 26:
-    print("Alerta: Temperatura interna ideal!")
-else:
-    print("Temperatura abaixo do normal.")
-
-if temperatura_externa < -20 or temperatura_externa >= 40:
-    print("Alerta: Temperatura externa alta!\nEstado de alerta.")
-else:
-    print("Temperatura externa dentro dos limites normais.")
-
-if integridade_estrutural == 0:
-    print("Alerta: Integridade estrutural comprometida!\nEstado crítico.")
-else:
-    print("Integridade estrutural OK.")
-
-'''
 import random
 
 erros=[]
@@ -57,4 +28,4 @@ else:
     print("STATUS: DECOLAGEM ABORTADA!")
     print("MOTIVOS:")
     for erro in erros:
-        print(f"- {erro}")'''
+        print(f"- {erro}")
