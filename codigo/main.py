@@ -1,6 +1,17 @@
 import random
+import time
+import os
+from google import genai
+from dotenv import load_dotenv
 
-# Função para imprimir o quadro conforme especificações do projeto 
+# 1. Carrega as variáveis do arquivo .env para o ambiente
+load_dotenv()
+
+# 2. Puxa a chave de forma segura
+api_key = os.getenv("GEMINI_API_KEY")
+client = genai.Client(api_key=api_key)
+
+# Função para imprimir o quadro
 def imprimir_quadro(titulo, linhas):
     largura = 65
     print("-" * largura)
@@ -14,6 +25,7 @@ def imprimir_quadro(titulo, linhas):
 quantidade_testes = 0
 testes_sucessos = 0
 testes_falhas = 0
+todos_erros = [] # Guarda os erros para a IA analisar depois
 
 print("\nSejam bem-vindos ao sistema de telemetria da Missão Aurora!")
 print("Iniciando sequência de 3 testes obrigatórios...\n")
@@ -22,7 +34,7 @@ while quantidade_testes < 3:
     erros = []
     quantidade_testes += 1
     
-    # 1. Simulação de telemetria 
+    # Simulação de telemetria 
     temp_interna = random.uniform(10, 35)
     temp_externa = random.uniform(-50, 50)
     integridade_estrutural = random.choice([0, 1]) 
@@ -30,7 +42,7 @@ while quantidade_testes < 3:
     pressao = random.uniform(250, 550)
     modulos_criticos = random.choice(["OK", "FALHA"])
 
-    # 2. Verificações de segurança baseadas nas faixas seguras 
+    # Verificações de segurança 
     if integridade_estrutural == 0:
         erros.append("FALHA NA INTEGRIDADE ESTRUTURAL")
     if nivel_energia < 80:
@@ -42,7 +54,7 @@ while quantidade_testes < 3:
     if modulos_criticos == "FALHA":
         erros.append("FALHA NOS MÓDULOS CRÍTICOS")
 
-    # 3. Processamento do resultado do teste individual
+    # Processamento do teste individual
     conteudo_relatorio = []
     if not erros:
         testes_sucessos += 1
@@ -61,18 +73,37 @@ while quantidade_testes < 3:
         conteudo_relatorio.append("ERROS ENCONTRADOS:")
         for erro in erros:
             conteudo_relatorio.append(f"- {erro}")
+            todos_erros.append(erro)
 
-    # Impressão do quadro da rodada atual
     imprimir_quadro(f"RELATÓRIO DE RODADA: {quantidade_testes}/3", [status_individual, info, "-" * 61] + conteudo_relatorio)
 
-# 4. Decisão Final da Missão 
+# Decisão Final da Missão 
 print("\n" + "="*65)
 print(f"RESUMO FINAL: {testes_sucessos} Sucessos | {testes_falhas} Falhas")
 
+# Montando o prompt dinâmico para a IA baseando-se nos resultados reais
 if testes_sucessos == 3:
     print(">>> STATUS FINAL: PRONTO PARA DECOLAR! 🚀")
-    print("Todos os testes foram aprovados. Iniciando contagem de ignição...") 
+    print("Todos os testes foram aprovados. Iniciando contagem de ignição...\n") 
+    prompt_ia = "Aja como um engenheiro de voo sênior. O foguete Aurora passou nos 3 testes de telemetria com 100% de sucesso. Escreva um breve relatório de duas linhas parabenizando a equipe e autorizando o lançamento em português do Brasil."
 else:
     print(">>> STATUS FINAL: DECOLAGEM ABORTADA! ❌")
     print(f"A missão requer 3 sucessos consecutivos. Detectamos {testes_falhas} falha(s).")
+    print(f"{time.localtime().tm_hour}:{time.localtime().tm_min}:{time.localtime().tm_sec} - A equipe de engenharia está investigando as falhas.\n")
+    
+    # Passa a lista de erros reais para o Gemini explicar
+    erros_formatados = ", ".join(set(todos_erros))
+    prompt_ia = f"Aja como um engenheiro de voo sênior. O lançamento do foguete Aurora foi abortado pois falhou em {testes_falhas} de 3 testes. As anomalias detectadas foram: {erros_formatados}. Em português do Brasil, explique de forma técnica e concisa por que essas anomalias impedem o lançamento e o que a equipe deve investigar."
+
+# 3. Chamada da IA com o contexto correto
+print("--- ANÁLISE DO DIRETOR DE VOO (IA) ---")
+try:
+    response = client.models.generate_content(
+        model="gemini-3-flash-preview", 
+        contents=prompt_ia
+    )
+    print(response.text)
+except Exception as e:
+    print(f"Falha na comunicação com a IA: {e}")
+    
 print("="*65)
