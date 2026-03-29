@@ -96,14 +96,32 @@ else:
     prompt_ia = f"Aja como um engenheiro de voo sênior. O lançamento do foguete Aurora foi abortado pois falhou em {testes_falhas} de 3 testes. As anomalias detectadas foram: {erros_formatados}. Em português do Brasil, explique de forma técnica e concisa por que essas anomalias impedem o lançamento e o que a equipe deve investigar."
 
 # 3. Chamada da IA com o contexto correto
+# 3. Chamada da IA com o contexto correto e Lógica de Retentativa (Retry)
 print("--- ANÁLISE DO DIRETOR DE VOO (IA) ---")
-try:
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview", 
-        contents=prompt_ia
-    )
-    print(response.text)
-except Exception as e:
-    print(f"Falha na comunicação com a IA: {e}")
+print("Conectando aos servidores de IA...\n")
+
+tentativas_maximas = 3
+sucesso_ia = False
+
+for tentativa in range(1, tentativas_maximas + 1):
+    try:
+        response = client.models.generate_content(
+            model="gemini-3-flash-preview",
+            contents=prompt_ia
+        )
+        print(response.text)
+        sucesso_ia = True
+        break 
+        
+    except Exception as e:
+        erro_str = str(e)
+        if "503" in erro_str:
+            print(f"[Aviso] Servidor ocupado (Tentativa {tentativa}/{tentativas_maximas}). Aguardando 5 segundos para tentar novamente...")
+            time.sleep(5) # Espera 5 segundos antes de tentar de novo
+        else:
+            print(f"Falha inesperada na comunicação com a IA: {e}")
+            break 
+if not sucesso_ia:
+    print("A análise de IA não pôde ser gerada no momento devido à alta demanda da rede. Por favor, tente novamente mais tarde.")
     
 print("="*65)

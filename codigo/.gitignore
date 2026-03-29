@@ -1,0 +1,5 @@
+# Ignora o arquivo de variáveis de ambiente (Senhas e Chaves API)
+.env
+
+# Ignora a pasta do ambiente virtual Python
+venv/
