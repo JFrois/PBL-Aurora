@@ -1,11 +1,22 @@
 # Missão Aurora Siger 🚀
 
+![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow.svg)
+
 Este repositório contém a documentação e o protótipo inicial de telemetria da nave **Aurora**. O projeto integra conceitos de Ciência da Computação, Engenharia de Foguetes e Meteorologia para validar a segurança de um lançamento espacial.
 
 ## 📋 Sobre o Projeto
 O objetivo desta fase é fornecer informações essenciais sobre o funcionamento de foguetes, abrangendo cálculos técnicos, estimativa de custos e o impacto social da exploração espacial. O projeto culmina em um script Python que processa dados de telemetria simulados para autorizar ou abortar uma decolagem.
 
-### Parâmetros de Telemetria Monitorados:
+## ✨ Funcionalidades
+- **Simulação de Telemetria:** Gera dados aleatórios para diversos parâmetros críticos do foguete.
+- **Verificação de Segurança:** Executa uma sequência de 3 testes pré-lançamento, validando os dados de telemetria contra regras de negócio predefinidas.
+- **Relatórios Detalhados:** Exibe relatórios claros no console para cada rodada de teste, indicando sucesso ou falhas específicas.
+- **Análise com IA (Gemini):** Em caso de falha, utiliza a API do Gemini para gerar um relatório técnico detalhado, agindo como um "Diretor de Voo (IA)" que explica as anomalias e sugere ações para a equipe de engenharia.
+- **Dashboard Interativo (WIP):** Inclui uma interface básica com Streamlit para futuras visualizações de dados.
+
+### Parâmetros Monitorados
 * **Temperatura:** Interna e externa.
 * **Integridade Estrutural:** Status operacional do corpo da nave.
 * **Níveis de Energia:** Capacidade e carga disponível (%).
@@ -14,14 +25,60 @@ O objetivo desta fase é fornecer informações essenciais sobre o funcionamento
 
 ---
 
-## 👥 Equipe (FIAP 2026)
-| Nome | RM |
-| :--- | :--- |
-| **Juan de Lucas Frois** | RM563260 |
-| **Flávia Roberta Pennachin** | RM561860 |
-| **Pedro Valente Toledo** | RM570394 |
-| **Bruno Antonio Santos Silva** | RM573180 | 
-| **Renan Mano Otero** | RM573615 |
+
+Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
+
+### Pré-requisitos
+- [Python 3.9+](https://www.python.org/downloads/)
+- Uma chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey)
+
+### Instalação
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/seu-usuario/PBL-Aurora.git
+    cd PBL-Aurora
+    ```
+
+2.  **Crie e ative um ambiente virtual:**
+    ```bash
+    # Para Windows
+    python -m venv venv
+    .\venv\Scripts\activate
+
+    # Para macOS/Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3.  **Instale as dependências:**
+    O projeto utiliza um arquivo `requirements.txt` para gerenciar as bibliotecas.
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Configure as variáveis de ambiente:**
+    - Crie um arquivo chamado `.env` na raiz do projeto.
+    - Adicione sua chave da API do Gemini, como no exemplo abaixo:
+    ```
+    GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
+    ```
+
+### Executando a Simulação
+
+O projeto possui duas saídas principais: uma simulação via console e uma interface web em desenvolvimento.
+
+- **Para rodar a simulação no console:**
+  ```bash
+  python codigo/main.py
+  ```
+  Isso executará os 3 testes de telemetria e exibirá os relatórios diretamente no seu terminal, incluindo a análise da IA.
+
+- **Para iniciar o dashboard web (WIP):**
+  ```bash
+  streamlit run codigo/main.py
+  ```
+  Abra seu navegador e acesse `http://localhost:8501` para ver a interface.
 
 ---
 
@@ -35,7 +92,11 @@ O script Python realiza a leitura dos dados simulados e executa as seguintes ver
 * **Temperatura Interna:** Faixa segura entre 18°C e 25°C.
 * **Módulos Críticos:** Devem retornar status "OK".
 
-### Exemplo de Saída:
+### Exemplo de Saída no Console
+
+<details>
+<summary>Clique para ver um exemplo de relatório de falha</summary>
+
 ```text
 Sejam bem-vindos ao sistema de telemetria da Missão Aurora!
 Iniciando sequência de 3 testes obrigatórios...
@@ -117,6 +178,31 @@ A equipe de terra deve iniciar imediatamente os seguintes protocolos de inspeç�
 *Setor de Sistemas de Lançamento*
 =================================================================
 ```
+</details>
+
+---
+
+## 📂 Estrutura do Projeto
+```
+PBL-Aurora/
+├── .gitignore
+├── README.md
+├── requirements.txt
+├── codigo/
+│   └── main.py
+└── venv/
+```
+
+---
+
+## 👥 Equipe (FIAP 2026)
+| Nome | RM |
+| :--- | :--- |
+| **Juan de Lucas Frois** | RM563260 |
+| **Flávia Roberta Pennachin** | RM561860 |
+| **Pedro Valente Toledo** | RM570394 |
+| **Bruno Antonio Santos Silva** | RM573180 | 
+| **Renan Mano Otero** | RM573615 |
 
 ---
 
@@ -125,6 +211,12 @@ O projeto aborda a responsabilidade na exploração espacial, discutindo temas c
 * **Lixo Espacial:** Riscos de colisão e desórbita programada.
 * **Impacto Social:** Como a tecnologia aeroespacial auxilia na agricultura e prevenção de desastres na Terra.
 * **Ética:** Justificativa da expansão humana versus problemas globais imediatos.
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Você pode adicionar um arquivo `LICENSE` ao seu repositório com o texto da licença, se desejar.
 
 ---
 
