@@ -122,31 +122,31 @@ else:
 # print("--- ANÁLISE DO DIRETOR DE VOO (IA) ---")
 # print("Conectando aos servidores de IA...\n")
 
-# tentativas_maximas = 3
-# sucesso_ia = False
+tentativas_maximas = 3
+sucesso_ia = False
 
-# for tentativa in range(1, tentativas_maximas + 1):
-#     try:
-#         response = client.models.generate_content(
-#             model="gemini-3-flash-preview", contents=prompt_ia
-#         )
-#         print(response.text)
-#         sucesso_ia = True
-#         break
+for tentativa in range(1, tentativas_maximas + 1):
+    try:
+        response = client.models.generate_content(
+            model="gemini-3-flash-preview", contents=prompt_ia
+        )
+        print(response.text)
+        sucesso_ia = True
+        break
 
-#     except Exception as e:
-#         erro_str = str(e)
-#         if "503" in erro_str:
-#             print(
-#                 f"[Aviso] Servidor ocupado (Tentativa {tentativa}/{tentativas_maximas}). Aguardando 5 segundos para tentar novamente..."
-#             )
-#             time.sleep(5)  # Espera 5 segundos antes de tentar de novo
-#         else:
-#             print(f"Falha inesperada na comunicação com a IA: {e}")
-#             break
-# if not sucesso_ia:
-#     print(
-#         "A análise de IA não pôde ser gerada no momento devido à alta demanda da rede. Por favor, tente novamente mais tarde."
-#     )
+    except Exception as e:
+        erro_str = str(e)
+        if "503" in erro_str:
+            print(
+                f"[Aviso] Servidor ocupado (Tentativa {tentativa}/{tentativas_maximas}). Aguardando 5 segundos para tentar novamente..."
+            )
+            time.sleep(5)  # Espera 5 segundos antes de tentar de novo
+        else:
+            print(f"Falha inesperada na comunicação com a IA: {e}")
+            break
+if not sucesso_ia:
+    print(
+        "A análise de IA não pôde ser gerada no momento devido à alta demanda da rede. Por favor, tente novamente mais tarde."
+    )
 
-# print("=" * 65)
+print("=" * 65)
