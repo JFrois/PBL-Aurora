@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 # 1. Carrega as variáveis do arquivo .env para o ambiente
 load_dotenv()
 
+print("Testando a nova branch")
+
 # 2. Puxa a chave de forma segura
 api_key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
