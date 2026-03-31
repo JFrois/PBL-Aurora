@@ -6,7 +6,7 @@
 Este repositório contém a documentação e o protótipo do sistema de telemetria da nave **Aurora**. O projeto integra conceitos de Ciência da Computação, Engenharia de Foguetes e Meteorologia para validar a segurança de janelas de lançamento aeroespacial.
 
 O projeto culmina em um script Python que atua como uma camada de Inteligência de Voo, automatizando a decisão de Lançar ou Abortar com base em telemetria simulada e regras de negócio, considerando não apenas aspectos técnicos, mas também custo e impacto social da exploração espacial. 
-<br>
+
 <br>
 
 
@@ -18,8 +18,8 @@ Este repositório contém:
 * Um módulo de análise com IA (Gemini) que age como um “Diretor de Voo” virtual.
 
 * Um dashboard interativo (WIP) com Streamlit para futuras visualizações em tempo real.
+
 <br>
-<br> 
 
 ## 🎯 Objetivos do Projeto
 * **Simulação de telemetria:** Geração de dados aleatórios para parâmetros críticos do foguete (temperatura, pressão, energia, integridade, módulos críticos).
@@ -27,6 +27,7 @@ Este repositório contém:
 * **Relatórios detalhados no console:** Exibição de relatórios claros para cada rodada, indicando sucesso ou falhas e listando as anomalias detectadas.
 * **Análise com IA (Gemini):** Em caso de falha, chamada à API do Gemini para gerar um relatório técnico estruturado, explicando as anomalias e sugerindo ações para a equipe de engenharia.
 * **Dashboard Interativo (WIP):** Protótipo de interface em Streamlit para visualização de telemetria e resultados dos testes em tempo quase real.
+
 <br>
 
 ### **Parâmetros Monitorados**
@@ -48,7 +49,7 @@ Para que a decolagem seja autorizada, todos os critérios abaixo devem ser satis
 * **Módulos Críticos:** todos com status "OK".
 
 Se qualquer uma dessas condições falhar em uma rodada, o teste é marcado como FALHA, e a missão é abortada ao final da sequência, com emissão de relatório técnico da IA.
-<br>
+
 <br>
 
 ### 🚀 Exemplo de Saída no Console
@@ -139,9 +140,6 @@ A equipe de terra deve iniciar imediatamente os seguintes protocolos de inspeç�
 </details>
 
 <br>
-<br>
-
-
 
 ## 🏗️ Arquitetura e Fluxo de Decisão
 
@@ -160,7 +158,7 @@ Em alto nível, o sistema segue o fluxo:
     * Geração de relatório técnico com IA (Gemini).
 
 5. (WIP) Envio/visualização dos dados no **dashboard Streamlit**.
-<br>
+
 <br>
 
 ### 🧭 Fluxo de Decisão da Missão
@@ -180,7 +178,7 @@ graph TD
     G -- Sim --> J[Status: DECOLAGEM AUTORIZADA 🚀];
     J --> K;
 ```
-
+<br>
 
 ## 🛠️ Configuração e Instalação
 Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
@@ -189,14 +187,13 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 - [Python 3.9+](https://www.python.org/downloads/)
 - Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey)
 <br>
-<br>  
+
 ### Passos para Execução
 1.  **Clone o repositório:**
     ```bash
     git clone https://github.com/seu-usuario/PBL-Aurora.git
     cd PBL-Aurora
     ```
-<br>
 
 2.  **Crie e ative um ambiente virtual:**
     ```bash
@@ -208,14 +205,12 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
     python3 -m venv venv
     source venv/bin/activate
     ```
-<br>
 
 3.  **Instale as dependências:**
     O projeto utiliza um arquivo `requirements.txt` para gerenciar as bibliotecas.
     ```bash
     pip install -r requirements.txt
     ```
-<br>
 
 4.  **Configure as variáveis de ambiente:**
     - Crie um arquivo chamado `.env` na raiz do projeto.
@@ -237,7 +232,7 @@ O projeto possui duas saídas principais: uma simulação via console e uma inte
     * Executar os 3 testes de telemetria
     * Exibir os relatórios de cada rodada no terminal 
     * Gerar, em caso de falha, um relatório detalhado via IA (Gemini).
-<br>
+
 <br>
 
 - **Para iniciar o dashboard web (WIP):**
@@ -246,9 +241,8 @@ O projeto possui duas saídas principais: uma simulação via console e uma inte
   ```
   Abra seu navegador e acesse `http://localhost:8501` para ver a interface.
 
-<br>
-<br> 
 
+<br> 
 
 ## 📂 Estrutura do Projeto
 ```
@@ -260,7 +254,7 @@ PBL-Aurora/
 │   └── main.py           # código
 └── README.md             # Documentação do projeto
 ```
-<br>
+
 <br>
 
 ## 🌍 Ética, Sustentabilidade e Impacto
@@ -268,7 +262,7 @@ Além da parte técnica, a Missão Aurora também aborda a responsabilidade na e
 * **Lixo Espacial:** riscos de colisão em órbita e importância de estratégias de desórbita programada.
 * **Impacto Social:** como tecnologias aeroespaciais apoiam agricultura, monitoramento climático e prevenção de desastres.
 * **Ética:** discussão sobre a justificativa da expansão humana para além da Terra frente a problemas globais imediatos.
-<br>
+  
 <br>
 
 ## 👥 Equipe (FIAP 2026)
