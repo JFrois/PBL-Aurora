@@ -3,3 +3,6 @@
 
 # Ignora a pasta do ambiente virtual Python
 venv/
+
+# macOS
+.DS_Store
