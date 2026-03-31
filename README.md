@@ -17,8 +17,6 @@ Este repositório contém:
 
 * Um módulo de análise com IA (Gemini) que age como um “Diretor de Voo” virtual.
 
-* Um dashboard interativo (WIP) com Streamlit para futuras visualizações em tempo real.
-
 <br>
 
 ## 🎯 Objetivos do Projeto
@@ -26,7 +24,6 @@ Este repositório contém:
 * **Verificação de segurança:** Execução de uma sequência de 3 testes pré-lançamento, validando a telemetria contra regras de negócio pré-definidas.
 * **Relatórios detalhados no console:** Exibição de relatórios claros para cada rodada, indicando sucesso ou falhas e listando as anomalias detectadas.
 * **Análise com IA (Gemini):** Em caso de falha, chamada à API do Gemini para gerar um relatório técnico estruturado, explicando as anomalias e sugerindo ações para a equipe de engenharia.
-* **Dashboard Interativo (WIP):** Protótipo de interface em Streamlit para visualização de telemetria e resultados dos testes em tempo quase real.
 
 <br>
 
@@ -57,84 +54,121 @@ Se qualquer uma dessas condições falhar em uma rodada, o teste é marcado como
 <summary>Clique para ver um exemplo de relatório em caso de falha nas três rodadas de teste</summary>
 
 ```text
-Sejam bem-vindos ao sistema de telemetria da Missão Aurora!
-Iniciando sequência de 3 testes obrigatórios...
 
------------------------------------------------------------------
-|                    RELATÓRIO DE RODADA: 1/3                   |
-|                                                               |
-| TESTE FALHOU                                                  |
-| Rodada 1: Anomalias detectadas.                               |
-| ------------------------------------------------------------- |
-| ERROS ENCONTRADOS:                                            |
-| - Energia insuficiente: 25.78% (Min: 80%)                     |
-| - Pressão fora dos padrões: 510.68 psi                        |
-| - FALHA NOS MÓDULOS CRÍTICOS                                  |
-|                                                               |
------------------------------------------------------------------
------------------------------------------------------------------
-|                    RELATÓRIO DE RODADA: 2/3                   |
-|                                                               |
-| TESTE FALHOU                                                  |
-| Rodada 2: Anomalias detectadas.                               |
-| ------------------------------------------------------------- |
-| ERROS ENCONTRADOS:                                            |
-| - FALHA NA INTEGRIDADE ESTRUTURAL                             |
-| - Temperatura interna fora do padrão: 16.84 C°                |
-| - FALHA NOS MÓDULOS CRÍTICOS                                  |
-|                                                               |
------------------------------------------------------------------
------------------------------------------------------------------
-|                    RELATÓRIO DE RODADA: 3/3                   |
-|                                                               |
-| TESTE FALHOU                                                  |
-| Rodada 3: Anomalias detectadas.                               |
-| ------------------------------------------------------------- |
-| ERROS ENCONTRADOS:                                            |
-| - Energia insuficiente: 22.57% (Min: 80%)                     |
-| - Pressão fora dos padrões: 498.31 psi                        |
-| - Temperatura interna fora do padrão: 10.09 C°                |
-|                                                               |
------------------------------------------------------------------
-
+=====================================================================================
+              Sejam bem-vindos ao sistema de telemetria da MISSÃO AURORA             
+                   Iniciando sequência de 3 testes obrigatórios...                   
+=====================================================================================
+-------------------------------------------------------------------------------------
+|                              RELATÓRIO DE RODADA: 1/3                             |
+|                                                                                   |
+| TESTE FALHOU                                                                      |
+| Rodada 1: Anomalias detectadas.                                                   |
+| -------------------------------------------------------------                     |
+| VERIFICAÇÃO DE SEGURANÇA:                                                         |
+|   > Bateria Útil p/ Sistema: 3039.19 kWh                                          |
+|   > Custo de Decolagem.....: 463.78 kWh                                           |
+|   > Autonomia energética pós decolagem...: 67.83%                                 |
+|   > Temp. Interna: 13.08 C°                                                       |
+|   > Temp. Externa: -7.10 C°                                                       |
+|   > Integridade: OK                                                               |
+|   > Pressão: 422.22 psi                                                           |
+| -----------------------------------------------------------------                 |
+| ERROS ENCONTRADOS:                                                                |
+| - FALHA NA INTEGRIDADE ESTRUTURAL                                                 |
+| - Temperatura interna fora do padrão: 13.08 C°                                    |
+| - Temperatura externa fora do padrão: -7.10 C°                                    |
+| - FALHA NOS MÓDULOS CRÍTICOS                                                      |
+| - RISCO DE BLACKOUT: Saldo de 67.83% (Min: 80%)                                   |
+|                                                                                   |
+-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+|                              RELATÓRIO DE RODADA: 2/3                             |
+|                                                                                   |
+| TESTE FALHOU                                                                      |
+| Rodada 2: Anomalias detectadas.                                                   |
+| -------------------------------------------------------------                     |
+| VERIFICAÇÃO DE SEGURANÇA:                                                         |
+|   > Bateria Útil p/ Sistema: 112.89 kWh                                           |
+|   > Custo de Decolagem.....: 396.91 kWh                                           |
+|   > Autonomia energética pós decolagem...: 6.28%                                  |
+|   > Temp. Interna: 19.40 C°                                                       |
+|   > Temp. Externa: 6.11 C°                                                        |
+|   > Integridade: OK                                                               |
+|   > Pressão: 463.72 psi                                                           |
+| -----------------------------------------------------------------                 |
+| ERROS ENCONTRADOS:                                                                |
+| - FALHA NA INTEGRIDADE ESTRUTURAL                                                 |
+| - Pressão fora dos padrões: 463.72 psi                                            |
+| - RISCO DE BLACKOUT: Saldo de 6.28% (Min: 80%)                                    |
+|                                                                                   |
+-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+|                              RELATÓRIO DE RODADA: 3/3                             |
+|                                                                                   |
+| TESTE FALHOU                                                                      |
+| Rodada 3: Anomalias detectadas.                                                   |
+| -------------------------------------------------------------                     |
+| VERIFICAÇÃO DE SEGURANÇA:                                                         |
+|   > Bateria Útil p/ Sistema: 1066.13 kWh                                          |
+|   > Custo de Decolagem.....: 284.43 kWh                                           |
+|   > Autonomia energética pós decolagem...: 45.58%                                 |
+|   > Temp. Interna: 16.35 C°                                                       |
+|   > Temp. Externa: 18.20 C°                                                       |
+|   > Integridade: OK                                                               |
+|   > Pressão: 384.69 psi                                                           |
+| -----------------------------------------------------------------                 |
+| ERROS ENCONTRADOS:                                                                |
+| - FALHA NA INTEGRIDADE ESTRUTURAL                                                 |
+| - Temperatura interna fora do padrão: 16.35 C°                                    |
+| - FALHA NOS MÓDULOS CRÍTICOS                                                      |
+| - RISCO DE BLACKOUT: Saldo de 45.58% (Min: 80%)                                   |
+|                                                                                   |
+-------------------------------------------------------------------------------------
 =================================================================
-RESUMO FINAL: 0 Sucessos | 3 Falhas
+RELATÓRIO DE RODADA: 0 Sucessos | 3 Falhas
+STATUS: ABORTAR MISSÃO! Verifique os erros acima. 🛑
+
 >>> STATUS FINAL: DECOLAGEM ABORTADA! ❌
 A missão requer 3 sucessos consecutivos. Detectamos 3 falha(s).
-21:53:3 - A equipe de engenharia está investigando as falhas.
+18:35:44 - A equipe de engenharia está investigando as falhas.
 
 --- ANÁLISE DO DIRETOR DE VOO (IA) ---
-Conectando aos servidores de IA...
+**BOLETIM TÉCNICO DE DIAGNÓSTICO – ABORTO DE LANÇAMENTO DA MISSÃO AURORA**
 
-**RELATÓRIO DE ENGENHARIA DE VOO: MISSÃO AURORA**
-**PARA:** Comando de Missão / Equipe de Operações
-**ASSUNTO:** Análise Técnica de Abortagem de Lançamento (Status: NO-GO)
+**CLASSIFICAÇÃO DOS DADOS:**
 
-Após a falha em três rodadas consecutivas de testes pré-voo, o lançamento do foguete Aurora foi abortado. Abaixo, apresento a análise técnica das anomalias e as diretrizes para investigação imediata.
+1.  **Integridade Estrutural/Mecânica:**
+    *   FALHA NA INTEGRIDADE ESTRUTURAL
+    *   Pressão fora dos padrões: 463.72 psi (Indica falha em sistema pressurizado ou vedação)
+2.  **Sistemas Críticos/Funcionais:**
+    *   FALHA NOS MÓDULOS CRÍTICOS
+3.  **Subsistema Elétrico/Energia:**
+    *   RISCO DE BLACKOUT: Saldo de 45.58% (Min: 80%)
+    *   RISCO DE BLACKOUT: Saldo de 6.28% (Min: 80%)
+    *   RISCO DE BLACKOUT: Saldo de 67.83% (Min: 80%)
+4.  **Condições Ambientais/Térmicas:**
+    *   Temperatura externa fora do padrão: -7.10 C°
+    *   Temperatura interna fora do padrão: 13.08 C°
+    *   Temperatura interna fora do padrão: 16.35 C°
 
-### 1. Análise das Anomalias Técnicas
+---
 
-*   **Déficit Energético Crítico (22.57% e 25.78% / Min: 80%):** O sistema opera com menos de um terço da carga nominal necessária. Sem energia suficiente, os aviônicos, sistemas de suporte à vida e atuadores hidráulicos não podem manter a estabilidade durante a ascensão. É um risco iminente de perda total de telemetria e controle.
-*   **Instabilidade de Pressão (498.31 psi e 510.68 psi):** As leituras indicam que o sistema pneumático ou de propelentes está fora do envelope operacional. Pressões fora do padrão sugerem vazamentos ou falhas em válvulas reguladoras, o que pode levar à cavitação de bombas ou, em caso extremo, à explosão do tanque.
-*   **Anomalias Térmicas (10.09 °C e 16.84 °C):** Temperaturas fora da janela operacional indicam falha no Sistema de Controle Ambiental (ECS) ou no isolamento térmico. Isso compromete a viscosidade de fluidos e a integridade de semicondutores sensíveis.
-*   **Falha de Integridade Estrutural e Módulos Críticos:** Este é o ponto de maior gravidade. O diagnóstico de falha estrutural indica fadiga de material, fissuras ou falhas de fixação na célula do foguete. Combinado com a falha em módulos críticos (computadores de bordo ou sistemas de navegação), o veículo sofreria desintegração catastrófica sob as cargas dinâmicas do *Max-Q* (máxima pressão dinâmica).
+**BOLETIM TÉCNICO DE DIAGNÓSTICO**
 
-### 2. Justificativa para o Aborto
-O lançamento nestas condições resultaria em falha catastrófica em T+ poucos segundos. A combinação de energia insuficiente para redundância e integridade estrutural comprometida torna o veículo incapaz de suportar o estresse aerodinâmico e as necessidades de processamento de dados da trajetória.
+**STATUS:**
+O lançamento da Missão Aurora foi imediatamente abortado. As verificações pré-lançamento indicaram falhas críticas em 3 de 3 testes, confirmando uma condição NO-GO.
 
-### 3. Diretrizes para Investigação
+**RISCO:**
+O conjunto de anomalias registradas, isoladamente e em conjunto, cria um cenário de risco inaceitável de perda do veículo e da missão.
+*   **Falha na Integridade Estrutural e Pressão Anormal:** Indica comprometimento físico da estrutura do veículo ou de seus subsistemas de propulsão/pressurização. Este cenário representa um risco iminente de desintegração catastrófica, explosão ou falha estrutural durante as fases de maior estresse dinâmico do voo, culminando na perda total do veículo e da carga útil.
+*   **Falha nos Módulos Críticos:** Aponta para a inoperância ou desempenho degradado de componentes essenciais para controle de voo, navegação, telemetria, sistemas de segurança ou propulsão. A falha de qualquer um desses módulos pode levar à perda de controle da trajetória, incapacidade de executar comandos, falha na separação de estágios ou impossibilidade de abortar a missão de forma segura, resultando na perda do veículo.
+*   **Múltiplos Riscos de Blackout:** Com saldos de energia muito abaixo do mínimo operacional exigido (45.58%, 6.28%, 67.83% frente a 80%), este é um indicativo claro de uma falha sistêmica e crítica no subsistema elétrico. A incapacidade de sustentar a alimentação de energia levaria à paralisação de todos os sistemas aviônicos e de suporte à vida a bordo, resultando em perda completa de controle, comunicação e, consequentemente, a perda do veículo em qualquer fase do voo.
+*   **Temperaturas Internas e Externas Fora do Padrão:** Sugerem um ambiente operacional inadequado para os equipamentos. Temperaturas extremas podem causar falha eletrônica por superaquecimento ou congelamento, degradação de materiais, comprometimento da lubrificação de componentes mecânicos ou falha de isolamento, afetando diretamente a funcionalidade e estabilidade do veículo. A temperatura externa anormal também pode indicar condições climáticas impróprias ou falha nos sistemas de controle térmico do veículo.
 
-A equipe de terra deve iniciar imediatamente os seguintes protocolos de inspeção:
-
-1.  **Sistemas Elétricos:** Diagnóstico completo nas células de combustível e baterias primárias para identificar curto-circuito ou degradação química precoce.
-2.  **Sistemas Pneumáticos e Hidráulicos:** Teste de estanqueidade e calibração dos transdutores de pressão para identificar o ponto exato da flutuação.
-3.  **Análise Estrutural (NDT):** Realizar ensaios não destrutivos (ultrassom e raio-X) na fuselagem e nas interfaces dos módulos críticos para localizar falhas na liga metálica ou compósitos.
-4.  **Revisão de Software e Barramentos:** Investigar o barramento de dados para entender se as "falhas em módulos críticos" são falhas de hardware ou erros de paridade na comunicação lógica.
-
-**Conclusão:** O veículo Aurora permanece em solo por tempo indeterminado até que a redundância de 80% de energia seja restabelecida e a integridade estrutural seja certificada.
-
-**Engenheiro de Voo Sênior**
-*Setor de Sistemas de Lançamento*
+**AÇÃO:**
+1.  **Engenharia de Hardware:** Foco imediato na inspeção detalhada e diagnóstica das falhas estruturais, dos módulos críticos e do subsistema de pressurização/propulsão. Uma análise aprofundada da arquitetura elétrica e das baterias é imperativa para identificar a raiz dos múltiplos riscos de blackout. É crucial verificar os sensores e sistemas de controle térmico, bem como as condições ambientais da plataforma de lançamento.
+2.  **Engenharia de Software:** Auditoria completa dos algoritmos de monitoramento e telemetria para garantir a precisão e robustez dos dados reportados. Revisão dos parâmetros de pré-lançamento e protocolos de verificação para identificar possíveis lacunas que permitiram a progressão a um estado de falha tão crítico. Desenvolver e testar atualizações de software para incorporar novas lógicas de detecção e mitigação baseadas nas descobertas de hardware.
 =================================================================
 ```
 </details>
@@ -156,8 +190,6 @@ Em alto nível, o sistema segue o fluxo:
     * Registro das anomalias por rodada.
 
     * Geração de relatório técnico com IA (Gemini).
-
-5. (WIP) Envio/visualização dos dados no **dashboard Streamlit**.
 
 <br>
 
@@ -233,35 +265,42 @@ O projeto possui duas saídas principais: uma simulação via console e uma inte
     * Exibir os relatórios de cada rodada no terminal 
     * Gerar, em caso de falha, um relatório detalhado via IA (Gemini).
 
-<br>
-
-- **Para iniciar o dashboard web (WIP):**
-  ```bash
-  streamlit run codigo/main.py
-  ```
-  Abra seu navegador e acesse `http://localhost:8501` para ver a interface.
-
-
 <br> 
 
 ## 📂 Estrutura do Projeto
 ```
 PBL-Aurora/
-├── .env                  # Chave de segurança 
-├── .gitignore            # Regras de exclusão do Git
-├── requirements.txt      # Dependências do projeto
+├── .env                        # Chave de segurança 
+├── .gitignore                  # Regras de exclusão do Git
+├── requirements.txt            # Dependências do projeto
 ├── codigo/
-│   └── main.py           # código
-└── README.md             # Documentação do projeto
+│   └── Projeto_Aurora.ipynb    # código
+└── README.md                   # Documentação do projeto
 ```
 
 <br>
 
-## 🌍 Ética, Sustentabilidade e Impacto
-Além da parte técnica, a Missão Aurora também aborda a responsabilidade na exploração espacial, incluindo:
-* **Lixo Espacial:** riscos de colisão em órbita e importância de estratégias de desórbita programada.
-* **Impacto Social:** como tecnologias aeroespaciais apoiam agricultura, monitoramento climático e prevenção de desastres.
-* **Ética:** discussão sobre a justificativa da expansão humana para além da Terra frente a problemas globais imediatos.
+# REFLEXÃO CRÍTICA: MISSÃO AURORA
+A exploração espacial é o reflexo dos valores da humanidade. Na Missão Aurora, a telemetria não apenas monitora máquinas, mas protege vidas e fundamenta uma presença humana ética e consciente.
+
+### ⚖️ Ética e Responsabilidade
+A exploração espacial não é uma fuga dos problemas terrestres, mas uma busca por soluções globais. O espaço deve ser um bem comum, focado na ciência e na cooperação, evitando a militarização e garantindo que o progresso tecnológico beneficie toda a sociedade, não apenas grupos restritos.
+
+### 🛰️ Sustentabilidade e Lixo Espacial
+A órbita terrestre é um recurso finito. Para evitar o Efeito Kessler (colisões em cadeia), a missão adota protocolos de Desórbita Programada: cada componente possui um fim de ciclo planejado, garantindo que a "estrada espacial" permaneça limpa e segura para as futuras gerações.
+
+### 🤝 Impacto Social do Lançamento Tripulado
+Enviar seres humanos ao espaço gera transformações profundas na estrutura social:
+
+* Inspiração STEM: O "Efeito Apollo" atrai jovens para carreiras científicas e quebra barreiras sociais através da representatividade.
+
+* Diplomacia Global: A manutenção da vida em órbita exige cooperação internacional, promovendo o diálogo e reforçando a identidade planetária (Overview Effect).
+
+* Avanços na Medicina: A telemetria e o suporte à vida impulsionam a telemedicina, cirurgias robóticas e tratamentos de perda óssea/muscular para idosos na Terra.
+
+* Cultura de Segurança: Os rigorosos protocolos de falha zero e as tecnologias de reciclagem de recursos (água e ar) são aplicados hoje em indústrias críticas e na gestão de desastres ambientais.
+--- 
+**Conclusão:** Decolar exige mais que combustível; exige o compromisso de proteger quem parte, quem fica e o ambiente que nos cerca.
   
 <br>
 
@@ -278,4 +317,5 @@ Além da parte técnica, a Missão Aurora também aborda a responsabilidade na e
 
 ---
 **Instituição:** FIAP\
-**Ano:** 2026
+**Ano:** 2026\
+**Turma:** 1CCOA-2026  
