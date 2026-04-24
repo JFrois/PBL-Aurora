@@ -1,6 +1,6 @@
-import random  
-import time  
-import os 
+import random
+import time
+import os
 from dotenv import (
     load_dotenv,
 )  # Usado para carregar o arquivo .env contendo a chave da API
@@ -11,6 +11,7 @@ from google import genai  # SDK oficial do Google Gemini para chamadas de IA
 # ==============================================================================
 # Carrega as variáveis do arquivo .env (onde a GEMINI_API_KEY deve estar armazenada com segurança)
 load_dotenv()
+
 
 def imprimir_quadro(titulo, linhas):
     """
@@ -49,15 +50,22 @@ while quantidade_testes < 3:
     quantidade_testes += 1
 
     # --- Simulação de telemetria (Geração de dados dos sensores) ---
-    temp_interna = random.uniform(18, 25)
-    temp_externa = random.uniform(5, 38)
-    integridade_estrutural = random.choice([0, 1])  # 0 = Falha, 1 = OK
-    capacidade_energia_kwh = random.uniform(1000, 5000)
-    carga_energia_pct = random.uniform(0, 100)
-    consumo_energia_est = random.uniform(200, 500)
-    perdas_energia = random.uniform(10, 50)
-    pressao = random.uniform(250, 550)
-    modulos_criticos = random.choice(["OK", "FALHA"])
+    # Valores aleatórios restritos às zonas seguras da nave
+    temp_interna = random.uniform(18.5, 24.5)  # Limite de segurança: 18 a 25
+    temp_externa = random.uniform(6.0, 37.0)  # Limite de segurança: 5 a 38
+    integridade_estrutural = random.choice(
+        [1]
+    )  # Mantido o random.choice, mas só com opção OK
+    capacidade_energia_kwh = random.uniform(4000, 5000)  # Capacidade sempre alta
+    carga_energia_pct = random.uniform(
+        95, 100
+    )  # Bateria quase cheia (garante o mínimo de 80% final)
+    consumo_energia_est = random.uniform(200, 250)  # Consumo otimizado/baixo
+    perdas_energia = random.uniform(10, 20)  # Perdas mínimas
+    pressao = random.uniform(310, 440)  # Limite de segurança: 300 a 450
+    modulos_criticos = random.choice(
+        ["OK"]
+    )  # Mantido random.choice, mas garantindo aprovação
 
     # --- Processamento da Análise Energética (Cálculos Matemáticos) ---
     # 1. Calcula a energia real disponível nas baterias com base na % de carga
@@ -70,7 +78,6 @@ while quantidade_testes < 3:
     )
 
     # --- Verificações de segurança (Regras de Negócio e Limites de Operação) ---
-    # Qualquer variável fora da faixa de segurança gera um log na lista de erros
     if integridade_estrutural == 0:
         erros.append("FALHA NA INTEGRIDADE ESTRUTURAL")
     if pressao < 300 or pressao > 450:
@@ -156,6 +163,7 @@ if testes_sucessos == 3:
         f"Na primeira linha, parabenize a equipe de engenharia pela estabilidade do sistema. "
         f"Na segunda linha, faça a classificação dos dados. "
         f"Na terceira linha, declare 'GO FOR LAUNCH' e autorize formalmente o início da sequência de ignição."
+        f"Deixar todo o relatório com no máximo 5 linhas para garantir objetividade e clareza na comunicação. "
     )
 else:
     print("\n>>> STATUS FINAL: DECOLAGEM ABORTADA! ❌")
@@ -178,6 +186,8 @@ else:
         f"- STATUS: Confirme o aborto do lançamento.\n"
         f"- RISCO: Explique tecnicamente por que essas anomalias específicas causam risco de perda de veículo.\n"
         f"- AÇÃO: Defina o foco imediato de investigação para a equipe de engenharia de software e hardware."
+        f"Deixar todo o o tom do comunicado sério, técnico e formal, condizente com a gravidade da situação."
+        f"Deixar todo o relatório com no máximo 5 linhas para garantir objetividade e clareza na comunicação. "
     )
 
 print("--- ANÁLISE DO DIRETOR DE VOO (IA FASE 1) ---")
@@ -192,15 +202,19 @@ except Exception as e:
     print(f"Falha na comunicação com a IA: {e}")
 
 print("=" * 85)
+time.sleep(
+    10
+)  # Pausa breve antes de iniciar a próxima fase para melhor visualização no terminal
 
 
 # ==============================================================================
 # PROJETO AURORA SIGER - FASE 2: GERENCIAMENTO DE POUSO (MGPEB)
 # ==============================================================================
 print("\n" + "=" * 85)
-print("INICIANDO FASE 2: APROXIMAÇÃO A MARTE E POUSO DE MÓDULOS".center(85))
-print("=" * 85 + "\n")
 
+print("INICIANDO FASE 2: APROXIMAÇÃO A MARTE E POUSO DE MÓDULOS".center(85))
+
+print("=" * 85 + "\n")
 # --- Estruturas de Dados Lineares Fundamentais ---
 fila_pouso = (
     []
@@ -213,7 +227,14 @@ pilha_alertas = (
 
 
 def criar_modulo(
-    nome, funcao, prioridade, criticidade, combustivel, horario, sensores_ok=True
+    ID_MODULO,
+    funcao,
+    prioridade,
+    criticidade,
+    combustivel,
+    massa,
+    horario,
+    sensores_ok=True,
 ):
     """
     Função construtora (Factory).
@@ -221,11 +242,12 @@ def criar_modulo(
     Ao agrupar os dados em um dicionário, movemos a entidade inteira entre as listas e filas.
     """
     return {
-        "nome": nome,
+        "ID_MODULO": ID_MODULO,
         "funcao": funcao,
         "prioridade": prioridade,
         "criticidade": criticidade,
         "combustivel": combustivel,
+        "massa": massa,
         "horario_chegada": horario,
         "sensores_ok": sensores_ok,
     }
@@ -234,51 +256,61 @@ def criar_modulo(
 def inicializar_cenario():
     """
     Carrega a fila de pouso inicial instanciando os 5 módulos fundamentais
-    conforme planejamento da base. O combustível é randomizado para gerar variação nos testes.
+    conforme planejamento da base.
     """
     fila_pouso.append(
         criar_modulo(
-            "Logística",
+            "MOD-LOG-01",
             "Ferramentas",
             4,
             "Média",
             round(random.uniform(5, 100), 1),
+            2500.0,  # Massa em kg
             "08:00",
         )
     )
     fila_pouso.append(
         criar_modulo(
-            "Habitação", "Abrigo", 3, "Alta", round(random.uniform(5, 100), 1), "08:15"
+            "MOD-HAB-01",
+            "Abrigo",
+            3,
+            "Alta",
+            round(random.uniform(5, 100), 1),
+            8500.0,
+            "08:15",
         )
     )
     fila_pouso.append(
         criar_modulo(
-            "Suporte Médico",
+            "MOD-MED-01",
             "Emergência",
             1,
             "Alta",
             round(random.uniform(5, 100), 1),
+            3200.0,
             "08:05",
         )
     )
     fila_pouso.append(
         criar_modulo(
-            "Laboratório",
+            "MOD-LAB-01",
             "Pesquisa",
             5,
             "Média",
             round(random.uniform(5, 100), 1),
+            4100.0,
             "08:30",
         )
     )
     # O módulo de energia tem chance aleatória de já nascer com os sensores pifados
     fila_pouso.append(
         criar_modulo(
-            "Energia",
+            "MOD-ENE-01",
             "Geração",
             2,
             "Alta",
             round(random.uniform(5, 100), 1),
+            6000.0,
             "08:10",
             sensores_ok=random.choice([True, False]),
         )
@@ -288,8 +320,7 @@ def inicializar_cenario():
 def buscar_menor_combustivel(fila):
     """
     Algoritmo de Busca Sequencial.
-    Varre a fila inteira linearmente, comparando o combustível atual com o menor já encontrado,
-    retornando o dicionário do módulo mais crítico.
+    Varre a fila inteira linearmente, comparando o combustível atual com o menor já encontrado.
     """
     if not fila:
         return None
@@ -303,8 +334,7 @@ def buscar_menor_combustivel(fila):
 def ordenar_fila_por_prioridade(fila):
     """
     Algoritmo de Ordenação: Insertion Sort (Ordenação por Inserção).
-    Percorre a lista e insere o elemento atual na posição correta comparando com os anteriores.
-    Garante que os módulos com prioridade 1 (maior urgência) fiquem no topo da fila (índice 0).
+    Garante que os módulos com prioridade menor numéricamente (ex: 1) fiquem no topo da fila.
     """
     for i in range(1, len(fila)):
         chave = fila[i]
@@ -317,10 +347,8 @@ def ordenar_fila_por_prioridade(fila):
 
 def analisar_clima_marciano():
     """
-    Função de modelagem de evento estocástico (aleatório).
     Simula fenômenos naturais (Tempestades, Cisalhamento, Frio Extremo)
     que podem abortar o pouso de última hora.
-    Retorna uma tupla: (Booleano indicando se o clima está OK, Lista de fenômenos que ocorreram)
     """
     fenomenos = [
         "Tempestade de Areia",
@@ -329,7 +357,7 @@ def analisar_clima_marciano():
     ]
     # 40% de chance de dar problema no clima durante a janela de pouso
     if random.random() < 0.40:
-        qtd_problemas = random.randint(1, 3)  # Sorteia de 1 a 3 eventos combinados
+        qtd_problemas = random.randint(1, 3)
         problemas_ativos = random.sample(fenomenos, qtd_problemas)
         return False, problemas_ativos
     return True, []
@@ -338,16 +366,14 @@ def analisar_clima_marciano():
 def simular_pouso(area_livre):
     """
     Motor central da Fase 2 do MGPEB.
-    Processa a fila de pouso aplicando estritamente as regras de lógica Booleana solicitadas.
+    Processa a fila de pouso aplicando estritamente as regras de lógica Booleana.
     """
     print("\n--- INICIANDO PROTOCOLO DE POUSO ---")
 
-    # Executa até a fila esvaziar
     while len(fila_pouso) > 0:
-        # FILA FIFO: Retira o módulo que está no topo (posição 0)
         modulo_atual = fila_pouso.pop(0)
         print(
-            f"\n[Analisando] {modulo_atual['nome']} (Prioridade {modulo_atual['prioridade']} | Combustível: {modulo_atual['combustivel']}%)"
+            f"\n[Analisando] {modulo_atual['ID_MODULO']} (Prioridade {modulo_atual['prioridade']} | Combustível: {modulo_atual['combustivel']}%)"
         )
 
         clima_ok, problemas_clima = analisar_clima_marciano()
@@ -365,34 +391,35 @@ def simular_pouso(area_livre):
         # REGRA EXCEPCIONAL 1: Se estiver sem combustível, mas não for prioridade, fura a fila.
         if not combustivel_ok and not prioridade_alta:
             print(f"   -> ALERTA: Combustível crítico! Reavaliando prioridade.")
-            pilha_alertas.append(f"Alerta de Combustível: {modulo_atual['nome']}")
-            modulo_atual["prioridade"] = 0  # Força a prioridade 0 (Máxima absoluta)
-            fila_pouso.append(modulo_atual)  # Devolve pra fila
-            ordenar_fila_por_prioridade(fila_pouso)  # Reordena para ele ir pro topo
-            continue  # Interrompe a iteração atual e volta pro início do While
+            pilha_alertas.append(f"Alerta de Combustível: {modulo_atual['ID_MODULO']}")
+            modulo_atual["prioridade"] = (
+                1  # Alterado de 0 para 1 para respeitar o limite (1 a 5)
+            )
+            fila_pouso.append(modulo_atual)
+            ordenar_fila_por_prioridade(fila_pouso)
+            continue
 
         # REGRA EXCEPCIONAL 2: Clima ruim AND sensores pifados = Alerta crítico e Retenção
         if not clima_ok and not sensores_ok:
-            msg_alerta = f"ALERTA MÁXIMO: Falha de Sensores + Clima Adverso ({problemas_clima[0]}) no módulo {modulo_atual['nome']}"
+            msg_alerta = f"ALERTA MÁXIMO: Falha de Sensores + Clima Adverso ({problemas_clima[0]}) no módulo {modulo_atual['ID_MODULO']}"
             print(f"   -> {msg_alerta}")
             pilha_alertas.append(msg_alerta)
             lista_espera.append(modulo_atual)
             continue
 
         # PORTA LÓGICA PRINCIPAL (AND Estrito)
-        # Só autoriza o pouso se TODAS as variáveis forem Verdadeiras
         if combustivel_ok and sensores_ok and clima_ok and area_livre:
             print(f"   -> SUCESSO: Pouso autorizado.")
             lista_pousados.append(modulo_atual)
-            area_livre = False  # Simula a área ocupada durante o pouso
+            area_livre = False
 
-        # TRATAMENTO DE FALHAS (Disparo de gatilhos visuais e movimentação entre listas)
+        # TRATAMENTO DE FALHAS
         else:
             print(f"   -> FALHA: Pouso negado.")
             if not sensores_ok:
                 print("      Motivo: Falha nos sensores. Adiado para análise.")
                 lista_espera.append(modulo_atual)
-                pilha_alertas.append(f"Falha de sensor: {modulo_atual['nome']}")
+                pilha_alertas.append(f"Falha de sensor: {modulo_atual['ID_MODULO']}")
             elif not area_livre:
                 print("      Motivo: Área de pouso ocupada. Entrando em espera.")
                 lista_espera.append(modulo_atual)
@@ -400,7 +427,6 @@ def simular_pouso(area_livre):
                 print("      Motivo: Condição atmosférica adversa. Entrando em espera.")
                 lista_espera.append(modulo_atual)
 
-        # Reseta o booleano de área para garantir a fluidez da simulação no próximo loop
         area_livre = True
 
 
@@ -410,41 +436,35 @@ def simular_pouso(area_livre):
 if __name__ == "__main__":
     inicializar_cenario()
 
-    # Aplicação prática do Algoritmo de Busca
     modulo_menos_combustivel = buscar_menor_combustivel(fila_pouso)
     print(
-        f"Módulo com menor combustível detectado: {modulo_menos_combustivel['nome']} ({modulo_menos_combustivel['combustivel']}%)"
+        f"Módulo com menor combustível detectado: {modulo_menos_combustivel['ID_MODULO']} ({modulo_menos_combustivel['combustivel']}%)"
     )
 
-    # Aplicação prática do Algoritmo de Ordenação
     ordenar_fila_por_prioridade(fila_pouso)
     print("\nFila de pouso configurada e ordenada por prioridade.")
 
-    # Inicializa o motor de pouso
     simular_pouso(area_livre=True)
 
-    # --- Relatório Final Fase 2 (Alimentando o Quadro da UI) ---
+    # --- Relatório Final Fase 2 ---
     linhas_quadro = []
     linhas_quadro.append(f"Módulos Pousados ({len(lista_pousados)}):")
     for m in lista_pousados:
-        linhas_quadro.append(f"  [+] {m['nome']}")
+        linhas_quadro.append(f"  [+] {m['ID_MODULO']}")
 
     linhas_quadro.append("")
     linhas_quadro.append(f"Módulos em Espera ({len(lista_espera)}):")
     for m in lista_espera:
-        linhas_quadro.append(f"  [-] {m['nome']}")
+        linhas_quadro.append(f"  [-] {m['ID_MODULO']}")
 
     linhas_quadro.append("")
     linhas_quadro.append(f"Alertas Críticos na Pilha ({len(pilha_alertas)}):")
 
-    # Fazemos uma cópia rápida da pilha para mandar os textos pra IA depois,
-    # já que o comando .pop() abaixo irá esvaziar a pilha original para exibi-la.
     alertas_gerados = list(pilha_alertas)
 
     if not pilha_alertas:
         linhas_quadro.append("  Nenhum alerta registrado.")
 
-    # Esvaziando a estrutura de Pilha (LIFO) para impressão
     while pilha_alertas:
         linhas_quadro.append(f"  (!) {pilha_alertas.pop()}")
 
@@ -452,18 +472,18 @@ if __name__ == "__main__":
     imprimir_quadro("RELATÓRIO FINAL DE OPERAÇÃO - MGPEB", linhas_quadro)
 
     # --- Inteligência Artificial Fase 2 (Boletim Diagnóstico) ---
-    # Convertendo as listas de dicionários em strings legíveis para a IA (List Comprehension)
     nomes_pousados = (
-        ", ".join([m["nome"] for m in lista_pousados]) if lista_pousados else "Nenhum"
+        ", ".join([m["ID_MODULO"] for m in lista_pousados])
+        if lista_pousados
+        else "Nenhum"
     )
     nomes_espera = (
-        ", ".join([m["nome"] for m in lista_espera]) if lista_espera else "Nenhum"
+        ", ".join([m["ID_MODULO"] for m in lista_espera]) if lista_espera else "Nenhum"
     )
     lista_de_alertas = (
         ", ".join(alertas_gerados) if alertas_gerados else "Nenhum alerta"
     )
 
-    # prompt do Gemini
     prompt_ia_fase2 = (
         f"Atue como Diretor de Voo Sênior da Missão Aurora. O processo de descida da Fase 2 terminou. "
         f"Resultado: {len(lista_pousados)} módulos pousados com sucesso ({nomes_pousados}) e "
@@ -472,10 +492,15 @@ if __name__ == "__main__":
         f"Escreva um boletim técnico de diagnóstico curto em português do Brasil:\n"
         f"- STATUS: Resuma o resultado da operação de pouso.\n"
         f"- RISCO: Explique tecnicamente os riscos gerados pelos módulos que ficaram em espera ou alertas críticos.\n"
-        f"- AÇÃO: Defina o foco imediato de investigação em órbita e na superfície."
+        f"- AÇÃO: Defina o foco imediato de investigação em órbita e na superfície.\n"
+        f"Deixar todo o o tom do comunicado sério, técnico e formal, condizente com a gravidade da situação.\n"
+        f"Deixar todo o relatório com no máximo 5 linhas para garantir objetividade e clareza na comunicação. "
     )
 
     print("\n--- ANÁLISE DO DIRETOR DE VOO (IA FASE 2) ---")
+    api_key = os.getenv("GEMINI_API_KEY")
+    client = genai.Client(api_key=api_key) if api_key else None
+
     try:
         if api_key:
             response = client.models.generate_content(
