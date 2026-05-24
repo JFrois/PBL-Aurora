@@ -301,6 +301,119 @@ Enviar seres humanos ao espaço gera transformações profundas na estrutura soc
 * Cultura de Segurança: Os rigorosos protocolos de falha zero e as tecnologias de reciclagem de recursos (água e ar) são aplicados hoje em indústrias críticas e na gestão de desastres ambientais.
 --- 
 **Conclusão:** Decolar exige mais que combustível; exige o compromisso de proteger quem parte, quem fica e o ambiente que nos cerca.
+
+## 🚀 Fase 2: Módulo de Gestão de Pouso e Estabilização da Base (MGPEB)
+
+Esta fase é responsável por gerenciar o tráfego orbital e a autorização de descida dos módulos na base Aurora Singer em Marte, utilizando estruturas de dados lineares fundamentais, algoritmos de busca/ordenação e lógica booleana estrita para mitigar riscos de colisão e falhas catastróficas.
+
+### 📐 1. Estruturas de Dados Utilizadas
+O sistema gerencia os módulos (representados como dicionários) utilizando três conceitos de estruturas de dados lineares:
+* **Fila de Pouso (`Queue` - FIFO):** Garante a regra de que o primeiro módulo a chegar/solicitar a descida seja o primeiro a ser processado (`pop(0)`).
+* **Listas de Histórico (`List`):** Utilizadas para catalogar o destino final das entidades, divididas entre `lista_pousados` (sucesso na superfície) e `lista_espera` (módulos retidos em órbita por contingência).
+* **Pilha de Alertas (`Stack` - LIFO):** Registra as anomalias climáticas e operacionais mais recentes no topo da pilha, garantindo que o último erro inserido seja o primeiro a ser exibido e tratado pelo painel (`pop()`).
+
+### ⚡ 2. Algoritmos Implementados
+Para processar e otimizar a fila de pouso, foram desenvolvidos dois algoritmos nativos (sem o uso de bibliotecas externas):
+* **Busca Sequencial:** Varre a fila de pouso de forma linear para identificar instantaneamente qual módulo possui o menor nível crítico de combustível.
+* **Insertion Sort (Ordenação por Inserção):** Reordena dinamicamente a fila com base na prioridade numérica do módulo (onde a prioridade 1 representa maior urgência), garantindo que os módulos de suporte médico e energético passem à frente.
+
+### 🧠 3. Portas Lógicas e Regras de Decisão
+A autorização final para o pouso de cada módulo exige uma validação booleana composta através de operadores lógicos estritos:
+1. **Regra de Sucesso Primária (`AND` Estrito):** O pouso só é executado com sucesso se:
+   $$\text{combustivel\_ok} \land \text{sensores\_ok} \land \text{clima\_ok} \land \text{area\_livre}$$
+2. **Regra de Contingência Energética:** Se um módulo apresentar combustível crítico ($\le 15\%$) mas não possuir prioridade alta, o sistema intercepta a entidade, eleva sua prioridade e reordena a fila.
+3. **Regra de Retenção por Clima e Sensores:** Se o radar acusar clima adverso **E** os sensores do módulo estiverem em falha, o pouso é negado imediatamente e o evento é enviado para o topo da pilha de alertas.
+
+### ⚙️ Exemplo de Entrada e Saída (Telemetria Simulada)
+* **Entrada na Fila:** Módulos `MOD-MED-01` (Prioridade 1), `MOD-ENE-01` (Prioridade 2), `MOD-HAB-01` (Prioridade 3), `MOD-LOG-01` (Prioridade 4), `MOD-LAB-01` (Prioridade 5).
+* **Saída no Terminal (Log de Operação):**
+```
+=====================================================================================
+               INICIANDO FASE 2: APROXIMAÇÃO A MARTE E POUSO DE MÓDULOS              
+=====================================================================================
+
+Módulo com menor combustível detectado: MOD-LAB-01 (10.9%)
+
+Fila de pouso configurada e ordenada por prioridade.
+
+--- INICIANDO PROTOCOLO DE POUSO ---
+
+[Analisando] MOD-MED-01 (Prioridade 1 | Combustível: 77.6%)
+   -> RADAR METEOROLÓGICO: Detectado(s) Cisalhamento de Vento!
+   -> FALHA: Pouso negado.
+      Motivo: Condição atmosférica adversa. Entrando em espera.
+
+[Analisando] MOD-ENE-01 (Prioridade 2 | Combustível: 39.9%)
+   -> RADAR METEOROLÓGICO: Detectado(s) Tempestade de Areia, Frio Extremo Inesperado!
+   -> ALERTA MÁXIMO: Falha de Sensores + Clima Adverso (Tempestade de Areia) no módulo MOD-ENE-01
+
+[Analisando] MOD-HAB-01 (Prioridade 3 | Combustível: 31.1%)
+   -> RADAR METEOROLÓGICO: Detectado(s) Tempestade de Areia, Cisalhamento de Vento!
+   -> FALHA: Pouso negado.
+      Motivo: Condição atmosférica adversa. Entrando em espera.
+
+[Analisando] MOD-LOG-01 (Prioridade 4 | Combustível: 25.8%)
+   -> SUCESSO: Pouso autorizado.
+
+[Analisando] MOD-LAB-01 (Prioridade 5 | Combustível: 10.9%)
+   -> RADAR METEOROLÓGICO: Detectado(s) Tempestade de Areia!
+   -> ALERTA: Combustível crítico! Reavaliando prioridade.
+
+[Analisando] MOD-LAB-01 (Prioridade 1 | Combustível: 10.9%)
+   -> RADAR METEOROLÓGICO: Detectado(s) Tempestade de Areia, Frio Extremo Inesperado, Cisalhamento de Vento!
+   -> FALHA: Pouso negado.
+      Motivo: Condição atmosférica adversa. Entrando em espera.
+
+
+-------------------------------------------------------------------------------------
+|                        RELATÓRIO FINAL DE OPERAÇÃO - MGPEB                        |
+|                                                                                   |
+| Módulos Pousados (1):                                                             |
+|   [+] MOD-LOG-01                                                                  |
+|                                                                                   |
+| Módulos em Espera (4):                                                            |
+|   [-] MOD-MED-01                                                                  |
+|   [-] MOD-ENE-01                                                                  |
+|   [-] MOD-HAB-01                                                                  |
+|   [-] MOD-LAB-01                                                                  |
+|                                                                                   |
+| Alertas Críticos na Pilha (2):                                                    |
+|   (!) Alerta de Combustível: MOD-LAB-01                                           |
+|   (!) ALERTA MÁXIMO: Falha de Sensores + Clima Adverso (Tempestade de Areia) no módulo MOD-ENE-01 |
+|                                                                                   |
+-------------------------------------------------------------------------------------
+
+--- ANÁLISE DO DIRETOR DE VOO (IA FASE 2) ---
+Boletim Técnico de Diagnóstico – Missão Aurora – Pouso Fase 2
+
+Fase 2: MOD-LOG-01 pousado com sucesso. MOD-MED-01, MOD-ENE-01, MOD-HAB-01, MOD-LAB-01 retidos em órbita.
+MOD-ENE-01 apresenta ALERTA MÁXIMO (falha de sensores + tempestade de areia), inviabilizando pouso seguro.
+MOD-LAB-01 com Alerta de Combustível crítico, comprometendo manobras e permanência orbital.
+Ação imediata: Priorizar diagnóstico detalhado de MOD-ENE-01 (órbita/superfície) e MOD-LAB-01 (propelente).
+Reavaliar perfis de reentrada dos demais módulos e janelas de pouso conforme dados atualizados.
+=====================================================================================
+
+```
+
+---
+
+## 🌌 Fase 3: Sistema de Funcionamento Inteligente da Colônia
+
+Este módulo unifica o processamento de dados e tomada de decisão para garantir a sobrevivência e a estabilidade energética da colônia Aurora Prime.
+
+### ⚙️ Exemplo de Entrada e Saída (Validação do Sistema)
+
+#### 1. Módulo de Decisão Condicional
+* **Entrada:** `bateria_nivel_pct = 40`, `consumo_total = 80` (Suporte de vida + Sistemas não essenciais ligados).
+* **Saída:** `"ALERTA: Energia < 50% e Consumo Alto. Modo Economia ATIVADO! Desligando sistemas não essenciais."`
+
+#### 2. Módulo de Previsão Climática (Regressão Linear)
+* **Entrada (Histórico):** Vento: `[8, 10, 12]` | Geração: `[20, 25, 30]` -> **Nova entrada:** `vento = 11`
+* **Saída:** `Previsão de energia ≈ 27.5 kWh`
+
+#### 3. Módulo de Eficiência Energética
+* **Entrada:** `geracao_total = 70W`, `consumo_total = 35W` (Após o corte automático do módulo não essencial).
+* **Saída:** `"SUGESTÃO: Geração total (70W) maior que o Consumo (35W). Armazenar energia excedente."`
   
 <br>
 
