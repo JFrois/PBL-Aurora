@@ -212,74 +212,6 @@ graph TD
 ```
 <br>
 
-## 🛠️ Configuração e Instalação
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
-
-### Pré-requisitos
-- [Python 3.9+](https://www.python.org/downloads/)
-- Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey)
-<br>
-
-### Passos para Execução
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/seu-usuario/PBL-Aurora.git
-    cd PBL-Aurora
-    ```
-
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    # Para Windows
-    python -m venv venv
-    .\venv\Scripts\activate
-
-    # Para macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-
-3.  **Instale as dependências:**
-    O projeto utiliza um arquivo `requirements.txt` para gerenciar as bibliotecas.
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Configure as variáveis de ambiente:**
-    - Crie um arquivo chamado `.env` na raiz do projeto.
-    - Adicione sua chave da API do Gemini, como no exemplo abaixo:
-    ```
-    GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
-    ```
-    <br>     
-
-### Executando a Simulação
-
-O projeto possui duas saídas principais: uma simulação via console e uma interface web em desenvolvimento.
-
-- **Para rodar a simulação no console:**
-  ```bash
-  python codigo/main.py
-  ```
-  Isso irá:
-    * Executar os 3 testes de telemetria
-    * Exibir os relatórios de cada rodada no terminal 
-    * Gerar, em caso de falha, um relatório detalhado via IA (Gemini).
-
-<br> 
-
-## 📂 Estrutura do Projeto
-```
-PBL-Aurora/
-├── .env                        # Chave de segurança 
-├── .gitignore                  # Regras de exclusão do Git
-├── requirements.txt            # Dependências do projeto
-├── codigo/
-│   └── Projeto_Aurora.ipynb    # código
-└── README.md                   # Documentação do projeto
-```
-
-<br>
-
 # REFLEXÃO CRÍTICA: MISSÃO AURORA
 A exploração espacial é o reflexo dos valores da humanidade. Na Missão Aurora, a telemetria não apenas monitora máquinas, mas protege vidas e fundamenta uma presença humana ética e consciente.
 
@@ -303,6 +235,8 @@ Enviar seres humanos ao espaço gera transformações profundas na estrutura soc
 **Conclusão:** Decolar exige mais que combustível; exige o compromisso de proteger quem parte, quem fica e o ambiente que nos cerca.
 
 ## 🚀 Fase 2: Módulo de Gestão de Pouso e Estabilização da Base (MGPEB)
+<details>
+<summary>Clique para ver a fase 2:</summary>
 
 Esta fase é responsável por gerenciar o tráfego orbital e a autorização de descida dos módulos na base Aurora Singer em Marte, utilizando estruturas de dados lineares fundamentais, algoritmos de busca/ordenação e lógica booleana estrita para mitigar riscos de colisão e falhas catastróficas.
 
@@ -394,10 +328,12 @@ Reavaliar perfis de reentrada dos demais módulos e janelas de pouso conforme da
 =====================================================================================
 
 ```
+</details>
 
 ---
-
 ## 🌌 Fase 3: Sistema de Funcionamento Inteligente da Colônia
+<details>
+<summary>Clique para ver a fase 3 em detalhe:</summary><br>
 
 Este módulo unifica o processamento de dados e tomada de decisão para garantir a sobrevivência e a estabilidade energética da colônia Aurora Prime.
 
@@ -414,9 +350,136 @@ Este módulo unifica o processamento de dados e tomada de decisão para garantir
 #### 3. Módulo de Eficiência Energética
 * **Entrada:** `geracao_total = 70W`, `consumo_total = 35W` (Após o corte automático do módulo não essencial).
 * **Saída:** `"SUGESTÃO: Geração total (70W) maior que o Consumo (35W). Armazenar energia excedente."`
-  
+<br>
+## Exemplo saída terminal:
+
+```
+=====================================================================================
+                     INICIANDO SISTEMA INTEGRADO DA MISSÃO AURORA                    
+=====================================================================================
+
+=====================================================================================
+                    INICIANDO FASE 1: TELEMETRIA E PRÉ-DESCOLAGEM                    
+=====================================================================================
+-------------------------------------------------------------------------------------
+|                                RODADA 1/3 - SUCESSO                               |
+|                                                                                   |
+| Parâmetros nominais.                                                              |
+|                                                                                   |
+-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+|                                RODADA 2/3 - SUCESSO                               |
+|                                                                                   |
+| Parâmetros nominais.                                                              |
+|                                                                                   |
+-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+|                                RODADA 3/3 - SUCESSO                               |
+|                                                                                   |
+| Parâmetros nominais.                                                              |
+|                                                                                   |
+-------------------------------------------------------------------------------------
+
+=====================================================================================
+                    INICIANDO FASE 2: APROXIMAÇÃO E POUSO (MGPEB)                    
+=====================================================================================
+
+--- INICIANDO PROTOCOLO DE POUSO ---
+[+] MOD-MED-01 pousou com sucesso.
+[+] MOD-ENE-01 pousou com sucesso.
+[-] MOD-HAB-01 retido em órbita.
+[-] MOD-LOG-01 retido em órbita.
+[+] MOD-LAB-01 pousou com sucesso.
+
+=====================================================================================
+                   INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA                  
+=====================================================================================
+
+=====================================================================================
+                       PROCESSAMENTO DE DADOS E AUDITORIA (IA)                       
+=====================================================================================
+>> Extraindo correlações e gerando contexto analítico profundo...
+>> Sintetizando Boletim Executivo Estruturado...
+
+Prezados membros da equipe de Missão Aurora,
+
+Com a máxima seriedade e empenho na segurança e sucesso de nossa empreitada, apresento o boletim operacional consolidado, com base na análise técnica detalhada recebida. Nossa missão enfrenta desafios críticos que exigem atenção e ação imediatas.
+
+INICIANDO FASE 1: TELEMETRIA E PRÉ-DESCOLAGEM
+-> A Fase 1, compreendendo as operações de telemetria e pré-descolagem, foi executada com sucesso pleno, conforme os parâmetros de missão. O status "GO" foi confirmado sem o registro de falhas operacionais ou anomalias detectadas em qualquer subsistema. Os logs brutos confirmam a ausência de erros de telemetria, garantindo a integridade dos dados e a conformidade com a linha de base planejada. Concluímos esta fase sem indícios de quaisquer eventos que pudessem ter impactado negativamente as fases subsequentes, refletindo a excelência da engenharia e das equipes de lançamento.
+
+INICIANDO FASE 2: APROXIMAÇÃO E POUSO (MGPEB)
+-> A Fase 2 de Aproximação e Pouso (MGPEB) representa o primeiro desvio crítico em relação ao plano de missão. Embora tenhamos obtido sucesso no pouso dos módulos Médico (MOD-MED-01), Energia (MOD-ENE-01) e Laboratório (MOD-LAB-01), o gerenciamento de pouso falhou para dois módulos de importância vital: Habitação (MOD-HAB-01) e Logística (MOD-LOG-01). Estes módulos foram retidos na órbita de espera devido a anomalias não especificadas, o que impõe uma revisão urgente do processo decisório e dos critérios de prontidão para desdobramento. A eficiência da ordenação da fila, neste contexto, foi comprometida pela incapacidade de se proceder com o pouso dos módulos críticos. Os riscos operacionais advindos da retenção desses módulos são severos e sistêmicos: a ausência do MOD-HAB-01 degrada drasticamente nossa capacidade de sustentação de vida e acomodação da tripulação no solo, forçando uma dependência precária de abrigos temporários. Igualmente, a retenção do MOD-LOG-01 compromete a gestão de recursos, a capacidade de manutenção, o reabastecimento e a recuperação de falhas, elevando exponencialmente a vulnerabilidade da colônia a longo prazo e a exaustão de suprimentos essenciais.
+
+INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA
+-> A Fase 3, referente às Operações Iniciais da Colônia e ao Sistema Inteligente, apresenta uma situação aparentemente paradoxal que exige nossa mais profunda análise. Embora os dados indiquem um balanço energético momentaneamente positivo, com um superávit de 10.06 MW, uma ação de segurança fundamental foi implementada: o corte de energia no módulo Laboratório para preservação das baterias. Esta decisão, que à primeira vista pareceria contraditória dado o superávit, é, na realidade, uma consequência direta e alarmante das falhas na Fase 2. O algoritmo de balanceamento de carga, embora eficaz em gerenciar a demanda instantânea, está agora operando sob um regime de resiliência severamente comprometida. A precisão da previsão eólica por regressão linear, que indicou condições favoráveis para uma geração robusta de 85.06 MW com ventos registrados de 36.0 unidades, é, por si só, insuficiente para compensar a vulnerabilidade estrutural. O impacto real do corte seletivo de energia nos módulos não essenciais, como o Laboratório, sinaliza uma gestão de risco intensamente conservadora imposta pela ausência do MOD-LOG-01 (que deveria prover capacidade de manutenção e substituição de baterias) e uma provável capacidade de armazenamento de energia (buffers) insuficiente para lidar com períodos de baixa geração prolongados. Esse corte é uma medida proativa para mitigar riscos futuros, indicando que o "superávit" atual é enganoso, pois o consumo total real seria significativamente maior com todos os módulos operacionais, e reflete uma priorização crítica para a sobrevivência em um ambiente degradado.
+=====================================================================================
+```
+
+</details>
+
 <br>
 
+## 📂 Estrutura do Projeto
+```Plaintext
+PBL-Aurora/
+├── .env                        # Chave de segurança da IA
+├── .gitignore                  # Regras de exclusão do Git
+├── requirements.txt            # Dependências do projeto
+├── codigo/
+│   ├── fase1.py                # Microsserviço de Lançamento
+│   ├── fase2.py                # Microsserviço de Pouso Orbital
+│   ├── fase3.py                # Microsserviço da Colônia e Regressão
+│   └── main.py                 # Orquestrador Central e Integração IA
+└── README.md                   # Documentação do projeto
+```
+## 🛠️ Configuração e Instalação
+Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
+
+### Pré-requisitos
+- [Python 3.9+](https://www.python.org/downloads/)
+- Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey)
+<br>
+
+### Passos para Execução
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/seu-usuario/PBL-Aurora.git
+    cd PBL-Aurora
+    ```
+
+2.  **Crie e ative um ambiente virtual:**
+    ```bash
+    # Para Windows
+    python -m venv venv
+    .\venv\Scripts\activate
+
+    # Para macOS/Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3.  **Instale as dependências:**
+    O projeto utiliza um arquivo `requirements.txt` para gerenciar as bibliotecas.
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Configure as variáveis de ambiente:**
+    - Crie um arquivo chamado `.env` na raiz do projeto.
+    - Adicione sua chave da API do Gemini, como no exemplo abaixo:
+    ```
+    GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
+    ``` 
+
+### Executando a Simulação
+
+O projeto possui duas saídas principais: uma simulação via console e uma interface web em desenvolvimento.
+
+- **Para rodar a simulação no console:**
+  ```bash
+  python codigo/main.py
+  ```
 ## 👥 Equipe (FIAP 2026)
 | Nome | RM |
 | :--- | :--- |
