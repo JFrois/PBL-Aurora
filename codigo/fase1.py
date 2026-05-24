@@ -64,7 +64,7 @@ def executar_fase1():
         if not erros:
             testes_sucessos += 1
             imprimir_quadro(
-                f"RODADA {quantidade_testes}/3 - SUCESSO", ["Parâmetros nominais."]
+                f"RODADA {quantidade_testes}/3 - SUCESSO", ["Parâmetros normais."]
             )
         else:
             testes_falhas += 1

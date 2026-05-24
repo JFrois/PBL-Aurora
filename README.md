@@ -351,6 +351,7 @@ Este módulo unifica o processamento de dados e tomada de decisão para garantir
 * **Entrada:** `geracao_total = 70W`, `consumo_total = 35W` (Após o corte automático do módulo não essencial).
 * **Saída:** `"SUGESTÃO: Geração total (70W) maior que o Consumo (35W). Armazenar energia excedente."`
 <br>
+
 ## Exemplo saída terminal:
 
 ```
