@@ -360,40 +360,75 @@ Este módulo unifica o processamento de dados e tomada de decisão para garantir
 =====================================================================================
 
 =====================================================================================
-                    INICIANDO FASE 1: TELEMETRIA E PRÉ-DESCOLAGEM                    
+            INICIANDO FASE 1: TELEMETRIA E PRÉ-DECOLAGEM (SISTEMA NOMINAL)           
 =====================================================================================
 -------------------------------------------------------------------------------------
 |                                RODADA 1/3 - SUCESSO                               |
 |                                                                                   |
-| Parâmetros nominais.                                                              |
+| STATUS: OPERAÇÃO NOMINAL                                                          |
+|   > Bateria Útil: 4560.30 kWh                                                     |
+|   > Autonomia após decolagem: 94.36% (Safe > 80%)                                 |
+|   > Pressão interna: 399.42 psi                                                   |
+|   > Temperatura Interna: 22.31 C°                                                 |
+| STATUS DOS MÓDULOS CRÍTICOS: OK                                                   |
 |                                                                                   |
 -------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------
 |                                RODADA 2/3 - SUCESSO                               |
 |                                                                                   |
-| Parâmetros nominais.                                                              |
+| STATUS: OPERAÇÃO NOMINAL                                                          |
+|   > Bateria Útil: 4722.60 kWh                                                     |
+|   > Autonomia após decolagem: 93.90% (Safe > 80%)                                 |
+|   > Pressão interna: 378.33 psi                                                   |
+|   > Temperatura Interna: 20.22 C°                                                 |
+| STATUS DOS MÓDULOS CRÍTICOS: OK                                                   |
 |                                                                                   |
 -------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------
 |                                RODADA 3/3 - SUCESSO                               |
 |                                                                                   |
-| Parâmetros nominais.                                                              |
+| STATUS: OPERAÇÃO NOMINAL                                                          |
+|   > Bateria Útil: 4758.56 kWh                                                     |
+|   > Autonomia após decolagem: 94.25% (Safe > 80%)                                 |
+|   > Pressão interna: 392.11 psi                                                   |
+|   > Temperatura Interna: 21.82 C°                                                 |
+| STATUS DOS MÓDULOS CRÍTICOS: OK                                                   |
 |                                                                                   |
 -------------------------------------------------------------------------------------
+
+>>> STATUS FINAL: DECOLAGEM AUTORIZADA! 🚀
 
 =====================================================================================
                     INICIANDO FASE 2: APROXIMAÇÃO E POUSO (MGPEB)                    
 =====================================================================================
 
 --- INICIANDO PROTOCOLO DE POUSO ---
-[+] MOD-MED-01 pousou com sucesso.
-[+] MOD-ENE-01 pousou com sucesso.
-[-] MOD-HAB-01 retido em órbita.
-[-] MOD-LOG-01 retido em órbita.
-[+] MOD-LAB-01 pousou com sucesso.
+
+[Analisando] MOD-MED-01 (Prioridade 1 | Combustível: 24.9%)
+   -> FALHA: Pouso negado.
+      Motivo: Condição atmosférica adversa (Cisalhamento de Vento, Tempestade de Areia, Frio Extremo Inesperado).
+
+[Analisando] MOD-ENE-01 (Prioridade 2 | Combustível: 12.7%)
+   -> ALERTA MÁXIMO: Falha de Sensores + Clima Adverso (Frio Extremo Inesperado) no módulo MOD-ENE-01
+
+[Analisando] MOD-HAB-01 (Prioridade 3 | Combustível: 33.7%)
+   -> SUCESSO: Pouso autorizado.
+
+[Analisando] MOD-LOG-01 (Prioridade 4 | Combustível: 27.8%)
+   -> SUCESSO: Pouso autorizado.
+
+[Analisando] MOD-LAB-01 (Prioridade 5 | Combustível: 43.5%)
+   -> SUCESSO: Pouso autorizado.
 
 =====================================================================================
                    INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA                  
+=====================================================================================
+
+=====================================================================================
+                          RESUMO TÉCNICO - FASE 3 (COLÔNIA)                          
+Balanço Energético: 10.06 MW
+Status do Sistema: ENERGIA EXCEDENTE
+Ações tomadas: Nenhuma
 =====================================================================================
 
 =====================================================================================
@@ -402,18 +437,24 @@ Este módulo unifica o processamento de dados e tomada de decisão para garantir
 >> Extraindo correlações e gerando contexto analítico profundo...
 >> Sintetizando Boletim Executivo Estruturado...
 
-Prezados membros da equipe de Missão Aurora,
-
-Com a máxima seriedade e empenho na segurança e sucesso de nossa empreitada, apresento o boletim operacional consolidado, com base na análise técnica detalhada recebida. Nossa missão enfrenta desafios críticos que exigem atenção e ação imediatas.
-
+--- BOLETIM DO DIRETOR DE VOO ---
 INICIANDO FASE 1: TELEMETRIA E PRÉ-DESCOLAGEM
--> A Fase 1, compreendendo as operações de telemetria e pré-descolagem, foi executada com sucesso pleno, conforme os parâmetros de missão. O status "GO" foi confirmado sem o registro de falhas operacionais ou anomalias detectadas em qualquer subsistema. Os logs brutos confirmam a ausência de erros de telemetria, garantindo a integridade dos dados e a conformidade com a linha de base planejada. Concluímos esta fase sem indícios de quaisquer eventos que pudessem ter impactado negativamente as fases subsequentes, refletindo a excelência da engenharia e das equipes de lançamento.
+-> A Fase 1 (Lançamento) foi concluída com sucesso completo, registrando três lançamentos bem-sucedidos.
+-> Não foram detectadas falhas ou anomalias durante esta fase crítica da missão.
+-> A execução precisa estabeleceu uma base operacional sólida para as fases subsequentes.
 
 INICIANDO FASE 2: APROXIMAÇÃO E POUSO (MGPEB)
--> A Fase 2 de Aproximação e Pouso (MGPEB) representa o primeiro desvio crítico em relação ao plano de missão. Embora tenhamos obtido sucesso no pouso dos módulos Médico (MOD-MED-01), Energia (MOD-ENE-01) e Laboratório (MOD-LAB-01), o gerenciamento de pouso falhou para dois módulos de importância vital: Habitação (MOD-HAB-01) e Logística (MOD-LOG-01). Estes módulos foram retidos na órbita de espera devido a anomalias não especificadas, o que impõe uma revisão urgente do processo decisório e dos critérios de prontidão para desdobramento. A eficiência da ordenação da fila, neste contexto, foi comprometida pela incapacidade de se proceder com o pouso dos módulos críticos. Os riscos operacionais advindos da retenção desses módulos são severos e sistêmicos: a ausência do MOD-HAB-01 degrada drasticamente nossa capacidade de sustentação de vida e acomodação da tripulação no solo, forçando uma dependência precária de abrigos temporários. Igualmente, a retenção do MOD-LOG-01 compromete a gestão de recursos, a capacidade de manutenção, o reabastecimento e a recuperação de falhas, elevando exponencialmente a vulnerabilidade da colônia a longo prazo e a exaustão de suprimentos essenciais.
+-> Três módulos essenciais (MOD-HAB-01, MOD-LOG-01, MOD-LAB-01) pousaram com êxito.
+-> Contudo, os módulos MOD-MED-01 e MOD-ENE-01 permanecem em espera, gerando um atraso crítico.
+-> Foi emitido "ALERTA MÁXIMO" para o MOD-ENE-01 devido a falha de sensores e frio extremo inesperado.
+-> Esta condição representa uma vulnerabilidade substancial à infraestrutura energética primária.
 
 INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA
--> A Fase 3, referente às Operações Iniciais da Colônia e ao Sistema Inteligente, apresenta uma situação aparentemente paradoxal que exige nossa mais profunda análise. Embora os dados indiquem um balanço energético momentaneamente positivo, com um superávit de 10.06 MW, uma ação de segurança fundamental foi implementada: o corte de energia no módulo Laboratório para preservação das baterias. Esta decisão, que à primeira vista pareceria contraditória dado o superávit, é, na realidade, uma consequência direta e alarmante das falhas na Fase 2. O algoritmo de balanceamento de carga, embora eficaz em gerenciar a demanda instantânea, está agora operando sob um regime de resiliência severamente comprometida. A precisão da previsão eólica por regressão linear, que indicou condições favoráveis para uma geração robusta de 85.06 MW com ventos registrados de 36.0 unidades, é, por si só, insuficiente para compensar a vulnerabilidade estrutural. O impacto real do corte seletivo de energia nos módulos não essenciais, como o Laboratório, sinaliza uma gestão de risco intensamente conservadora imposta pela ausência do MOD-LOG-01 (que deveria prover capacidade de manutenção e substituição de baterias) e uma provável capacidade de armazenamento de energia (buffers) insuficiente para lidar com períodos de baixa geração prolongados. Esse corte é uma medida proativa para mitigar riscos futuros, indicando que o "superávit" atual é enganoso, pois o consumo total real seria significativamente maior com todos os módulos operacionais, e reflete uma priorização crítica para a sobrevivência em um ambiente degradado.
+-> A colônia opera com estabilidade energética atual, registrando um excedente de 10.06 MW.
+-> A geração de 85.06 MW supera o consumo de 75.0 MW, auxiliada por ventos de 36.0.
+-> Recomenda-se o armazenamento proativo deste excedente para otimizar a resiliência.
+-> Contudo, esta margem é temporária e a ausência do MOD-ENE-01 limita expansão e redundância futura.
+-> O frio extremo inesperado pode impactar o consumo de aquecimento e a eficiência geral dos sistemas.
 =====================================================================================
 ```
 

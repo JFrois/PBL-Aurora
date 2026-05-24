@@ -14,6 +14,40 @@ def criar_modulo(ID_MODULO, prioridade, combustivel, sensores_ok=True):
     }
 
 
+def ordenar_fila_por_prioridade(fila):
+    """
+    Algoritmo de Ordenação: Insertion Sort (Ordenação por Inserção).
+    Reorganiza a fila para garantir que a prioridade mais alta (1) seja processada primeiro.
+    """
+    for i in range(1, len(fila)):
+        chave = fila[i]
+        j = i - 1
+        while j >= 0 and chave["prioridade"] < fila[j]["prioridade"]:
+            fila[j + 1] = fila[j]
+            j -= 1
+        fila[j + 1] = chave
+
+
+def analisar_clima_marciano():
+    """
+    Simula fenômenos naturais (Tempestades, Cisalhamento, Frio Extremo)
+    que podem abortar o pouso de última hora.
+    Retorna uma tupla: (Booleano clima_ok, Lista de problemas)
+    """
+    fenomenos = [
+        "Tempestade de Areia",
+        "Cisalhamento de Vento",
+        "Frio Extremo Inesperado",
+    ]
+
+    # 40% de chance de dar problema no clima durante a janela de pouso
+    if random.random() < 0.40:
+        qtd_problemas = random.randint(1, 3)
+        problemas_ativos = random.sample(fenomenos, qtd_problemas)
+        return False, problemas_ativos
+    return True, []
+
+
 def executar_fase2():
     """
     Processa a chegada dos módulos à órbita de Marte.
@@ -37,20 +71,14 @@ def executar_fase2():
         ),
     ]
 
-    # ALGORITMO: Insertion Sort (Ordenação por Inserção)
-    # Reorganiza a fila para garantir que a prioridade mais alta (1) seja processada primeiro
-    for i in range(1, len(fila_pouso)):
-        chave = fila_pouso[i]
-        j = i - 1
-        while j >= 0 and chave["prioridade"] < fila_pouso[j]["prioridade"]:
-            fila_pouso[j + 1] = fila_pouso[j]
-            j -= 1
-        fila_pouso[j + 1] = chave
+    # Ordenação inicial obrigatória
+    ordenar_fila_por_prioridade(fila_pouso)
 
     # Estruturas para armazenar o destino das entidades
-    lista_pousados = []  # Armazena os módulos que pousaram com sucesso
-    lista_espera = []  # Armazena módulos retidos em órbita devido a falhas
+    lista_pousados = []  # Armazena os IDs dos módulos que pousaram com sucesso
+    lista_espera = []  # Armazena IDs dos módulos retidos em órbita devido a falhas
     pilha_alertas = []  # Pilha LIFO para os registos de anomalias
+    area_livre = True  # Validação de espaço no espaçoporto
 
     print("\n--- INICIANDO PROTOCOLO DE POUSO ---")
 
@@ -58,28 +86,66 @@ def executar_fase2():
     while len(fila_pouso) > 0:
         modulo = fila_pouso.pop(0)
 
-        # Simula 40% de probabilidade de mau tempo
-        clima_ok = True if random.random() > 0.40 else False
+        print(
+            f"\n[Analisando] {modulo['ID_MODULO']} (Prioridade {modulo['prioridade']} | Combustível: {modulo['combustivel']}%)"
+        )
 
-        # Variável booleana para combustível
+        clima_ok, problemas_clima = analisar_clima_marciano()
         combustivel_ok = modulo["combustivel"] > 15
+        sensores_ok = modulo["sensores_ok"]
 
-        # Regra Excecional: Se estiver sem combustível, altera a prioridade para emergência (1)
+        # ----------------------------------------------------------------------
+        # REGRA EXCEPCIONAL 1: Sem combustível e não é prioridade máxima
+        # ----------------------------------------------------------------------
         if not combustivel_ok and modulo["prioridade"] > 2:
+            print("   -> ALERTA: Combustível crítico! Reavaliando prioridade.")
+            pilha_alertas.append(f"Alerta de Combustível: {modulo['ID_MODULO']}")
+
+            # Força prioridade máxima e devolve à fila
             modulo["prioridade"] = 1
-            fila_pouso.append(modulo)  # Recoloca no final da fila para ser reprocessado
+            fila_pouso.append(modulo)
+
+            # Aplica o Insertion Sort para garantir que ele vá pro topo da fila
+            ordenar_fila_por_prioridade(fila_pouso)
             continue
 
-        # Porta Lógica AND: O pouso só ocorre se tudo estiver em ordem
-        if clima_ok and modulo["sensores_ok"] and combustivel_ok:
-            print(f"[+] {modulo['ID_MODULO']} pousou com sucesso.")
-            lista_pousados.append(modulo["ID_MODULO"])
-        else:
-            print(f"[-] {modulo['ID_MODULO']} retido em órbita.")
+        # ----------------------------------------------------------------------
+        # REGRA EXCEPCIONAL 2: Clima ruim AND sensores pifados (Perigo de queda)
+        # ----------------------------------------------------------------------
+        if not clima_ok and not sensores_ok:
+            msg_alerta = f"ALERTA MÁXIMO: Falha de Sensores + Clima Adverso ({problemas_clima[0]}) no módulo {modulo['ID_MODULO']}"
+            print(f"   -> {msg_alerta}")
+            pilha_alertas.append(msg_alerta)
             lista_espera.append(modulo["ID_MODULO"])
-            pilha_alertas.append(f"Anomalia no {modulo['ID_MODULO']}")
+            continue
 
-    # Retorna o resultado estruturado para o orquestrador (main.py)
+        # ----------------------------------------------------------------------
+        # PORTA LÓGICA PRINCIPAL (AND Estrito)
+        # ----------------------------------------------------------------------
+        if clima_ok and sensores_ok and combustivel_ok and area_livre:
+            print(f"   -> SUCESSO: Pouso autorizado.")
+            lista_pousados.append(modulo["ID_MODULO"])
+            area_livre = False  # Simula que a área foi momentaneamente ocupada
+        else:
+            print("   -> FALHA: Pouso negado.")
+            lista_espera.append(modulo["ID_MODULO"])
+
+            # Registro detalhado do motivo da retenção
+            if not sensores_ok:
+                print(
+                    "      Motivo: Falha nos sensores. Adiado para análise em órbita."
+                )
+                pilha_alertas.append(f"Falha de sensor: {modulo['ID_MODULO']}")
+            elif not area_livre:
+                print("      Motivo: Área de pouso ocupada. Entrando em espera.")
+            elif not clima_ok:
+                fenomenos_str = ", ".join(problemas_clima)
+                print(f"      Motivo: Condição atmosférica adversa ({fenomenos_str}).")
+
+        # Reseta o booleano de área para o próximo loop (liberação da pista)
+        area_livre = True
+
+    # Retorna o resultado estruturado e super detalhado para o orquestrador (main.py)
     return {
         "pousados": lista_pousados,
         "em_espera": lista_espera,

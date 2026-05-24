@@ -7,56 +7,44 @@ import json
 from dotenv import load_dotenv
 from google import genai
 
-# Importação dos módulos independentes de cada fase
+# Importação dos módulos independentes
 from fase1 import executar_fase1
 from fase2 import executar_fase2
 from fase3 import executar_fase3
 
-# Carrega as variáveis de ambiente a partir do arquivo .env (onde está a chave de API)
+# Carrega as variáveis de ambiente
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
-# Inicializa o cliente oficial da Google GenAI caso a chave exista
+# Inicializa o cliente oficial da Google GenAI
 client = genai.Client(api_key=api_key) if api_key else None
 
 
 def rodar_simulacao_integrada():
     """
-    Função principal encarregada de coordenar o fluxo linear do Projeto Aurora.
-    Coleta as saídas em bruto das três fases, encapsula-as em um payload JSON
-    e executa o pipeline de requisição dupla com a IA para auditoria técnica.
+    Coordena o pipeline: Executa fases -> Consolida dados -> IA Analista -> IA Executiva.
     """
     print("=" * 85)
     print("INICIANDO SISTEMA INTEGRADO DA MISSÃO AURORA".center(85))
     print("=" * 85)
 
-    # --------------------------------------------------------------------------
-    # EXECUÇÃO DO PIPELINE DE DADOS (Módulos Independentes)
-    # --------------------------------------------------------------------------
-    # Coleta de métricas e status de validação do lançamento
-    resultados_f1 = executar_fase1()
+    # 1. Execução linear das fases (Cada fase cuida dos seus próprios logs no terminal)
+    res_f1 = executar_fase1()
+    res_f2 = executar_fase2()
+    res_f3 = executar_fase3()
 
-    # Processamento da fila de pouso orbital (FIFO/Insertion Sort)
-    resultados_f2 = executar_fase2()
-
-    # Análise de eficiência operacional e previsão por regressão linear manual
-    resultados_f3 = executar_fase3()
-
-    # Consolidando o pacote de dados centralizado (Data Lake Temporário)
+    # 2. Consolidando o pacote de dados único (Data Lake)
     contexto_operacional = {
-        "Fase_1_Lancamento": resultados_f1,
-        "Fase_2_Pouso": resultados_f2,
-        "Fase_3_Colonia": resultados_f3,
+        "Fase_1_Lancamento": res_f1,
+        "Fase_2_Pouso": res_f2,
+        "Fase_3_Colonia": res_f3,
     }
 
-    # Converte o dicionário global para string JSON estruturada
+    # Conversão para JSON para o prompt da IA
     dados_json = json.dumps(contexto_operacional, indent=2, ensure_ascii=False)
 
-    # Bloqueio de segurança caso a chave da API do Gemini não esteja configurada
     if not client:
-        print(
-            "\n[!] Chave 'GEMINI_API_KEY' ausente no arquivo .env. Encerrando sem IA."
-        )
+        print("\n[!] Chave 'GEMINI_API_KEY' ausente. Encerrando sem IA.")
         return
 
     print("\n" + "=" * 85)
@@ -64,52 +52,43 @@ def rodar_simulacao_integrada():
     print("=" * 85)
 
     # --------------------------------------------------------------------------
-    # REQUISIÇÃO IA 1: Otimização e Enriquecimento do Contexto Técnico
+    # REQUISIÇÃO IA 1: O "Analista de Dados" (Correlação Técnica)
     # --------------------------------------------------------------------------
     print(">> Extraindo correlações e gerando contexto analítico profundo...")
     prompt_contexto = (
-        f"Você é um Engenheiro de Sistemas Aeroespaciais sênior. Analise os seguintes logs em bruto "
-        f"obtidos através das 3 fases integradas da missão Aurora:\n{dados_json}\n\n"
-        f"Gere um relatório puramente técnico correlacionando os eventos de forma cruzada. Explique como "
-        f"as falhas de uma fase impactam o ecossistema das fases subsequentes (ex: se houve perda ou retenção "
-        f"de módulos vitais na Fase 2, correlacione com a severidade do corte de carga na colônia na Fase 3). "
-        f"Adote um tom estritamente profissional, acadêmico e detalhista."
+        f"Você é um Engenheiro de Sistemas Aeroespaciais sênior. Analise os logs da missão:\n{dados_json}\n\n"
+        f"Gere um relatório técnico correlacionando os eventos. Como as falhas de uma fase (se houver) "
+        f"impactam o ecossistema das fases seguintes? Seja técnico, detalhista e profissional."
     )
 
-    # Executa a primeira chamada para consolidação do conhecimento cruzado
     resposta_contexto = client.models.generate_content(
         model="gemini-2.5-flash", contents=prompt_contexto
     )
 
     # --------------------------------------------------------------------------
-    # REQUISIÇÃO IA 2: Formatação Estrita e Boletim Direto por Fases
+    # REQUISIÇÃO IA 2: O "Diretor de Voo" (Boletim Executivo Formal)
     # --------------------------------------------------------------------------
     print(">> Sintetizando Boletim Executivo Estruturado...\n")
     prompt_executivo = (
-        f"Com base na análise técnica detalhada fornecida pela engenharia de sistemas:\n"
-        f"'{resposta_contexto.text}'\n\n"
-        f"Atue como o Diretor de Voo da Missão Aurora. Escreva um boletim operacional contextualizado "
-        f"que deve seguir OBRIGATORIAMENTE o layout estrito abaixo, utilizando as setas '->' para inserir "
-        f"sua resposta altamente detalhada, clara e objetiva para cada uma das fases:\n\n"
+        f"Com base na análise técnica:\n'{resposta_contexto.text}'\n\n"
+        f"Atue como Diretor de Voo. Escreva um boletim operacional estritamente no layout abaixo:\n\n"
         f"INICIANDO FASE 1: TELEMETRIA E PRÉ-DESCOLAGEM\n"
-        f"-> [Insira aqui o seu retorno contextual detalhado sobre a Fase 1: análise do status GO/NO-GO, sucessos e impacto dos erros de telemetria]\n\n"
+        f"-> [Análise detalhada fase 1]\n\n"
         f"INICIANDO FASE 2: APROXIMAÇÃO E POUSO (MGPEB)\n"
-        f"-> [Insira aqui o seu retorno contextual detalhado sobre a Fase 2: auditoria do gerenciamento de pouso, eficiência da ordenação da fila e riscos operacionais dos módulos retidos]\n\n"
+        f"-> [Análise detalhada fase 2]\n\n"
         f"INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA\n"
-        f"-> [Insira aqui o seu retorno contextual detalhado sobre a Fase 3: avaliação do algoritmo de balanceamento de carga, precisão da previsão eólica por regressão linear e o impacto real do corte seletivo de energia nos módulos não essenciais]\n\n"
-        f"Restrições: Não altere os títulos das fases, preserve a estrutura exata solicitada e mantenha um tom de liderança sério e formal."
+        f"-> [Análise detalhada fase 3]\n\n"
+        f"Restrições: Use as setas '->', tom formal, técnico e no máximo 5 linhas por fase."
     )
 
-    # Executa a segunda chamada injetando o contexto rico e o template visual
     resposta_executiva = client.models.generate_content(
         model="gemini-2.5-flash", contents=prompt_executivo
     )
 
-    # exibição do output final idêntico ao modelo solicitado pelo grupo
+    print("--- BOLETIM DO DIRETOR DE VOO ---")
     print(resposta_executiva.text)
     print("=" * 85)
 
 
 if __name__ == "__main__":
-    # Ponto de entrada padrão para execução isolada do script
     rodar_simulacao_integrada()
