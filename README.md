@@ -401,8 +401,7 @@ Esta fase unifica processamento de dados e tomada de decisão para manter a col�
 
 ### Exemplo saída terminal:
 
-```
-
+```text
 =====================================================================================
                      INICIANDO SISTEMA INTEGRADO DA MISSÃO AURORA                    
 =====================================================================================
