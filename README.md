@@ -283,9 +283,10 @@ Para processar e otimizar a fila de pouso, foram desenvolvidos dois algoritmos n
 ### Portas Lógicas e Regras de Decisão
 A autorização final para o pouso de cada módulo exige uma validação booleana composta através de operadores lógicos estritos:
 1. **Regra de Sucesso Primária (`AND` Estrito):** O pouso só é executado com sucesso se:
-   $$\text{combustivel\_ok} \land \text{sensores\_ok} \land \text{clima\_ok} \land \text{area\_livre}$$
-2. **Regra de Contingência Energética:** Se um módulo apresentar combustível crítico ($\le 15\%$) mas não possuir prioridade alta, o sistema intercepta a entidade, eleva sua prioridade e reordena a fila.
-3. **Regra de Retenção por Clima e Sensores:** Se o radar acusar clima adverso **E** os sensores do módulo estiverem em falha, o pouso é negado imediatamente e o evento é enviado para o topo da pilha de alertas.
+   
+   `combustivel_ok ∧ sensores_ok ∧ clima_ok ∧ area_livre`
+3. **Regra de Contingência Energética:** Se um módulo apresentar combustível crítico ($\le 15\%$) mas não possuir prioridade alta, o sistema intercepta a entidade, eleva sua prioridade e reordena a fila.
+4. **Regra de Retenção por Clima e Sensores:** Se o radar acusar clima adverso **E** os sensores do módulo estiverem em falha, o pouso é negado imediatamente e o evento é enviado para o topo da pilha de alertas.
 
 <br>
 
