@@ -13,7 +13,7 @@ O sistema foi estruturado em três fases integradas, cada uma responsável por u
 
 <br> 
 
-## A evolução do projeto ocorre através de três macroetapas:
+## A evolução do projeto:
   
 ### 🚀 Fase 1: Decolagem da Missão
 Realiza a validação inicial da missão por meio da análise de telemetria, da checagem automatizada de pré-lançamento e da identificação de anomalias, verificando se as condições operacionais permitem autorizar ou abortar a decolagem.
