@@ -402,6 +402,7 @@ Esta fase unifica processamento de dados e tomada de decisão para manter a col�
 ### Exemplo saída terminal:
 
 ```
+
 =====================================================================================
                      INICIANDO SISTEMA INTEGRADO DA MISSÃO AURORA                    
 =====================================================================================
@@ -413,10 +414,10 @@ Esta fase unifica processamento de dados e tomada de decisão para manter a col�
 |                                RODADA 1/3 - SUCESSO                               |
 |                                                                                   |
 | STATUS: OPERAÇÃO NOMINAL                                                          |
-|   > Bateria Útil: 4560.30 kWh                                                     |
-|   > Autonomia após decolagem: 94.36% (Safe > 80%)                                 |
-|   > Pressão interna: 399.42 psi                                                   |
-|   > Temperatura Interna: 22.31 C°                                                 |
+|   > Bateria Útil: 4451.00 kWh                                                     |
+|   > Autonomia após decolagem: 93.87% (Safe > 80%)                                 |
+|   > Pressão interna: 356.44 psi                                                   |
+|   > Temperatura Interna: 22.45 C°                                                 |
 | STATUS DOS MÓDULOS CRÍTICOS: OK                                                   |
 |                                                                                   |
 -------------------------------------------------------------------------------------
@@ -424,10 +425,10 @@ Esta fase unifica processamento de dados e tomada de decisão para manter a col�
 |                                RODADA 2/3 - SUCESSO                               |
 |                                                                                   |
 | STATUS: OPERAÇÃO NOMINAL                                                          |
-|   > Bateria Útil: 4722.60 kWh                                                     |
-|   > Autonomia após decolagem: 93.90% (Safe > 80%)                                 |
-|   > Pressão interna: 378.33 psi                                                   |
-|   > Temperatura Interna: 20.22 C°                                                 |
+|   > Bateria Útil: 4738.63 kWh                                                     |
+|   > Autonomia após decolagem: 94.26% (Safe > 80%)                                 |
+|   > Pressão interna: 354.89 psi                                                   |
+|   > Temperatura Interna: 21.98 C°                                                 |
 | STATUS DOS MÓDULOS CRÍTICOS: OK                                                   |
 |                                                                                   |
 -------------------------------------------------------------------------------------
@@ -435,10 +436,10 @@ Esta fase unifica processamento de dados e tomada de decisão para manter a col�
 |                                RODADA 3/3 - SUCESSO                               |
 |                                                                                   |
 | STATUS: OPERAÇÃO NOMINAL                                                          |
-|   > Bateria Útil: 4758.56 kWh                                                     |
-|   > Autonomia após decolagem: 94.25% (Safe > 80%)                                 |
-|   > Pressão interna: 392.11 psi                                                   |
-|   > Temperatura Interna: 21.82 C°                                                 |
+|   > Bateria Útil: 4516.91 kWh                                                     |
+|   > Autonomia após decolagem: 94.59% (Safe > 80%)                                 |
+|   > Pressão interna: 387.80 psi                                                   |
+|   > Temperatura Interna: 22.14 C°                                                 |
 | STATUS DOS MÓDULOS CRÍTICOS: OK                                                   |
 |                                                                                   |
 -------------------------------------------------------------------------------------
@@ -451,31 +452,39 @@ Esta fase unifica processamento de dados e tomada de decisão para manter a col�
 
 --- INICIANDO PROTOCOLO DE POUSO ---
 
-[Analisando] MOD-MED-01 (Prioridade 1 | Combustível: 24.9%)
+[Analisando] MOD-MED-01 (Prioridade 1 | Combustível: 66.3%)
    -> FALHA: Pouso negado.
-      Motivo: Condição atmosférica adversa (Cisalhamento de Vento, Tempestade de Areia, Frio Extremo Inesperado).
+      Motivo: Condição atmosférica adversa (Cisalhamento de Vento, Frio Extremo Inesperado).
 
-[Analisando] MOD-ENE-01 (Prioridade 2 | Combustível: 12.7%)
-   -> ALERTA MÁXIMO: Falha de Sensores + Clima Adverso (Frio Extremo Inesperado) no módulo MOD-ENE-01
-
-[Analisando] MOD-HAB-01 (Prioridade 3 | Combustível: 33.7%)
+[Analisando] MOD-ENE-01 (Prioridade 2 | Combustível: 60.7%)
    -> SUCESSO: Pouso autorizado.
 
-[Analisando] MOD-LOG-01 (Prioridade 4 | Combustível: 27.8%)
+[Analisando] MOD-HAB-01 (Prioridade 3 | Combustível: 93.9%)
    -> SUCESSO: Pouso autorizado.
 
-[Analisando] MOD-LAB-01 (Prioridade 5 | Combustível: 43.5%)
+[Analisando] MOD-LOG-01 (Prioridade 4 | Combustível: 68.2%)
+   -> SUCESSO: Pouso autorizado.
+
+[Analisando] MOD-LAB-01 (Prioridade 5 | Combustível: 77.3%)
    -> SUCESSO: Pouso autorizado.
 
 =====================================================================================
                    INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA                  
 =====================================================================================
+  [Regressão] m=1.0519  b=-2.8076  R²=0.9872 (excelente ajuste)
+
+  [Hierarquia] sistema_energetico → tipo_geracao → solar=50.0 MW | eolico=35.06 MW
 
 =====================================================================================
                           RESUMO TÉCNICO - FASE 3 (COLÔNIA)                          
-Balanço Energético: 10.06 MW
-Status do Sistema: ENERGIA EXCEDENTE
-Ações tomadas: Nenhuma
+  Geração Total  : 85.06 MW  (Solar 50.0 + Eólico 35.06)
+  Consumo Total  : 75.00 MW
+  Balanço        : 10.06 MW
+  Bateria        : 50.00 kWh
+  Status         : ENERGIA EXCEDENTE
+  Mensagem       : Geração maior que consumo. Sugestão: armazenar energia excedente.
+  Ações tomadas  :
+      → Armazenando excedente de 10.06 MW na bateria.
 =====================================================================================
 
 =====================================================================================
@@ -485,24 +494,30 @@ Ações tomadas: Nenhuma
 >> Sintetizando Boletim Executivo Estruturado...
 
 --- BOLETIM DO DIRETOR DE VOO ---
+**BOLETIM OPERACIONAL - DIRETOR DE VOO**
+
 INICIANDO FASE 1: TELEMETRIA E PRÉ-DESCOLAGEM
--> A Fase 1 (Lançamento) foi concluída com sucesso completo, registrando três lançamentos bem-sucedidos.
--> Não foram detectadas falhas ou anomalias durante esta fase crítica da missão.
--> A execução precisa estabeleceu uma base operacional sólida para as fases subsequentes.
+-> Lançamento executado com sucesso total, todos os parâmetros críticos dentro das margens operacionais nominais.
+-> Registados 3 sucessos e ausência completa de falhas ou erros nos sistemas de voo.
+-> A robustez do veículo lançador foi plenamente demonstrada, assegurando a integridade do payload.
+-> Esta fase estabeleceu uma plataforma estável e sem anomalias para as operações subsequentes.
+-> Impacto impecável, garantindo a viabilidade inicial da missão conforme planeado.
 
 INICIANDO FASE 2: APROXIMAÇÃO E POUSO (MGPEB)
--> Três módulos essenciais (MOD-HAB-01, MOD-LOG-01, MOD-LAB-01) pousaram com êxito.
--> Contudo, os módulos MOD-MED-01 e MOD-ENE-01 permanecem em espera, gerando um atraso crítico.
--> Foi emitido "ALERTA MÁXIMO" para o MOD-ENE-01 devido a falha de sensores e frio extremo inesperado.
--> Esta condição representa uma vulnerabilidade substancial à infraestrutura energética primária.
+-> Quatro dos cinco módulos essenciais (`MOD-ENE-01`, `MOD-HAB-01`, `MOD-LOG-01`, `MOD-LAB-01`) foram implantados com sucesso.
+-> O `MOD-MED-01` encontra-se em estado "em espera", sem alertas críticos associados, indicando uma decisão operacional controlada.
+-> Este desvio reduz temporariamente a capacidade de suporte médico total, mas não compromete a viabilidade imediata.
+-> O pouso eficaz dos módulos de energia e habitat é crucial para a sustentabilidade da Fase 3.
+-> Prioridade: Investigar e formular plano de ação para a implantação segura do `MOD-MED-01`.
 
 INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA
--> A colônia opera com estabilidade energética atual, registrando um excedente de 10.06 MW.
--> A geração de 85.06 MW supera o consumo de 75.0 MW, auxiliada por ventos de 36.0.
--> Recomenda-se o armazenamento proativo deste excedente para otimizar a resiliência.
--> Contudo, esta margem é temporária e a ausência do MOD-ENE-01 limita expansão e redundância futura.
--> O frio extremo inesperado pode impactar o consumo de aquecimento e a eficiência geral dos sistemas.
-=====================================================================================
+-> A colônia demonstra notável autossustentabilidade energética, com uma geração total de 85.06 MW.
+-> O consumo total é de 75.0 MW, resultando num excedente operacional robusto de 10.06 MW.
+-> Esta energia excedente está a ser armazenada eficientemente nas baterias, conforme protocolo de segurança.
+-> A gestão de energia otimizada é um marco crítico para a sobrevivência a longo prazo da missão.
+-> Recomenda-se monitorização contínua para otimização e validação dos modelos de desempenho.
+===========================================================================
+```
 ```
 
 </details>
