@@ -10,6 +10,7 @@ HISTORICO_EOLICO = [
     (60.0, 63.0),
 ]
 
+# --- MÓDULO 3: PREVISÃO (Pessoa 3) ---
 # --- Correção 25/05 --- 2 #
 def calcular_regressao(dados_historicos, vento_atual):
     """Calcula a Regressão Linear Simples (Mínimos Quadrados) e o R²."""
@@ -36,12 +37,10 @@ def calcular_regressao(dados_historicos, vento_atual):
 # --- Correção 25/05 --- 2 #
 
 # --- Correção 25/05 --- 1 #
-
 def obter_dados_colonia(vento_atual):
     """
     Retorna a estrutura hierárquica completa da colônia.
     Navegação: sistema_energetico -> tipo_geracao -> solar / eolico
-
     """
     geracao_eolica = calcular_regressao(HISTORICO_EOLICO, vento_atual)
 
@@ -67,11 +66,7 @@ def obter_dados_colonia(vento_atual):
             "Laboratório":    {"consumo": 20.0, "essencial": False, "status": "ligado"},
         },
     }
-
 # --- Correção 25/05 --- 1 #
-
-# --- MÓDULO 3: PREVISÃO (Pessoa 3) ---
-
 
 
 # --- MÓDULO 4: ANÁLISE DE EFICIÊNCIA (Pessoa 4) ---
@@ -113,14 +108,16 @@ def analisar_uso_energia(geracao, consumo, reserva):
             "mensagem": "Geração igual ao consumo. Sistema energético estável.",
             "saldo": round(saldo, 2),
         }
+
+
 # --- Correção 25/05 --- 3 #
-def aplicar_logica_de_decisao(dados_colonia, diagnostico):
+def aplicar_logica_de_decisao(dados_colonia, diagnostico, balanco):
     """
     Toma decisões automáticas combinando o status do diagnóstico E/OU
     o nível absoluto da bateria.
 
     Regras compostas (operadores lógicos explícitos):
-      - (ALERTA CRÍTICO ou RISCO MODERADO) AND bateria baixa → corte imediato + modo economia
+      - (ALERTA CRÍTICO ou RISCO MODERADO) AND bateria baixa OU balanço < -5 → corte imediato + modo economia
       - (ALERTA CRÍTICO ou RISCO MODERADO) com bateria ok   → corte de não-essenciais
       - ENERGIA EXCEDENTE AND bateria não cheia             → sugestão de armazenamento
     """
@@ -128,8 +125,8 @@ def aplicar_logica_de_decisao(dados_colonia, diagnostico):
     bateria = dados_colonia["sistema_energetico"]["bateria_kwh"]
     status  = diagnostico["status"]
 
-    # Regra 1: situação crítica OU moderada AND bateria abaixo de 20 kWh
-    if (status in ["ALERTA CRÍTICO", "RISCO MODERADO"]) and (bateria < 20.0):
+    # Regra 1: situação crítica OU moderada AND (bateria abaixo de 20 kWh OU balanço abaixo de -5 MW)
+    if (status in ["ALERTA CRÍTICO", "RISCO MODERADO"]) and (bateria < 20.0 or balanco < -5.0):
         acoes.append("MODO ECONOMIA ATIVADO: bateria crítica + déficit de geração.")
         for nome, sys in dados_colonia["sistemas"].items():
             if not sys["essencial"]:
@@ -149,6 +146,7 @@ def aplicar_logica_de_decisao(dados_colonia, diagnostico):
 
     return acoes
 # --- Correção 25/05 --- 3 #
+
 
 # --- EXECUÇÃO INTEGRADA ---
 # --- Correção 25/05 --- 4 #
@@ -182,7 +180,7 @@ def executar_fase3():
     diagnostico = analisar_uso_energia(geracao_total, consumo_total, bateria)
 
     # 5. Lógica de decisão composta (AND / OR explícitos)
-    acoes_tomadas = aplicar_logica_de_decisao(dados_colonia, diagnostico)
+    acoes_tomadas = aplicar_logica_de_decisao(dados_colonia, diagnostico, balanco)
 
     # --- Relatório final ---
     print("\n" + "=" * 85)
