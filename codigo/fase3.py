@@ -11,7 +11,7 @@ HISTORICO_EOLICO = [
 ]
 
 # --- MÓDULO 3: PREVISÃO (Pessoa 3) ---
-# --- Correção 25/05 --- 2 #
+
 def calcular_regressao(dados_historicos, vento_atual):
     """Calcula a Regressão Linear Simples (Mínimos Quadrados) e o R²."""
     n = len(dados_historicos)
@@ -34,9 +34,8 @@ def calcular_regressao(dados_historicos, vento_atual):
           f"({'excelente ajuste' if r2 >= 0.95 else 'ajuste aceitável'})")
 
     return max(0.0, min(previsao, 80.0))
-# --- Correção 25/05 --- 2 #
 
-# --- Correção 25/05 --- 1 #
+
 def obter_dados_colonia(vento_atual):
     """
     Retorna a estrutura hierárquica completa da colônia.
@@ -66,7 +65,6 @@ def obter_dados_colonia(vento_atual):
             "Laboratório":    {"consumo": 20.0, "essencial": False, "status": "ligado"},
         },
     }
-# --- Correção 25/05 --- 1 #
 
 
 # --- MÓDULO 4: ANÁLISE DE EFICIÊNCIA (Pessoa 4) ---
@@ -110,7 +108,6 @@ def analisar_uso_energia(geracao, consumo, reserva):
         }
 
 
-# --- Correção 25/05 --- 3 #
 def aplicar_logica_de_decisao(dados_colonia, diagnostico, balanco):
     """
     Toma decisões automáticas combinando o status do diagnóstico E/OU
@@ -145,11 +142,9 @@ def aplicar_logica_de_decisao(dados_colonia, diagnostico, balanco):
         acoes.append(f"  → Armazenando excedente de {diagnostico.get('energia_para_armazenar', 0):.2f} MW na bateria.")
 
     return acoes
-# --- Correção 25/05 --- 3 #
 
 
 # --- EXECUÇÃO INTEGRADA ---
-# --- Correção 25/05 --- 4 #
 def executar_fase3():
     print("\n" + "=" * 85)
     print("INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA".center(85))
@@ -209,4 +204,3 @@ def executar_fase3():
         "diagnostico_eficiencia": diagnostico,
         "acoes_seguranca": acoes_tomadas,
     }
-# --- Correção 25/05 --- 4 #
