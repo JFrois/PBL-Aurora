@@ -336,40 +336,251 @@ def listar_todos_modulos():
 
 
 # =====================================================================
-# BLOCO 6 — STUBS DOS ALGORITMOS (INTEGRANTE 2)
+# BLOCO 6 — STUBS DOS ALGORITMOS (Pedro)
 # =====================================================================
 
 def algoritmo_dijkstra(origem: str, destino: str):
     """
-    [STUB — INTEGRANTE 2]
-    Caminho de menor custo (metros) entre dois módulos via Dijkstra.
-    Retorna dict {"caminho": list[str], "distancia": int} ou None.
+    Encontra o caminho de menor distância (em metros) entre dois módulos
+    utilizando o algoritmo de Dijkstra com seleção linear do mínimo.
+
+    Complexidade: O(N²) — adequada para grafos pequenos como este (N=8).
+
+    Parâmetros:
+        origem  (str): chave do módulo de partida (ex: "armazenamento_energia")
+        destino (str): chave do módulo de chegada  (ex: "suporte_medico")
+
+    Retorna:
+        dict {"caminho": list[str], "distancia": int}  se houver caminho
+        None se origem/destino inválidos ou sem caminho possível
     """
-    print("\n  [STUB] Dijkstra ainda não implementado — aguardando Integrante 2.")
-    print(f"  Chamada: origem='{origem}' → destino='{destino}'")
-    return None
+    # Validação das entradas
+    if origem not in NOMES_MODULOS or destino not in NOMES_MODULOS:
+        print("\n  [!] Módulo de origem ou destino inválido.")
+        return None
+
+    if origem == destino:
+        print("\n  [!] Origem e destino são o mesmo módulo.")
+        return None
+
+    idx_origem  = NOMES_MODULOS.index(origem)
+    idx_destino = NOMES_MODULOS.index(destino)
+
+    # Inicialização: distâncias como infinito para todos os nós
+    INF      = float("inf")
+    dist     = [INF] * N        # distância acumulada mínima até cada nó
+    anterior = [-1]  * N        # nó anterior no caminho ótimo (para reconstrução)
+    visitado = [False] * N      # controle de nós já finalizados
+
+    dist[idx_origem] = 0        # custo zero para sair da origem
+
+    for _ in range(N):
+        # Seleciona o nó não visitado com menor distância acumulada (O(N))
+        u = -1
+        for v in range(N):
+            if not visitado[v] and (u == -1 or dist[v] < dist[u]):
+                u = v
+
+        if u == -1 or dist[u] == INF:
+            break               # sem mais nós alcançáveis
+
+        visitado[u] = True
+
+        if u == idx_destino:
+            break               # destino finalizado — encerra cedo
+
+        # Relaxamento: atualiza a distância dos vizinhos de u
+        for v in range(N):
+            peso = MATRIZ_ADJACENCIA[u][v]
+            if peso > 0 and not visitado[v]:
+                nova_dist = dist[u] + peso
+                if nova_dist < dist[v]:
+                    dist[v]     = nova_dist
+                    anterior[v] = u     # registra de onde viemos para reconstruir o caminho
+
+    # Verifica alcançabilidade
+    if dist[idx_destino] == INF:
+        print(f"\n  [!] Não existe caminho entre '{origem}' e '{destino}'.")
+        return None
+
+    # Reconstrói o caminho percorrendo o vetor `anterior` de trás para frente
+    caminho_idx = []
+    atual = idx_destino
+    while atual != -1:
+        caminho_idx.append(atual)
+        atual = anterior[atual]
+    caminho_idx.reverse()
+
+    caminho_chaves = [NOMES_MODULOS[i] for i in caminho_idx]
+
+    # ── Exibição detalhada ──────────────────────────────────────────
+    print("\n" + "=" * 85)
+    print("  DIJKSTRA — CAMINHO DE MENOR DISTÂNCIA")
+    print("=" * 85)
+    print(f"  Origem  : {MODULOS_COLONIA[origem]['descricao'][0]}")
+    print(f"  Destino : {MODULOS_COLONIA[destino]['descricao'][0]}")
+    print()
+    print("  Trajeto detalhado:")
+    for i in range(len(caminho_chaves) - 1):
+        a      = caminho_chaves[i]
+        b      = caminho_chaves[i + 1]
+        trecho = MATRIZ_ADJACENCIA[NOMES_MODULOS.index(a)][NOMES_MODULOS.index(b)]
+        nome_a = MODULOS_COLONIA[a]["descricao"][0]
+        nome_b = MODULOS_COLONIA[b]["descricao"][0]
+        print(f"    {nome_a}  →  {nome_b}  ({trecho} m)")
+
+    nomes_caminho = [MODULOS_COLONIA[c]["descricao"][0] for c in caminho_chaves]
+    print()
+    print(f"  Caminho completo : {' → '.join(nomes_caminho)}")
+    print(f"  Distância total  : {dist[idx_destino]} metros")
+    print(f"  Saltos           : {len(caminho_chaves) - 1}")
+    print("=" * 85)
+
+    return {"caminho": caminho_chaves, "distancia": dist[idx_destino]}
 
 
 def algoritmo_bfs(origem: str):
     """
-    [STUB — INTEGRANTE 2]
-    Percurso em Largura a partir de um módulo de origem.
-    Retorna list[str] com a ordem de visita BFS.
+    Percorre o grafo em Largura (Breadth-First Search) a partir de um módulo,
+    visitando primeiro todos os vizinhos diretos antes de avançar para os
+    vizinhos dos vizinhos.
+
+    Utiliza uma fila (list usado como deque FIFO) para garantir a ordem correta.
+    Complexidade: O(N + A), onde A é o número de arestas.
+
+    Uso prático no SIGIC: mapear todos os módulos alcançáveis a partir de
+    um ponto de falha e verificar a conectividade geral da rede.
+
+    Parâmetros:
+        origem (str): chave do módulo de partida
+
+    Retorna:
+        list[str] com as chaves dos módulos na ordem de visita BFS
     """
-    print("\n  [STUB] BFS ainda não implementado — aguardando Integrante 2.")
-    print(f"  Chamada: origem='{origem}'")
-    return []
+    if origem not in NOMES_MODULOS:
+        print("\n  [!] Módulo de origem inválido.")
+        return []
+
+    idx_origem = NOMES_MODULOS.index(origem)
+
+    visitado = [False] * N
+    fila     = [idx_origem]     # fila FIFO: insere no fim, remove do início
+    ordem    = []               # sequência de visita resultante
+
+    visitado[idx_origem] = True
+
+    while fila:
+        u = fila.pop(0)         # remove o primeiro (FIFO)
+        ordem.append(NOMES_MODULOS[u])
+
+        # Enfileira vizinhos não visitados em ordem crescente de índice
+        # (garante resultado determinístico para a mesma entrada)
+        for v in range(N):
+            if MATRIZ_ADJACENCIA[u][v] > 0 and not visitado[v]:
+                visitado[v] = True
+                fila.append(v)
+
+    # ── Exibição detalhada ──────────────────────────────────────────
+    print("\n" + "=" * 85)
+    print("  BFS — BUSCA EM LARGURA (Breadth-First Search)")
+    print("=" * 85)
+    nome_origem = MODULOS_COLONIA[origem]["descricao"][0]
+    print(f"  Ponto de partida  : {nome_origem}")
+    print(f"  Módulos alcançados: {len(ordem)}/{N}")
+    print()
+    print("  Ordem de visita (nível a nível a partir da origem):")
+    for i, chave in enumerate(ordem, start=1):
+        nome   = MODULOS_COLONIA[chave]["descricao"][0]
+        status = MODULOS_COLONIA[chave]["status"]
+        print(f"    {i:>2}. {nome}  ({status})")
+
+    if len(ordem) < N:
+        nao_alcancados = [
+            MODULOS_COLONIA[c]["descricao"][0]
+            for c in NOMES_MODULOS if c not in ordem
+        ]
+        print(f"\n  ⚠ Módulos não alcançáveis a partir de {nome_origem}:")
+        for nome in nao_alcancados:
+            print(f"       • {nome}")
+    else:
+        print("\n  ✅ Grafo totalmente conexo a partir deste módulo.")
+
+    print("=" * 85)
+
+    return ordem
 
 
 def algoritmo_dfs(origem: str):
     """
-    [STUB — INTEGRANTE 2]
-    Percurso em Profundidade a partir de um módulo de origem.
-    Retorna list[str] com a ordem de visita DFS.
+    Percorre o grafo em Profundidade (Depth-First Search) a partir de um módulo,
+    explorando cada ramo até o fim antes de retroceder (backtracking).
+
+    Implementado de forma iterativa com pilha explícita para evitar o limite
+    de recursão do Python em grafos maiores.
+    Complexidade: O(N + A), onde A é o número de arestas.
+
+    Uso prático no SIGIC: detectar conexões críticas (pontes na rede),
+    identificar componentes conectados e auditar rotas de contingência.
+
+    Parâmetros:
+        origem (str): chave do módulo de partida
+
+    Retorna:
+        list[str] com as chaves dos módulos na ordem de visita DFS
     """
-    print("\n  [STUB] DFS ainda não implementado — aguardando Integrante 2.")
-    print(f"  Chamada: origem='{origem}'")
-    return []
+    if origem not in NOMES_MODULOS:
+        print("\n  [!] Módulo de origem inválido.")
+        return []
+
+    idx_origem = NOMES_MODULOS.index(origem)
+
+    visitado = [False] * N
+    pilha    = [idx_origem]     # pilha LIFO: insere e remove pelo topo
+    ordem    = []
+
+    while pilha:
+        u = pilha.pop()         # remove do topo (LIFO — comportamento DFS)
+
+        if visitado[u]:
+            continue            # nó já processado por outro ramo — pula
+        visitado[u] = True
+        ordem.append(NOMES_MODULOS[u])
+
+        # Empilha vizinhos em ordem reversa para manter exploração por
+        # índice crescente (o vizinho de menor índice é o primeiro visitado)
+        for v in range(N - 1, -1, -1):
+            if MATRIZ_ADJACENCIA[u][v] > 0 and not visitado[v]:
+                pilha.append(v)
+
+    # ── Exibição detalhada ──────────────────────────────────────────
+    print("\n" + "=" * 85)
+    print("  DFS — BUSCA EM PROFUNDIDADE (Depth-First Search)")
+    print("=" * 85)
+    nome_origem = MODULOS_COLONIA[origem]["descricao"][0]
+    print(f"  Ponto de partida  : {nome_origem}")
+    print(f"  Módulos alcançados: {len(ordem)}/{N}")
+    print()
+    print("  Ordem de visita (explorando cada ramo até o fim antes de retroceder):")
+    for i, chave in enumerate(ordem, start=1):
+        nome   = MODULOS_COLONIA[chave]["descricao"][0]
+        status = MODULOS_COLONIA[chave]["status"]
+        print(f"    {i:>2}. {nome}  ({status})")
+
+    if len(ordem) < N:
+        nao_alcancados = [
+            MODULOS_COLONIA[c]["descricao"][0]
+            for c in NOMES_MODULOS if c not in ordem
+        ]
+        print(f"\n  ⚠ Módulos não alcançáveis a partir de {nome_origem}:")
+        for nome in nao_alcancados:
+            print(f"       • {nome}")
+        print("\n  ⚠ Grafo parcialmente desconexo — existem módulos isolados.")
+    else:
+        print("\n  ✅ Grafo totalmente conexo a partir deste módulo.")
+
+    print("=" * 85)
+
+    return ordem
 
 
 # =====================================================================
@@ -383,9 +594,9 @@ def exibir_menu_principal():
     print("  [1]  Visualizar Rede (Matriz de Adjacência + status real)")
     print("  [2]  Listar Todos os Módulos (Inventário atualizado)")
     print("  [3]  Consultar Status de um Módulo  [busca O(1)]")
-    print("  [4]  Executar Dijkstra (Caminho Mínimo)         ← Integrante 2")
-    print("  [5]  Executar BFS (Busca em Largura)            ← Integrante 2")
-    print("  [6]  Executar DFS (Busca em Profundidade)       ← Integrante 2")
+    print("  [4]  Executar Dijkstra (Caminho Mínimo)")
+    print("  [5]  Executar BFS (Busca em Largura) ")
+    print("  [6]  Executar DFS (Busca em Profundidade)")
     print("  [0]  Encerrar SIGIC e retornar ao pipeline")
     print("-" * 85)
 
