@@ -51,7 +51,7 @@ MODULOS_COLONIA: dict = {
     },
     "centro_controle": {
         "descricao": ("Centro de Controle", "Núcleo de comando e monitoramento da base"),
-        "coordenadas_xy": (200, 200),
+        "coordenadas_xy": (200, 300),
         "consumo_kw": 60.0,
         "prioridade": 2,
         "capacidade": "8 estações de trabalho",
@@ -69,7 +69,7 @@ MODULOS_COLONIA: dict = {
     },
     "agricultura": {
         "descricao": ("Agricultura", "Estufas pressurizadas para produção de alimentos"),
-        "coordenadas_xy": (100, 350),
+        "coordenadas_xy": (300, 500),
         "consumo_kw": 35.0,
         "prioridade": 4,
         "capacidade": "200 m² de área cultivável",
@@ -78,7 +78,7 @@ MODULOS_COLONIA: dict = {
     },
     "laboratorio": {
         "descricao": ("Laboratório Científico", "Pesquisa geológica, biológica e química"),
-        "coordenadas_xy": (400, 350),
+        "coordenadas_xy": (500, 400),
         "consumo_kw": 55.0,
         "prioridade": 7,
         "capacidade": "6 bancadas de pesquisa",
@@ -96,7 +96,7 @@ MODULOS_COLONIA: dict = {
     },
     "suporte_medico": {
         "descricao": ("Suporte Médico", "Enfermaria, UTI e estoque de medicamentos"),
-        "coordenadas_xy": (200, 350),
+        "coordenadas_xy": (100, 400),
         "consumo_kw": 30.0,
         "prioridade": 2,
         "capacidade": "4 leitos de UTI",
@@ -105,7 +105,7 @@ MODULOS_COLONIA: dict = {
     },
     "producao_oxigenio": {
         "descricao": ("Produção de Oxigênio", "Eletrolisadores e sistemas de reciclagem de CO₂"),
-        "coordenadas_xy": (300, 300),
+        "coordenadas_xy": (400, 300),
         "consumo_kw": 50.0,
         "prioridade": 1,
         "capacidade": "Até 15 kg O₂/dia",
@@ -141,15 +141,15 @@ N = len(NOMES_MODULOS)
 # =====================================================================
 
 MATRIZ_ADJACENCIA: list = [
-    # hab  ctrl  ener  agri  lab   com   med   ox
-    [  0,  120,  250,  150,    0,    0,  200,    0],  # 0: habitacao
-    [120,    0,  180,    0,  300,  200,  150,  100],  # 1: centro_controle
-    [250,  180,    0,  220,    0,  350,    0,  130],  # 2: armazenamento_energia
-    [150,    0,  220,    0,  280,    0,  175,  200],  # 3: agricultura
-    [  0,  300,    0,  280,    0,  210,    0,  160],  # 4: laboratorio
-    [  0,  200,  350,    0,  210,    0,    0,  320],  # 5: comunicacao
-    [200,  150,    0,  175,    0,    0,    0,  110],  # 6: suporte_medico
-    [  0,  100,  130,  200,  160,  320,  110,    0],  # 7: producao_oxigenio
+    # hab  ctrl  ener  agri   lab   com   med   oxi
+    [   0,  140,  220,  360,    0,    0,  200,    0],  # 0: habitacao
+    [ 140,    0,  220,    0,  320,  320,  140,  200],  # 1: centro_controle
+    [ 220,  220,    0,  400,    0,  220,    0,  220],  # 2: armazenamento_energia
+    [ 360,    0,  400,    0,  220,    0,  220,  220],  # 3: agricultura
+    [   0,  320,    0,  220,    0,  200,    0,  140],  # 4: laboratorio
+    [   0,  320,  220,    0,  200,    0,    0,  140],  # 5: comunicacao
+    [ 200,  140,    0,  220,    0,    0,    0,  320],  # 6: suporte_medico
+    [   0,  200,  220,  220,  140,  140,  320,    0],  # 7: producao_oxigenio
 ]
 
 
@@ -765,3 +765,4 @@ if __name__ == "__main__":
     }
 
     executar_fase4(res_f2_simulado, res_f3_simulado)
+
