@@ -3,6 +3,9 @@
 
 # Ignora a pasta do ambiente virtual Python
 venv/
+__pycache__/
+*.pyc
 
 # macOS
 .DS_Store
+
