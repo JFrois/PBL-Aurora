@@ -3,63 +3,93 @@
 ![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)
 ![Status](https://img.shields.io/badge/status-Concluído-green.svg)
 
-Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional, análise de telemetria, gerenciamento de pouso e operação inteligente de uma colônia em Marte.
+Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional de uma missão em Marte, integrando análise de telemetria, gerenciamento de pouso, inteligência operacional e modelagem da infraestrutura da colônia.
 
 <br>
 
-### Visão Geral
+## Visão Geral
 
-O sistema foi estruturado em três fases integradas, cada uma responsável por uma etapa crítica da missão: validação de decolagem, gestão de pouso dos módulos e funcionamento inteligente da colônia.
+O projeto evolui em quatro fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente da base marciana. Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática e otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
 
-<br> 
+<br>
 
-## A evolução do projeto:
+## Fases do Projeto
   
-### 🚀 Fase 1: Decolagem da Missão
+### 🚀 Fase 1: Simulação de telemetria e validação de lançamento
+
 Realiza a validação inicial da missão por meio da análise de telemetria, da checagem automatizada de pré-lançamento e da identificação de anomalias, verificando se as condições operacionais permitem autorizar ou abortar a decolagem.
- 
+
 <details>
-<summary>Clique para ver a fase 1 em detalhe:</summary>
+<summary>Clique para ver a Fase 1 em detalhe</summary>
   
-### Visão Geral da Fase
+## Visão Geral da Fase
+
 Esta fase concentra a análise inicial da missão, verificando se a nave apresenta condições adequadas para iniciar a operação. O sistema interpreta os dados recebidos, aplica critérios de validação e apresenta um diagnóstico técnico da situação operacional.
 
-<br>
+## Objetivo da Fase
 
-### Objetivo da Fase
-* **Simulação de telemetria:** Geração de dados randômicos para parâmetros críticos do foguete (temperatura, pressão, energia, integridade, módulos críticos).
-* **Verificação de segurança:** Execução de uma sequência de 3 testes pré-lançamento, validando a telemetria contra regras de negócio pré-definidas.
-* **Relatórios detalhados no console:** Exibição de relatórios claros para cada rodada, indicando sucesso ou falhas e listando as anomalias detectadas.
-* **Análise com IA (Gemini):** Em caso de falha, chamada à API do Gemini para gerar um relatório técnico estruturado, explicando as anomalias e sugerindo ações para a equipe de engenharia.
+- **Simulação de telemetria:** geração de dados randômicos para parâmetros críticos do foguete, como temperatura, pressão, energia, integridade estrutural e módulos críticos.
+- **Verificação de segurança:** execução de uma sequência de 3 testes pré-lançamento, validando a telemetria com base em regras de negócio.
+- **Relatórios detalhados no console:** exibição de diagnósticos claros para cada rodada, destacando sucessos, falhas e anomalias detectadas.
+- **Análise com IA (Gemini):** em caso de falha, geração de um relatório técnico estruturado com apoio de IA para interpretação das anomalias.
 
-<br>
-
-### **Parâmetros Monitorados**
+## Parâmetros monitorados
 Durante a simulação, a camada de telemetria monitora:
-* **🌡️ Temperatura:** interna e externa da nave.
-* **🏗️ Estrutural:** status de integridade da fuselagem e célula da nave.
-* **⚡Energia:** capacidade e carga disponível (%) para sistemas essenciais.
-* **🎈 Pressão:** monitoramento dos tanques (faixa operacional segura).
-* **💻 Módulos Críticos:** status dos sistemas essenciais de bordo.
+- **Temperatura:** condições térmicas internas e externas da nave.
+- **Integridade estrutural:** status da fuselagem e da estrutura principal.
+- **Energia:** carga disponível para sistemas essenciais.
+- **Pressão:** monitoramento dos tanques em faixa operacional segura.
+- **Módulos críticos:** verificação dos sistemas indispensáveis para a missão.
 
-<br>
+## Regras de negócio de segurança
 
-### Regras de Negócio de Segurança
 Para que a decolagem seja autorizada, todos os critérios abaixo devem ser satisfeitos em 3 rodadas consecutivas:
-* **Integridade Estrutural:** deve ser 1 (Operacional).
-* **Energia:** mínimo de 80% para decolagem segura.
-* **Pressão:** entre 300 e 450 psi.
-* **Temperatura Interna:** entre 18°C e 25°C.
-* **Módulos Críticos:** todos com status "OK".
 
-Se qualquer uma dessas condições falhar em uma rodada, o teste é marcado como FALHA, e a missão é abortada ao final da sequência, com emissão de relatório técnico da IA.
+- **Integridade estrutural:** deve estar operacional.
+- **Energia:** mínimo de 80%.
+- **Pressão:** entre 300 e 450 psi.
+- **Temperatura interna:** entre 18°C e 25°C.
+- **Módulos críticos:** todos com status `OK`.
 
-<br>
+Se qualquer uma dessas condições falhar em uma rodada, o teste é marcado como falho e a missão é abortada ao final da sequência, com emissão de relatório técnico complementar.
 
-### Exemplo de Saída no Console
-<details>
-<summary>Clique para ver um exemplo de relatório em caso de falha nas três rodadas de teste</summary>
 
+##  Arquitetura e Fluxo de Decisão
+
+Em alto nível, o sistema segue o fluxo:
+
+1. **Geração de telemetria simulada** (valores aleatórios dentro/fora dos limites).
+
+2. **Aplicação das regras de negócio** para cada rodada de teste.
+
+3. **Cálculo do status da missão** (GO / NO-GO) após 3 rodadas.
+
+4. **Em caso de falha**:
+
+    * Registro das anomalias por rodada.
+
+    * Geração de relatório técnico com IA (Gemini).
+
+
+## Fluxo de Decisão da Missão
+```mermaid
+graph TD
+    A([Início da Simulação]) --> B[1. Gerar Telemetria];
+    B --> C[2. Aplicar Regras de Negócio];
+    C --> D{Parâmetros OK?};
+    D -- Não --> E[Registrar Falhas];
+    E --> F{Rodada 3/3?};
+    D -- Sim --> F;
+    F -- Não --> B;
+    F -- Sim --> G{3 Rodadas Válidas?};
+    G -- Não --> H[Status: DECOLAGEM ABORTADA ❌];
+    H --> I[Gerar Relatório com IA];
+    I --> K([Fim]);
+    G -- Sim --> J[Status: DECOLAGEM AUTORIZADA 🚀];
+    J --> K;
+```
+
+## Exemplo de saída no console
 ```text
 
 =====================================================================================
@@ -178,48 +208,9 @@ O conjunto de anomalias registradas, isoladamente e em conjunto, cria um cenári
 2.  **Engenharia de Software:** Auditoria completa dos algoritmos de monitoramento e telemetria para garantir a precisão e robustez dos dados reportados. Revisão dos parâmetros de pré-lançamento e protocolos de verificação para identificar possíveis lacunas que permitiram a progressão a um estado de falha tão crítico. Desenvolver e testar atualizações de software para incorporar novas lógicas de detecção e mitigação baseadas nas descobertas de hardware.
 =================================================================
 ```
-</details>
 
-<br>
 
-###  Arquitetura e Fluxo de Decisão
-
-Em alto nível, o sistema segue o fluxo:
-
-1. **Geração de telemetria simulada** (valores aleatórios dentro/fora dos limites).
-
-2. **Aplicação das regras de negócio** para cada rodada de teste.
-
-3. **Cálculo do status da missão** (GO / NO-GO) após 3 rodadas.
-
-4. **Em caso de falha**:
-
-    * Registro das anomalias por rodada.
-
-    * Geração de relatório técnico com IA (Gemini).
-
-<br>
-
-### Fluxo de Decisão da Missão
-```mermaid
-graph TD
-    A([Início da Simulação]) --> B[1. Gerar Telemetria];
-    B --> C[2. Aplicar Regras de Negócio];
-    C --> D{Parâmetros OK?};
-    D -- Não --> E[Registrar Falhas];
-    E --> F{Rodada 3/3?};
-    D -- Sim --> F;
-    F -- Não --> B;
-    F -- Sim --> G{3 Rodadas Válidas?};
-    G -- Não --> H[Status: DECOLAGEM ABORTADA ❌];
-    H --> I[Gerar Relatório com IA];
-    I --> K([Fim]);
-    G -- Sim --> J[Status: DECOLAGEM AUTORIZADA 🚀];
-    J --> K;
-```
-<br>
-
-### REFLEXÃO CRÍTICA: MISSÃO AURORA
+## Reflexão Crítica
 A exploração espacial é o reflexo dos valores da humanidade. Na Missão Aurora, a telemetria não apenas monitora máquinas, mas protege vidas e fundamenta uma presença humana ética e consciente.
 
 ###  Ética e Responsabilidade
@@ -239,48 +230,43 @@ Enviar seres humanos ao espaço gera transformações profundas na estrutura soc
 
 * Cultura de Segurança: Os rigorosos protocolos de falha zero e as tecnologias de reciclagem de recursos (água e ar) são aplicados hoje em indústrias críticas e na gestão de desastres ambientais.
 
-<br>
+## Conclusão
+Decolar exige mais que combustível; exige o compromisso de proteger quem parte, quem fica e o ambiente que nos cerca.
 
-**Conclusão:** Decolar exige mais que combustível; exige o compromisso de proteger quem parte, quem fica e o ambiente que nos cerca.
 </details>
 
 <br>
 
 ### 🚀 Fase 2: Módulo de Gestão de Pouso e Estabilização da Base (MGPEB)
-Coordena a aproximação e o pouso dos módulos da missão, organizando a sequência de descida, priorizando situações críticas e aplicando regras lógicas, estruturas dinâmicas e algoritmos para garantir uma operação segura.  
+Responsável por organizar a aproximação orbital, validar a ordem de prioridade dos módulos e controlar a liberação segura para pouso na colônia marciana.  
 <details>
 <summary>Clique para ver a fase 2 em detalhe:</summary>
 
-### Visão Geral da Fase:
-Nesta etapa, o sistema controla a descida dos módulos da missão até a base marciana. A lógica considera fatores operacionais e emergenciais para reorganizar prioridades, reter módulos em órbita quando necessário e registrar alertas críticos da operação.
+## Visão Geral da Fase
+Nesta fase, o sistema gerencia o processo de pouso dos módulos da missão, organizando a fila orbital, priorizando módulos críticos e validando quais estruturas podem ser liberadas para compor a base marciana.
 
-<br>
 
-### Objetivo da Fase
+## Objetivo da Fase
+- Controlar a ordem de pouso com base em prioridade operacional.
+- Separar módulos aptos para pouso e módulos em espera.
+- Garantir organização lógica da implantação da colônia.
+- Produzir saídas claras no terminal para acompanhamento da operação.
 
-- Gerenciar a fila de pouso dos módulos em aproximação orbital.
-- Priorizar módulos em situação crítica.
-- Aplicar lógica booleana para autorizar ou negar pousos.
-- Utilizar algoritmos de busca e ordenação para apoiar a tomada de decisão.
-- Registrar alertas e contingências durante a operação.
-<br>
 
-### Estruturas de Dados Utilizadas
+## Estruturas de Dados Utilizadas
 O sistema gerencia os módulos (representados como dicionários) utilizando três conceitos de estruturas de dados lineares:
 * **Fila de Pouso (`Queue` - FIFO):** Garante a regra de que o primeiro módulo a chegar/solicitar a descida seja o primeiro a ser processado (`pop(0)`).
 * **Listas de Histórico (`List`):** Utilizadas para catalogar o destino final das entidades, divididas entre `lista_pousados` (sucesso na superfície) e `lista_espera` (módulos retidos em órbita por contingência).
 * **Pilha de Alertas (`Stack` - LIFO):** Registra as anomalias climáticas e operacionais mais recentes no topo da pilha, garantindo que o último erro inserido seja o primeiro a ser exibido e tratado pelo painel (`pop()`).
 
-<br>
 
-### Algoritmos Implementados
+## Algoritmos Implementados
 Para processar e otimizar a fila de pouso, foram desenvolvidos dois algoritmos nativos (sem o uso de bibliotecas externas):
 * **Busca Sequencial:** Varre a fila de pouso de forma linear para identificar instantaneamente qual módulo possui o menor nível crítico de combustível.
 * **Insertion Sort (Ordenação por Inserção):** Reordena dinamicamente a fila com base na prioridade numérica do módulo (onde a prioridade 1 representa maior urgência), garantindo que os módulos de suporte médico e energético passem à frente.
 
-<br>
 
-### Portas Lógicas e Regras de Decisão
+## Portas Lógicas e Regras de Decisão
 A autorização final para o pouso de cada módulo exige uma validação booleana composta através de operadores lógicos estritos:
 1. **Regra de Sucesso Primária (`AND` Estrito):** O pouso só é executado com sucesso se:
    
@@ -288,9 +274,8 @@ A autorização final para o pouso de cada módulo exige uma validação boolean
 3. **Regra de Contingência Energética:** Se um módulo apresentar combustível crítico ($\le 15\%$) mas não possuir prioridade alta, o sistema intercepta a entidade, eleva sua prioridade e reordena a fila.
 4. **Regra de Retenção por Clima e Sensores:** Se o radar acusar clima adverso **E** os sensores do módulo estiverem em falha, o pouso é negado imediatamente e o evento é enviado para o topo da pilha de alertas.
 
-<br>
 
-### Exemplo de Entrada e Saída (Telemetria Simulada)
+## Exemplo de Entrada e Saída (Telemetria Simulada)
 * **Entrada na Fila:** Módulos `MOD-MED-01` (Prioridade 1), `MOD-ENE-01` (Prioridade 2), `MOD-HAB-01` (Prioridade 3), `MOD-LOG-01` (Prioridade 4), `MOD-LAB-01` (Prioridade 5).
 * **Saída no Terminal (Log de Operação):**
 ```
@@ -364,27 +349,24 @@ Reavaliar perfis de reentrada dos demais módulos e janelas de pouso conforme da
 
 <br>
 
-
 ### 🚀 Fase 3: Sistema de Funcionamento Inteligente da Colônia
-Gerencia de forma inteligente os subsistemas da colônia, priorizando recursos críticos e apoiando decisões automáticas para manter a operação da base.
+Representa o funcionamento operacional da base após o pouso dos módulos, analisando consumo, desempenho e comportamento dos sistemas internos da colônia.
 <details>
 <summary>Clique para ver a fase 3 em detalhe:</summary><br>
 
-### Visão Geral da Fase:
-Esta fase unifica processamento de dados e tomada de decisão para manter a colônia em funcionamento. O sistema avalia condições energéticas, prioriza recursos críticos e utiliza previsão para apoiar a continuidade operacional da colônia Aurora Prime.
+## Visão Geral da Fase
+A Fase 3 concentra a lógica de operação da colônia, monitorando o funcionamento dos módulos já ativados e avaliando condições de consumo, desempenho e equilíbrio energético da base.
 
-<br>
 
-### Objetivo da Fase
+## Objetivo da Fase
 - Monitorar os subsistemas essenciais da colônia.
 - Aplicar regras condicionais para respostas automáticas.
 - Avaliar o equilíbrio entre geração e consumo de energia.
 - Apoiar decisões relacionadas à eficiência energética.
 - Estimar cenários futuros com base em regressão linear.
 
-<br>
 
-###  Exemplo de Entrada e Saída (Validação do Sistema)
+##  Exemplo de Entrada e Saída (Validação do Sistema)
 
 #### 1. Módulo de Decisão Condicional
 * **Entrada:** `bateria_nivel_pct = 40`, `consumo_total = 80` (Suporte de vida + Sistemas não essenciais ligados).
@@ -397,9 +379,9 @@ Esta fase unifica processamento de dados e tomada de decisão para manter a col�
 #### 3. Módulo de Eficiência Energética
 * **Entrada:** `geracao_total = 70W`, `consumo_total = 35W` (Após o corte automático do módulo não essencial).
 * **Saída:** `"SUGESTÃO: Geração total (70W) maior que o Consumo (35W). Armazenar energia excedente."`
-<br>
 
-### Exemplo saída terminal:
+
+## Exemplo saída terminal
 
 ```text
 =====================================================================================
@@ -517,36 +499,193 @@ INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA
 -> Recomenda-se monitorização contínua para otimização e validação dos modelos de desempenho.
 ===========================================================================
 ```
-```
-
 </details>
 
 <br>
 
-## Estrutura do Projeto
-```Plaintext
-PBL-Aurora/
-├── .env                        # Chave de segurança da IA
-├── .gitignore                  # Regras de exclusão do Git
-├── requirements.txt            # Dependências do projeto
-├── codigo/
-│   ├── fase1.py                # Microsserviço de Lançamento
-│   ├── fase2.py                # Microsserviço de Pouso Orbital
-│   ├── fase3.py                # Microsserviço da Colônia e Regressão
-│   └── main.py                 # Orquestrador Central e Integração IA
-└── README.md                   # Documentação do projeto
+### 🚀 Fase 4: Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia (SIGIC)
+Representa a infraestrutura da Aurora Siger como uma rede inteligente, modelando os módulos da base em um grafo para analisar conexões, rotas e decisões operacionais de forma estruturada.
+<details>
+<summary>Clique para ver a fase 4 em detalhe:</summary>
+
+## Visão Geral da Fase
+Nesta fase, o SIGIC organiza a infraestrutura da colônia por meio de grafos e matriz de adjacência, permitindo visualizar a rede, explorar conexões entre módulos e identificar caminhos mais eficientes para o funcionamento da base.
+
+
+## Objetivo da Fase
+- Modelar os módulos da colônia como vértices e suas conexões como arestas com pesos de distância.
+- Aplicar algoritmos de grafos (BFS, DFS e Dijkstra) para explorar a rede e identificar rotas eficientes.
+- Apoiar decisões de distribuição de energia e priorização de módulos críticos com base na topologia da rede.
+
+
+## Modelagem Matemática e Otimização da Rede
+Para apoiar a sustentabilidade da Base Aurora Siger, foi proposta uma modelagem matemática do desperdício energético na transmissão entre módulos da colônia. O modelo considera o crescimento do consumo energético ao longo do tempo e o impacto da distância percorrida na rede.
+
+
+#### Formulação matemática do desperdício energético
+
+O consumo energético da colônia ao longo do tempo é descrito por: `C(t) = C₀ · e^(k · t)`
+
+
+A energia dissipada em uma transmissão entre dois módulos é proporcional à distância do cabeamento e ao consumo no instante analisado. Assim, a perda acumulada ao longo do tempo pode ser modelada por: `E_perda(t) = ∫₀ᵗ (μ · dᵢⱼ · C(τ)) dτ`
+
+
+Resolvendo a integral, obtemos: `E_perda(t) = μ · dᵢⱼ · (C₀ / k) · (e^(k · t) - 1)`
+
+
+### Variáveis do modelo
+
+- E_perda(t): energia total desperdiçada ao longo do tempo.
+- μ: coeficiente de perda energética por metro de transmissão.
+- d_ij: distância entre os módulos i e j, obtida a partir da rede do SIGIC.
+- C₀: consumo inicial da colônia.
+- k: taxa de crescimento operacional da base.
+- t: tempo de operação contínua.
+
+
+#### Análise qualitativa
+
+O modelo mostra que o desperdício energético cresce de forma exponencial com o tempo, especialmente à medida que a infraestrutura da colônia se expande. Isso significa que pequenas perdas iniciais podem se transformar em impactos relevantes no desempenho energético da base, exigindo monitoramento e decisões otimizadas de roteamento.
+
+
+#### Otimização da rede com Dijkstra
+
+Como o SIGIC não controla diretamente o consumo inicial da colônia nem a taxa de crescimento operacional, a principal variável de otimização é a distância total percorrida na transmissão de recursos. Nesse contexto, o algoritmo de **Dijkstra** é aplicado para identificar os caminhos mínimos entre módulos e reduzir o valor de `d_ij` dentro da rede. 
+
+Na prática, para enviar energia do módulo **Armazenamento de Energia (ENE)** ao módulo **Suporte Médico (MED)**, o sistema seleciona a rota mais eficiente passando por **Centro de Controle (CTR)**, totalizando **360 m**, em vez de uma rota alternativa por **Agricultura (AGR)**, que totalizaria **620 m**. Essa redução de distância diminui diretamente a perda acumulada de energia e reforça o papel do SIGIC na otimização e sustentabilidade da infraestrutura da colônia. 
+
+
+
+## Exemplo de saída no terminal
+
+```text
+[SIGIC] Executando em modo standalone (sem dados reais das fases anteriores).
+[SIGIC] Usando dados simulados para teste.
+
+
+=====================================================================================
+  SIGIC — Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia  
+                    Base Aurora Siger | Fase 4                               
+=====================================================================================
+
+  [SIGIC] Sincronizando rede com resultados do pouso orbital...
+    ⚫  MOD-MED-01 → Suporte Médico: INATIVO (retido em órbita)
+    ✅  MOD-ENE-01 → Armazenamento de Energia: ATIVADO na rede
+    ✅  MOD-HAB-01 → Habitação: ATIVADO na rede
+    ⚫  MOD-LAB-01 → Laboratório Científico: INATIVO (retido em órbita)
+    ✅  MOD-LOG-01 → Centro de Controle: ATIVADO na rede
+    🔵  Comunicação: OPERACIONAL (infraestrutura base da colônia)
+    🔵  Produção de Oxigênio: OPERACIONAL (infraestrutura base da colônia)
+    🔵  Agricultura: AGUARDANDO_POUSO (infraestrutura base da colônia)
+
+
+=====================================================================================
+  INVENTÁRIO DE MÓDULOS — BASE AURORA SIGER
+=====================================================================================
+  #    MÓDULO                         PRIORIDADE   CONSUMO (kW)    STATUS
+  ---------------------------------------------------------------------------
+  1    Habitação                      1            45.0            🟢 operacional
+  2    Centro de Controle             2            60.0            🟢 operacional
+  3    Armazenamento de Energia       3            10.0            🟢 operacional
+  4    Agricultura                    4            35.0            ⚫ aguardando_pouso
+  5    Laboratório Científico         7            55.0            ⚫ inativo
+  6    Comunicação                    5            40.0            🟢 operacional
+  7    Suporte Médico                 2            30.0            ⚫ inativo
+  8    Produção de Oxigênio           1            50.0            🟢 operacional
+  ---------------------------------------------------------------------------
+  Módulos operacionais: 5/8  |  Consumo ativo: 205.0 kW  |  Capacidade total: 325.0 kW
+=====================================================================================
+
+  8 módulos indexados | 8×8 Matriz de Adjacência configurada.
+  Abrindo painel de controle interativo...
+
+
+-------------------------------------------------------------------------------------
+  PAINEL DE CONTROLE — SIGIC
+-------------------------------------------------------------------------------------
+  [1]  Visualizar Rede (Matriz de Adjacência + status real)
+  [2]  Listar Todos os Módulos (Inventário atualizado)
+  [3]  Consultar Status de um Módulo  [busca O(1)]
+  [4]  Executar Dijkstra (Caminho Mínimo)
+  [5]  Executar BFS (Busca em Largura) 
+  [6]  Executar DFS (Busca em Profundidade)
+  [0]  Encerrar SIGIC e retornar ao pipeline
+-------------------------------------------------------------------------------------
+  Digite a opção desejada:
+
 ```
+
+## Exemplo de rota mínima
+```text
+Digite a opção desejada: 4
+
+  [DIJKSTRA] Módulo de ORIGEM:
+
+  Módulos disponíveis:
+    [1] Habitação  (habitacao) — operacional
+    [2] Centro de Controle  (centro_controle) — operacional
+    [3] Armazenamento de Energia  (armazenamento_energia) — operacional
+    [4] Agricultura  (agricultura) — aguardando_pouso
+    [5] Laboratório Científico  (laboratorio) — inativo
+    [6] Comunicação  (comunicacao) — operacional
+    [7] Suporte Médico  (suporte_medico) — inativo
+    [8] Produção de Oxigênio  (producao_oxigenio) — operacional
+
+  Módulo de origem (número): 3
+
+  [DIJKSTRA] Módulo de DESTINO:
+
+  Módulos disponíveis:
+    [1] Habitação  (habitacao) — operacional
+    [2] Centro de Controle  (centro_controle) — operacional
+    [3] Armazenamento de Energia  (armazenamento_energia) — operacional
+    [4] Agricultura  (agricultura) — aguardando_pouso
+    [5] Laboratório Científico  (laboratorio) — inativo
+    [6] Comunicação  (comunicacao) — operacional
+    [7] Suporte Médico  (suporte_medico) — inativo
+    [8] Produção de Oxigênio  (producao_oxigenio) — operacional
+
+  Módulo de destino (número): 7
+
+=====================================================================================
+  DIJKSTRA — CAMINHO DE MENOR DISTÂNCIA
+=====================================================================================
+  Origem  : Armazenamento de Energia
+  Destino : Suporte Médico
+
+  Trajeto detalhado:
+    Armazenamento de Energia  →  Centro de Controle  (220 m)
+    Centro de Controle  →  Suporte Médico  (140 m)
+
+  Caminho completo : Armazenamento de Energia → Centro de Controle → Suporte Médico
+  Distância total  : 360 metros
+  Saltos           : 2
+=====================================================================================
+
+  Caminho: armazenamento_energia → centro_controle → suporte_medico
+  Distância total: 360 metros
+
+```
+</details>
+
+
+
 <br>
 
 ## Tecnologias Utilizadas
 
-- Python
+- Python 3.9+
 - Estruturas condicionais
 - Estruturas de repetição
 - Listas, filas e pilhas
 - Algoritmos de busca e ordenação
 - Regressão linear
 - Organização modular em arquivos Python
+- Grafos e matriz de adjacência
+- Algoritmos de grafos (BFS, DFS e Dijkstra)
+- Estruturas de dados em Python (dicionários, tuplas, listas)
+- Simulação e interação via menu em terminal
+- Integração entre microsserviços em pipeline
 
 <br>
 
@@ -558,10 +697,10 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 - Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey)
 <br>
 
-### Passos para Executar o Projeto
+### Passo a Passo Para Executar
 1.  **Clone o repositório:**
     ```bash
-    git clone https://github.com/seu-usuario/PBL-Aurora.git
+    git clone https://github.com/JFrois/PBL-Aurora.git
     cd PBL-Aurora
     ```
 
@@ -589,7 +728,7 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
     GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
     ``` 
 
-### Executando a Simulação
+### Executando o projeto
 
 O projeto possui duas saídas principais: uma simulação via console e uma interface web em desenvolvimento.
 
@@ -600,7 +739,27 @@ O projeto possui duas saídas principais: uma simulação via console e uma inte
 
 <br>
 
-## 👥 Equipe (FIAP 2026)
+## Estrutura do Projeto
+```plaintext
+PBL-Aurora/
+├── .env                            # Chave de segurança da IA
+├── .gitignore                      # Regras de exclusão do Git
+├── README.md                       # Documentação do projeto
+├── requirements.txt                # Dependências do projeto
+├── codigo/
+│   ├── fase1.py                    # Simulação de telemetria e validação de lançamento
+│   ├── fase2.py                    # MGPEB: gestão de pouso e estabilização da base
+│   ├── fase3.py                    # Sistema de funcionamento inteligente da colônia
+│   ├── fase4.py                    # SIGIC: gerenciamento da infraestrutura da colônia
+│   └── main.py                     # Orquestrador Central e Integração IA
+└── Documentos/
+    ├── rede_colonia.pdf            # Diagrama visual da rede da colônia
+    └── relatorio_pbl_fase4.pdf     # Relatório técnico da Fase 4
+```
+
+<br>
+
+## 👥 Equipe 
 | Nome | RM |
 | :--- | :--- |
 | **Juan de Lucas Frois** | RM563260 |
@@ -609,7 +768,8 @@ O projeto possui duas saídas principais: uma simulação via console e uma inte
 | **Bruno Antonio Santos Silva** | RM573180 | 
 | **Renan Mano Otero** | RM573615 |
 
+**Instituição:** FIAP - Faculdade de Informática e Administração Paulista\
+**Turma:** 1CCOA-2026\
+**Ano:** 2026
+
 ---
-**Instituição:** FIAP\
-**Ano:** 2026\
-**Turma:** 1CCOA-2026  
