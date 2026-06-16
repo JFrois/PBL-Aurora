@@ -751,7 +751,6 @@ def executar_fase4(resultado_fase2: dict, resultado_fase3: dict) -> dict:
 # EXECUÇÃO STANDALONE (testes isolados sem o pipeline completo)
 # =====================================================================
 if __name__ == "__main__":
-    print("[SIGIC] Executando em modo standalone (sem dados reais das fases anteriores).")
     print("[SIGIC] Usando dados simulados para teste.\n")
 
     # Dados simulados para rodar sem o main.py
