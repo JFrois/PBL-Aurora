@@ -33,7 +33,7 @@ MAPA_ID_MODULO = {
     "MOD-ENE-01": "armazenamento_energia",
     "MOD-HAB-01": "habitacao",
     "MOD-LAB-01": "laboratorio",
-    "MOD-LOG-01": "centro_controle",   # LOG-01 representa o Centro de Controle/Logística
+    "MOD-LOG-01": "centro_controle",  # LOG-01 representa o Centro de Controle/Logística
 }
 
 # Dicionário-mestre: mapeia o identificador do módulo aos seus atributos
@@ -42,16 +42,26 @@ MODULOS_COLONIA: dict = {
         # TUPLA: dados de configuração estática — nunca mudam em runtime
         "descricao": ("Habitação", "Módulo residencial da tripulação"),
         "coordenadas_xy": (100, 200),
+        # TUPLA: necessidade_comunicacao = (protocolo, largura_banda_mbps, criticidade_link)
+        # protocolo       → padrão de comunicação utilizado pelo módulo
+        # largura_banda   → largura de banda mínima exigida para operação (Mbps)
+        # criticidade_link → "alta" | "media" | "baixa" — impacto da perda do link
+        "necessidade_comunicacao": ("Wi-Fi mesh interno", 10, "media"),
         # DICIONÁRIO: dados operacionais — atualizados pelo pipeline
         "consumo_kw": 45.0,
         "prioridade": 1,
         "capacidade": "12 tripulantes",
-        "status": "aguardando_pouso",   # valor inicial — será sobrescrito
+        "status": "aguardando_pouso",  # valor inicial — será sobrescrito
         "status_codigo": 0,
     },
     "centro_controle": {
-        "descricao": ("Centro de Controle", "Núcleo de comando e monitoramento da base"),
+        "descricao": (
+            "Centro de Controle",
+            "Núcleo de comando e monitoramento da base",
+        ),
         "coordenadas_xy": (200, 300),
+        # Hub central — agrega telemetria de todos os módulos e retransmite para a Terra
+        "necessidade_comunicacao": ("Ethernet + RF interno", 100, "alta"),
         "consumo_kw": 60.0,
         "prioridade": 2,
         "capacidade": "8 estações de trabalho",
@@ -59,8 +69,13 @@ MODULOS_COLONIA: dict = {
         "status_codigo": 0,
     },
     "armazenamento_energia": {
-        "descricao": ("Armazenamento de Energia", "Baterias e painéis solares da colônia"),
+        "descricao": (
+            "Armazenamento de Energia",
+            "Baterias e painéis solares da colônia",
+        ),
         "coordenadas_xy": (300, 100),
+        # Envia telemetria de carga/descarga; link de baixa banda mas crítico para gestão
+        "necessidade_comunicacao": ("RF interno", 5, "alta"),
         "consumo_kw": 10.0,
         "prioridade": 3,
         "capacidade": "500 kWh",
@@ -68,8 +83,13 @@ MODULOS_COLONIA: dict = {
         "status_codigo": 0,
     },
     "agricultura": {
-        "descricao": ("Agricultura", "Estufas pressurizadas para produção de alimentos"),
+        "descricao": (
+            "Agricultura",
+            "Estufas pressurizadas para produção de alimentos",
+        ),
         "coordenadas_xy": (300, 500),
+        # Sensores de solo e clima; comunicação periódica, não contínua
+        "necessidade_comunicacao": ("Wi-Fi mesh interno", 2, "baixa"),
         "consumo_kw": 35.0,
         "prioridade": 4,
         "capacidade": "200 m² de área cultivável",
@@ -77,8 +97,13 @@ MODULOS_COLONIA: dict = {
         "status_codigo": 0,
     },
     "laboratorio": {
-        "descricao": ("Laboratório Científico", "Pesquisa geológica, biológica e química"),
+        "descricao": (
+            "Laboratório Científico",
+            "Pesquisa geológica, biológica e química",
+        ),
         "coordenadas_xy": (500, 400),
+        # Transferência de dados científicos volumosos; alta banda para envio à Terra
+        "necessidade_comunicacao": ("Ethernet + laser Terra", 50, "media"),
         "consumo_kw": 55.0,
         "prioridade": 7,
         "capacidade": "6 bancadas de pesquisa",
@@ -88,15 +113,19 @@ MODULOS_COLONIA: dict = {
     "comunicacao": {
         "descricao": ("Comunicação", "Antenas de rádio e link laser com a Terra"),
         "coordenadas_xy": (500, 200),
+        # Módulo de comunicação em si — opera com máxima banda e redundância total
+        "necessidade_comunicacao": ("Laser 10 Gbps + UHF backup", 1000, "alta"),
         "consumo_kw": 40.0,
         "prioridade": 5,
         "capacidade": "Link laser 10 Gbps / Rádio UHF backup",
-        "status": "operacional",        # comunicação já estava ativa nas fases anteriores
+        "status": "operacional",  # comunicação já estava ativa nas fases anteriores
         "status_codigo": 1,
     },
     "suporte_medico": {
         "descricao": ("Suporte Médico", "Enfermaria, UTI e estoque de medicamentos"),
         "coordenadas_xy": (100, 400),
+        # Telemetria de sinais vitais em tempo real — link deve ser contínuo e confiável
+        "necessidade_comunicacao": ("RF interno dedicado", 20, "alta"),
         "consumo_kw": 30.0,
         "prioridade": 2,
         "capacidade": "4 leitos de UTI",
@@ -104,12 +133,17 @@ MODULOS_COLONIA: dict = {
         "status_codigo": 0,
     },
     "producao_oxigenio": {
-        "descricao": ("Produção de Oxigênio", "Eletrolisadores e sistemas de reciclagem de CO₂"),
+        "descricao": (
+            "Produção de Oxigênio",
+            "Eletrolisadores e sistemas de reciclagem de CO₂",
+        ),
         "coordenadas_xy": (400, 300),
+        # Monitoramento contínuo de O₂/CO₂ — falha de link pode ser fatal
+        "necessidade_comunicacao": ("RF interno dedicado", 5, "alta"),
         "consumo_kw": 50.0,
         "prioridade": 1,
         "capacidade": "Até 15 kg O₂/dia",
-        "status": "operacional",        # essencial — já operava desde o pouso base
+        "status": "operacional",  # essencial — já operava desde o pouso base
         "status_codigo": 1,
     },
 }
@@ -119,14 +153,14 @@ MODULOS_COLONIA: dict = {
 # =====================================================================
 
 NOMES_MODULOS: list = [
-    "habitacao",             # índice 0
-    "centro_controle",       # índice 1
-    "armazenamento_energia", # índice 2
-    "agricultura",           # índice 3
-    "laboratorio",           # índice 4
-    "comunicacao",           # índice 5
-    "suporte_medico",        # índice 6
-    "producao_oxigenio",     # índice 7
+    "habitacao",  # índice 0
+    "centro_controle",  # índice 1
+    "armazenamento_energia",  # índice 2
+    "agricultura",  # índice 3
+    "laboratorio",  # índice 4
+    "comunicacao",  # índice 5
+    "suporte_medico",  # índice 6
+    "producao_oxigenio",  # índice 7
 ]
 
 N = len(NOMES_MODULOS)
@@ -142,20 +176,21 @@ N = len(NOMES_MODULOS)
 
 MATRIZ_ADJACENCIA: list = [
     # hab  ctrl  ener  agri   lab   com   med   oxi
-    [   0,  140,  220,  360,    0,    0,  200,    0],  # 0: habitacao
-    [ 140,    0,  220,    0,  320,  320,  140,  200],  # 1: centro_controle
-    [ 220,  220,    0,  400,    0,  220,    0,  220],  # 2: armazenamento_energia
-    [ 360,    0,  400,    0,  220,    0,  220,  220],  # 3: agricultura
-    [   0,  320,    0,  220,    0,  200,    0,  140],  # 4: laboratorio
-    [   0,  320,  220,    0,  200,    0,    0,  140],  # 5: comunicacao
-    [ 200,  140,    0,  220,    0,    0,    0,  320],  # 6: suporte_medico
-    [   0,  200,  220,  220,  140,  140,  320,    0],  # 7: producao_oxigenio
+    [0, 140, 220, 360, 0, 0, 200, 0],  # 0: habitacao
+    [140, 0, 220, 0, 320, 320, 140, 200],  # 1: centro_controle
+    [220, 220, 0, 400, 0, 220, 0, 220],  # 2: armazenamento_energia
+    [360, 0, 400, 0, 220, 0, 220, 220],  # 3: agricultura
+    [0, 320, 0, 220, 0, 200, 0, 140],  # 4: laboratorio
+    [0, 320, 220, 0, 200, 0, 0, 140],  # 5: comunicacao
+    [200, 140, 0, 220, 0, 0, 0, 320],  # 6: suporte_medico
+    [0, 200, 220, 220, 140, 140, 320, 0],  # 7: producao_oxigenio
 ]
 
 
 # =====================================================================
 # BLOCO 4 — INTEGRAÇÃO COM O PIPELINE (PONTO DE CONEXÃO CENTRAL)
 # =====================================================================
+
 
 def sincronizar_com_pipeline(resultado_fase2: dict, resultado_fase3: dict):
     """
@@ -168,7 +203,7 @@ def sincronizar_com_pipeline(resultado_fase2: dict, resultado_fase3: dict):
       - Módulo de energia com diagnóstico de alerta/crítico da Fase 3
         → status = "alerta" ou "crítico"
     """
-    pousados  = resultado_fase2.get("pousados", [])
+    pousados = resultado_fase2.get("pousados", [])
     em_espera = resultado_fase2.get("em_espera", [])
 
     # Itera sobre o mapeamento ID_Fase2 ↔ chave_SIGIC
@@ -199,7 +234,7 @@ def exibir_resumo_sincronizacao(resultado_fase2: dict):
     print("\n  [SIGIC] Sincronizando rede com resultados do pouso orbital...")
     time.sleep(0.6)
 
-    pousados  = resultado_fase2.get("pousados", [])
+    pousados = resultado_fase2.get("pousados", [])
     em_espera = resultado_fase2.get("em_espera", [])
 
     for id_modulo, chave_sigic in MAPA_ID_MODULO.items():
@@ -223,17 +258,24 @@ def exibir_resumo_sincronizacao(resultado_fase2: dict):
 # BLOCO 5 — FUNÇÕES AUXILIARES DE EXIBIÇÃO
 # =====================================================================
 
+
 def exibir_cabecalho_sigic():
     print("\n" + "=" * 85)
-    print("  SIGIC — Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia  ")
-    print("                    Base Aurora Siger | Fase 4                               ")
+    print(
+        "  SIGIC — Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia  "
+    )
+    print(
+        "                    Base Aurora Siger | Fase 4                               "
+    )
     print("=" * 85)
 
 
 def exibir_matriz_adjacencia():
     print("\n" + "=" * 85)
     print("  REDE DE INFRAESTRUTURA — MATRIZ DE ADJACÊNCIA (distâncias em metros)  ")
-    print("  (0 = sem conexão direta | módulos inativos mantêm arestas para futura ativação)")
+    print(
+        "  (0 = sem conexão direta | módulos inativos mantêm arestas para futura ativação)"
+    )
     print("=" * 85)
 
     abreviacoes = ["HAB", "CTR", "ENE", "AGR", "LAB", "COM", "MED", "OXI"]
@@ -246,8 +288,8 @@ def exibir_matriz_adjacencia():
     print(f"{'':>6}" + "-" * (6 * N))
 
     for i in range(N):
-        chave  = NOMES_MODULOS[i]
-        icone  = mapa_status.get(MODULOS_COLONIA[chave]["status_codigo"], "?")
+        chave = NOMES_MODULOS[i]
+        icone = mapa_status.get(MODULOS_COLONIA[chave]["status_codigo"], "?")
         print(f"{abreviacoes[i]:>4}{icone}|", end="")
         for j in range(N):
             valor = MATRIZ_ADJACENCIA[i][j]
@@ -256,14 +298,13 @@ def exibir_matriz_adjacencia():
 
     print("\n  Legenda (abreviação → módulo | ícone = status atual):")
     for i, (abrev, chave) in enumerate(zip(abreviacoes, NOMES_MODULOS)):
-        nome   = MODULOS_COLONIA[chave]["descricao"][0]
-        icone  = mapa_status.get(MODULOS_COLONIA[chave]["status_codigo"], "?")
+        nome = MODULOS_COLONIA[chave]["descricao"][0]
+        icone = mapa_status.get(MODULOS_COLONIA[chave]["status_codigo"], "?")
         status = MODULOS_COLONIA[chave]["status"]
         print(f"    {abrev} → {nome}  {icone} {status}")
 
     total_conexoes = sum(
-        1 for i in range(N) for j in range(i + 1, N)
-        if MATRIZ_ADJACENCIA[i][j] > 0
+        1 for i in range(N) for j in range(i + 1, N) if MATRIZ_ADJACENCIA[i][j] > 0
     )
     print(f"\n  Total de arestas no grafo: {total_conexoes}")
     print("=" * 85)
@@ -274,23 +315,37 @@ def consultar_status_modulo(chave: str):
         print(f"\n  [!] Módulo '{chave}' não encontrado.")
         return
 
-    modulo = MODULOS_COLONIA[chave]   # acesso direto O(1)
-    mapa_status = {1: "🟢 OPERACIONAL", 2: "🟡 ALERTA", 3: "🔴 CRÍTICO", 0: "⚫ INATIVO"}
+    modulo = MODULOS_COLONIA[chave]  # acesso direto O(1)
+    mapa_status = {
+        1: "🟢 OPERACIONAL",
+        2: "🟡 ALERTA",
+        3: "🔴 CRÍTICO",
+        0: "⚫ INATIVO",
+    }
 
-    nome_modulo  = modulo["descricao"][0]
-    descricao    = modulo["descricao"][1]
-    coords       = modulo["coordenadas_xy"]
+    nome_modulo = modulo["descricao"][0]
+    descricao = modulo["descricao"][1]
+    coords = modulo["coordenadas_xy"]
     status_label = mapa_status.get(modulo["status_codigo"], "DESCONHECIDO")
 
     print("\n" + "=" * 85)
     print(f"  STATUS DO MÓDULO: {nome_modulo.upper()}")
     print("=" * 85)
+    # Desempacota a tupla de comunicação — índices fixos por design
+    comm = modulo["necessidade_comunicacao"]  # (protocolo, banda_mbps, criticidade)
+    protocolo_comm = comm[0]
+    banda_comm = comm[1]
+    criticidade_comm = comm[2]
+
     print(f"  Descrição    : {descricao}")
     print(f"  Identificador: {chave}")
     print(f"  Coordenadas  : X={coords[0]} m, Y={coords[1]} m")
     print(f"  Prioridade   : {modulo['prioridade']}  (1=crítico → 8=baixo impacto)")
     print(f"  Consumo      : {modulo['consumo_kw']} kW")
     print(f"  Capacidade   : {modulo['capacidade']}")
+    print(
+        f"  Comunicação  : {protocolo_comm}  |  Banda mínima: {banda_comm} Mbps  |  Criticidade: {criticidade_comm}"
+    )
     print(f"  Status atual : {status_label}")
 
     if chave in NOMES_MODULOS:
@@ -298,11 +353,15 @@ def consultar_status_modulo(chave: str):
         vizinhos = []
         for j in range(N):
             if MATRIZ_ADJACENCIA[idx][j] > 0:
-                nome_viz   = MODULOS_COLONIA[NOMES_MODULOS[j]]["descricao"][0]
+                nome_viz = MODULOS_COLONIA[NOMES_MODULOS[j]]["descricao"][0]
                 status_viz = MODULOS_COLONIA[NOMES_MODULOS[j]]["status"]
-                vizinhos.append(f"{nome_viz} ({MATRIZ_ADJACENCIA[idx][j]} m | {status_viz})")
+                vizinhos.append(
+                    f"{nome_viz} ({MATRIZ_ADJACENCIA[idx][j]} m | {status_viz})"
+                )
         if vizinhos:
-            print(f"  Conexões     : {chr(10) + '               '.join([''] + vizinhos)}")
+            print(
+                f"  Conexões     : {chr(10) + '               '.join([''] + vizinhos)}"
+            )
 
     print("=" * 85)
 
@@ -313,31 +372,38 @@ def listar_todos_modulos():
     print("\n" + "=" * 85)
     print("  INVENTÁRIO DE MÓDULOS — BASE AURORA SIGER")
     print("=" * 85)
-    print(f"  {'#':<4} {'MÓDULO':<30} {'PRIORIDADE':<12} {'CONSUMO (kW)':<15} {'STATUS'}")
+    print(
+        f"  {'#':<4} {'MÓDULO':<30} {'PRIORIDADE':<12} {'CONSUMO (kW)':<15} {'STATUS'}"
+    )
     print("  " + "-" * 75)
 
     operacionais = 0
     consumo_ativo = 0.0
     for i, chave in enumerate(NOMES_MODULOS, start=1):
-        modulo  = MODULOS_COLONIA[chave]
-        nome    = modulo["descricao"][0]
-        icone   = mapa_status.get(modulo["status_codigo"], "?")
-        status  = modulo["status"]
-        print(f"  {i:<4} {nome:<30} {modulo['prioridade']:<12} {modulo['consumo_kw']:<15.1f} {icone} {status}")
+        modulo = MODULOS_COLONIA[chave]
+        nome = modulo["descricao"][0]
+        icone = mapa_status.get(modulo["status_codigo"], "?")
+        status = modulo["status"]
+        print(
+            f"  {i:<4} {nome:<30} {modulo['prioridade']:<12} {modulo['consumo_kw']:<15.1f} {icone} {status}"
+        )
         if modulo["status_codigo"] == 1:
             operacionais += 1
             consumo_ativo += modulo["consumo_kw"]
 
     consumo_total = sum(m["consumo_kw"] for m in MODULOS_COLONIA.values())
     print("  " + "-" * 75)
-    print(f"  Módulos operacionais: {operacionais}/{N}  |  "
-          f"Consumo ativo: {consumo_ativo:.1f} kW  |  Capacidade total: {consumo_total:.1f} kW")
+    print(
+        f"  Módulos operacionais: {operacionais}/{N}  |  "
+        f"Consumo ativo: {consumo_ativo:.1f} kW  |  Capacidade total: {consumo_total:.1f} kW"
+    )
     print("=" * 85)
 
 
 # =====================================================================
 # BLOCO 6 — STUBS DOS ALGORITMOS (Pedro)
 # =====================================================================
+
 
 def algoritmo_dijkstra(origem: str, destino: str):
     """
@@ -363,16 +429,16 @@ def algoritmo_dijkstra(origem: str, destino: str):
         print("\n  [!] Origem e destino são o mesmo módulo.")
         return None
 
-    idx_origem  = NOMES_MODULOS.index(origem)
+    idx_origem = NOMES_MODULOS.index(origem)
     idx_destino = NOMES_MODULOS.index(destino)
 
     # Inicialização: distâncias como infinito para todos os nós
-    INF      = float("inf")
-    dist     = [INF] * N        # distância acumulada mínima até cada nó
-    anterior = [-1]  * N        # nó anterior no caminho ótimo (para reconstrução)
-    visitado = [False] * N      # controle de nós já finalizados
+    INF = float("inf")
+    dist = [INF] * N  # distância acumulada mínima até cada nó
+    anterior = [-1] * N  # nó anterior no caminho ótimo (para reconstrução)
+    visitado = [False] * N  # controle de nós já finalizados
 
-    dist[idx_origem] = 0        # custo zero para sair da origem
+    dist[idx_origem] = 0  # custo zero para sair da origem
 
     for _ in range(N):
         # Seleciona o nó não visitado com menor distância acumulada (O(N))
@@ -382,12 +448,12 @@ def algoritmo_dijkstra(origem: str, destino: str):
                 u = v
 
         if u == -1 or dist[u] == INF:
-            break               # sem mais nós alcançáveis
+            break  # sem mais nós alcançáveis
 
         visitado[u] = True
 
         if u == idx_destino:
-            break               # destino finalizado — encerra cedo
+            break  # destino finalizado — encerra cedo
 
         # Relaxamento: atualiza a distância dos vizinhos de u
         for v in range(N):
@@ -395,8 +461,10 @@ def algoritmo_dijkstra(origem: str, destino: str):
             if peso > 0 and not visitado[v]:
                 nova_dist = dist[u] + peso
                 if nova_dist < dist[v]:
-                    dist[v]     = nova_dist
-                    anterior[v] = u     # registra de onde viemos para reconstruir o caminho
+                    dist[v] = nova_dist
+                    anterior[v] = (
+                        u  # registra de onde viemos para reconstruir o caminho
+                    )
 
     # Verifica alcançabilidade
     if dist[idx_destino] == INF:
@@ -422,8 +490,8 @@ def algoritmo_dijkstra(origem: str, destino: str):
     print()
     print("  Trajeto detalhado:")
     for i in range(len(caminho_chaves) - 1):
-        a      = caminho_chaves[i]
-        b      = caminho_chaves[i + 1]
+        a = caminho_chaves[i]
+        b = caminho_chaves[i + 1]
         trecho = MATRIZ_ADJACENCIA[NOMES_MODULOS.index(a)][NOMES_MODULOS.index(b)]
         nome_a = MODULOS_COLONIA[a]["descricao"][0]
         nome_b = MODULOS_COLONIA[b]["descricao"][0]
@@ -464,13 +532,13 @@ def algoritmo_bfs(origem: str):
     idx_origem = NOMES_MODULOS.index(origem)
 
     visitado = [False] * N
-    fila     = [idx_origem]     # fila FIFO: insere no fim, remove do início
-    ordem    = []               # sequência de visita resultante
+    fila = [idx_origem]  # fila FIFO: insere no fim, remove do início
+    ordem = []  # sequência de visita resultante
 
     visitado[idx_origem] = True
 
     while fila:
-        u = fila.pop(0)         # remove o primeiro (FIFO)
+        u = fila.pop(0)  # remove o primeiro (FIFO)
         ordem.append(NOMES_MODULOS[u])
 
         # Enfileira vizinhos não visitados em ordem crescente de índice
@@ -490,14 +558,13 @@ def algoritmo_bfs(origem: str):
     print()
     print("  Ordem de visita (nível a nível a partir da origem):")
     for i, chave in enumerate(ordem, start=1):
-        nome   = MODULOS_COLONIA[chave]["descricao"][0]
+        nome = MODULOS_COLONIA[chave]["descricao"][0]
         status = MODULOS_COLONIA[chave]["status"]
         print(f"    {i:>2}. {nome}  ({status})")
 
     if len(ordem) < N:
         nao_alcancados = [
-            MODULOS_COLONIA[c]["descricao"][0]
-            for c in NOMES_MODULOS if c not in ordem
+            MODULOS_COLONIA[c]["descricao"][0] for c in NOMES_MODULOS if c not in ordem
         ]
         print(f"\n  ⚠ Módulos não alcançáveis a partir de {nome_origem}:")
         for nome in nao_alcancados:
@@ -535,14 +602,14 @@ def algoritmo_dfs(origem: str):
     idx_origem = NOMES_MODULOS.index(origem)
 
     visitado = [False] * N
-    pilha    = [idx_origem]     # pilha LIFO: insere e remove pelo topo
-    ordem    = []
+    pilha = [idx_origem]  # pilha LIFO: insere e remove pelo topo
+    ordem = []
 
     while pilha:
-        u = pilha.pop()         # remove do topo (LIFO — comportamento DFS)
+        u = pilha.pop()  # remove do topo (LIFO — comportamento DFS)
 
         if visitado[u]:
-            continue            # nó já processado por outro ramo — pula
+            continue  # nó já processado por outro ramo — pula
         visitado[u] = True
         ordem.append(NOMES_MODULOS[u])
 
@@ -562,14 +629,13 @@ def algoritmo_dfs(origem: str):
     print()
     print("  Ordem de visita (explorando cada ramo até o fim antes de retroceder):")
     for i, chave in enumerate(ordem, start=1):
-        nome   = MODULOS_COLONIA[chave]["descricao"][0]
+        nome = MODULOS_COLONIA[chave]["descricao"][0]
         status = MODULOS_COLONIA[chave]["status"]
         print(f"    {i:>2}. {nome}  ({status})")
 
     if len(ordem) < N:
         nao_alcancados = [
-            MODULOS_COLONIA[c]["descricao"][0]
-            for c in NOMES_MODULOS if c not in ordem
+            MODULOS_COLONIA[c]["descricao"][0] for c in NOMES_MODULOS if c not in ordem
         ]
         print(f"\n  ⚠ Módulos não alcançáveis a partir de {nome_origem}:")
         for nome in nao_alcancados:
@@ -586,6 +652,7 @@ def algoritmo_dfs(origem: str):
 # =====================================================================
 # BLOCO 7 — MENU INTERATIVO
 # =====================================================================
+
 
 def exibir_menu_principal():
     print("\n" + "-" * 85)
@@ -604,7 +671,7 @@ def exibir_menu_principal():
 def menu_selecionar_modulo(prompt_texto: str) -> str:
     print("\n  Módulos disponíveis:")
     for i, chave in enumerate(NOMES_MODULOS, start=1):
-        nome   = MODULOS_COLONIA[chave]["descricao"][0]
+        nome = MODULOS_COLONIA[chave]["descricao"][0]
         status = MODULOS_COLONIA[chave]["status"]
         print(f"    [{i}] {nome}  ({chave}) — {status}")
 
@@ -682,6 +749,7 @@ def rodar_menu_interativo():
 # BLOCO 8 — PONTO DE ENTRADA DA FASE 4 (chamado pelo main.py)
 # =====================================================================
 
+
 def executar_fase4(resultado_fase2: dict, resultado_fase3: dict) -> dict:
     """
     Função principal da Fase 4. Segue o mesmo padrão das outras fases:
@@ -739,11 +807,12 @@ def executar_fase4(resultado_fase2: dict, resultado_fase3: dict) -> dict:
         "modulos_em_alerta": alertas,
         "total_modulos": N,
         "total_arestas_grafo": sum(
-            1 for i in range(N) for j in range(i + 1, N)
-            if MATRIZ_ADJACENCIA[i][j] > 0
+            1 for i in range(N) for j in range(i + 1, N) if MATRIZ_ADJACENCIA[i][j] > 0
         ),
         "consumo_ativo_kw": consumo_ativo,
-        "status_rede": "parcialmente_operacional" if inativos else "totalmente_operacional",
+        "status_rede": (
+            "parcialmente_operacional" if inativos else "totalmente_operacional"
+        ),
     }
 
 
@@ -755,13 +824,12 @@ if __name__ == "__main__":
 
     # Dados simulados para rodar sem o main.py
     res_f2_simulado = {
-        "pousados":  ["MOD-ENE-01", "MOD-HAB-01", "MOD-LOG-01"],
+        "pousados": ["MOD-ENE-01", "MOD-HAB-01", "MOD-LOG-01"],
         "em_espera": ["MOD-MED-01", "MOD-LAB-01"],
-        "alertas":   [],
+        "alertas": [],
     }
     res_f3_simulado = {
         "diagnostico_eficiencia": {"status": "ENERGIA EXCEDENTE"},
     }
 
     executar_fase4(res_f2_simulado, res_f3_simulado)
-
