@@ -506,6 +506,63 @@ def algoritmo_dijkstra(origem: str, destino: str):
 
     return {"caminho": caminho_chaves, "distancia": dist[idx_destino]}
 
+def detectar_bridges():
+    """
+    Detecta todas as BRIDGES (conexões críticas) no grafo.
+    Uma bridge é uma aresta que, se removida, desconecta o grafo.
+    
+    Algoritmo: DFS com timestamp (Tarjan)
+    Complexidade: O(N + A)
+    
+    Retorna: lista de tuplas [(módulo_a, módulo_b, distância), ...]
+    """
+    timestamp = [0]
+    visitado = [False] * N
+    discovery_time = [-1] * N
+    low = [-1] * N
+    bridges = []
+ 
+    def dfs_bridge(u, pai=-1):
+        visitado[u] = True
+        discovery_time[u] = low[u] = timestamp[0]
+        timestamp[0] += 1
+ 
+        for v in range(N):
+            if MATRIZ_ADJACENCIA[u][v] == 0:
+                continue
+ 
+            if not visitado[v]:
+                dfs_bridge(v, u)
+                
+                if low[v] > discovery_time[u]:
+                    u_nome = MODULOS_COLONIA[NOMES_MODULOS[u]]["descricao"][0]
+                    v_nome = MODULOS_COLONIA[NOMES_MODULOS[v]]["descricao"][0]
+                    bridges.append((u_nome, v_nome, MATRIZ_ADJACENCIA[u][v]))
+                
+                low[u] = min(low[u], low[v])
+            
+            elif v != pai:
+                low[u] = min(low[u], discovery_time[v])
+ 
+    for i in range(N):
+        if not visitado[i]:
+            dfs_bridge(i)
+ 
+    print("\n" + "=" * 85)
+    print("  CONEXÕES CRÍTICAS — BRIDGES (arestas cuja remoção desconecta a rede)")
+    print("=" * 85)
+ 
+    if not bridges:
+        print("\n  ✅ Nenhuma conexão crítica detectada! A rede é tolerante a falhas.\n")
+    else:
+        print(f"\n  ⚠️  {len(bridges)} conexão(ões) crítica(s) encontrada(s):\n")
+        for i, (mod_a, mod_b, dist) in enumerate(bridges, start=1):
+            print(f"    [{i}] {mod_a} ←→ {mod_b}  ({dist} m)")
+            print(f"         Se esta conexão falhar, a rede fica desconectada.\n")
+ 
+    print("=" * 85)
+    return bridges
+ 
 
 def algoritmo_bfs(origem: str):
     """
@@ -664,6 +721,7 @@ def exibir_menu_principal():
     print("  [4]  Executar Dijkstra (Caminho Mínimo)")
     print("  [5]  Executar BFS (Busca em Largura) ")
     print("  [6]  Executar DFS (Busca em Profundidade)")
+    print("  [7]  Detectar Conexões Críticas (Bridges)")
     print("  [0]  Encerrar SIGIC e retornar ao pipeline")
     print("-" * 85)
 
@@ -733,6 +791,9 @@ def rodar_menu_interativo():
                 if visitados:
                     nomes = [MODULOS_COLONIA[c]["descricao"][0] for c in visitados]
                     print(f"\n  Ordem DFS: {' → '.join(nomes)}")
+        
+        elif opcao == "7":
+            detectar_bridges()
 
         elif opcao == "0":
             print("\n  [SIGIC] Encerrando painel de controle...\n")
