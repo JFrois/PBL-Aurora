@@ -609,7 +609,7 @@ Na prática, para enviar energia do módulo **Armazenamento de Energia (ENE)** a
   [4]  Executar Dijkstra (Caminho Mínimo)
   [5]  Executar BFS (Busca em Largura) 
   [6]  Executar DFS (Busca em Profundidade)
-  [7]     Detectar Conexões Críticas (Bridges)
+  [7]  Detectar Conexões Críticas (Bridges)
   [0]  Encerrar SIGIC e retornar ao pipeline
 -------------------------------------------------------------------------------------
   Digite a opção desejada:
@@ -766,7 +766,6 @@ PBL-Aurora/
 | **Juan de Lucas Frois** | RM563260 |
 | **Flávia Roberta Pennachin** | RM561860 |
 | **Pedro Valente Toledo** | RM570394 |
-| **Bruno Antonio Santos Silva** | RM573180 | 
 | **Renan Mano Otero** | RM573615 |
 
 **Instituição:** FIAP - Faculdade de Informática e Administração Paulista\
