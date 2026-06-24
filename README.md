@@ -609,6 +609,7 @@ Na prática, para enviar energia do módulo **Armazenamento de Energia (ENE)** a
   [4]  Executar Dijkstra (Caminho Mínimo)
   [5]  Executar BFS (Busca em Largura) 
   [6]  Executar DFS (Busca em Profundidade)
+     [7]     Detectar Conexões Críticas (Bridges)
   [0]  Encerrar SIGIC e retornar ao pipeline
 -------------------------------------------------------------------------------------
   Digite a opção desejada:

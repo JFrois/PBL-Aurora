@@ -801,7 +801,7 @@ def rodar_menu_interativo():
             break
 
         else:
-            print("\n  [!] Opção inválida. Escolha entre 0 e 6.")
+            print("\n  [!] Opção inválida. Escolha entre 0 e 7.")
 
         time.sleep(0.2)
 
