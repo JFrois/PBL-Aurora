@@ -695,7 +695,7 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 
 ### Pré-requisitos
 - [Python 3.9+](https://www.python.org/downloads/)
-- Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey)
+- Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey), necessária apenas para a execução integrada com IA
 <br>
 
 ### Passo a Passo Para Executar
@@ -731,12 +731,19 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 
 ### Executando o projeto
 
-O projeto possui duas saídas principais: uma simulação via console e uma interface web em desenvolvimento.
+O projeto possui duas formas principais de execução:
 
-- **Para rodar a simulação no console:**
+- **Para executar a simulação integrada, digite no console:**
   ```bash
   python codigo/main.py
   ```
+
+- **Para executar a simulação isolada, digite no console:**
+  ```bash
+  python codigo/fase4.py
+  ```
+
+Observação: o arquivo requirements.txt é utilizado para o projeto integrado, especialmente para as fases com apoio de IA. A Fase 4/SIGIC pode ser executada isoladamente com recursos básicos de Python pelo arquivo codigo/fase4.py.
 
 <br>
 
@@ -755,7 +762,7 @@ PBL-Aurora/
 │   └── main.py                     # Orquestrador Central e Integração IA
 └── Documentos/
     ├── rede_colonia.pdf            # Diagrama visual da rede da colônia
-    └── relatorio_pbl_fase4.pdf     # Relatório técnico da Fase 4
+    └── relatorio_pbl_fase4.pdf     # Documentação complementar / relatório técnico da Fase 4
 ```
 
 <br>
