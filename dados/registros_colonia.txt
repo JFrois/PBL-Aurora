@@ -1,0 +1,9 @@
+[2026-08-18 07:12:03] [SISTEMA] Sistema NCAS iniciado.
+[2026-08-18 07:15:41] [ACESSO] Usuário "operador_01" autenticado no terminal central.
+[2026-08-18 09:30:10] [MANUTENCAO] Substituição de filtro de ar concluída na Habitação.
+[2026-08-19 14:02:55] [SOLICITACAO] Tripulação solicitou verificação do sensor de temperatura do Laboratório Científico.
+[2026-08-20 03:47:22] [ALERTA] Falha crítica detectada na Produção de Oxigênio.
+[2026-08-20 03:48:01] [RESPOSTA_IA] Resposta simulada enviada ao Centro de Controle sobre o alerta de oxigênio.
+[2026-08-21 11:20:37] [ALERTA] Consumo elevado registrado no Armazenamento de Energia.
+[2026-08-21 18:05:14] [ACESSO] Usuário "operador_02" encerrou a sessão no terminal central.[2026-08-22 17:19:16] [SISTEMA] Sistema NCAS encerrado.
+[2026-08-22 17:20:06] [SISTEMA] Fase 5 executada via pipeline integrado (1 alertas críticos).
