@@ -408,15 +408,15 @@ def main() -> None:
 # consolidado em main.py.
 # ==============================================================================
 
+# ==============================================================================
+# BLOCO 5 — PONTO DE ENTRADA NÃO INTERATIVO PARA O main.py (PIPELINE INTEGRADO)
+# ==============================================================================
 
-def executar_fase5(client=None) -> dict:
+
+def executar_fase5(client=None, res_f2=None, res_f4=None) -> dict:
     """
-    Executa a Fase 5 (NCAS) de forma automática/não interativa, para ser
-    chamada a partir de main.py junto com as fases 1 a 4.
-
-    `client` (opcional): permite que main.py reaproveite seu próprio cliente
-    Gemini já inicializado, em vez de depender apenas do cliente local deste
-    módulo.
+    Executa a Fase 5 integrando as falhas de pouso (Fase 2) e a topologia (Fase 4)
+    diretamente no arquivo JSON do NCAS para gerar análises da IA.
     """
     global _client
     if client is not None:
@@ -426,12 +426,41 @@ def executar_fase5(client=None) -> dict:
     print("INICIANDO FASE 5: NÚCLEO COGNITIVO DA AURORA SIGER (NCAS)".center(85))
     print("=" * 85)
 
-    dados = carregar_dados_json()
-    modulos = dados.get("modulos", [])
-    alertas = dados.get("alertas", [])
-    alertas_criticos = [a for a in alertas if validar_alerta_critico(a)]
+    # Limpa a base atual e reconstrói o JSON com o cenário real do pipeline
+    dados = {"modulos": [], "alertas": []}
 
+    # 1. Alimentando Módulos Operacionais a partir da Rede (Fase 4)
+    if res_f4:
+        for mod in res_f4.get("modulos_operacionais", []):
+            dados["modulos"].append(
+                {
+                    "nome": mod,
+                    "tipo": "infraestrutura",
+                    "status": "operacional",
+                    "consumo_kw": 0.0,
+                    "ultima_manutencao": datetime.now().strftime("%Y-%m-%d"),
+                }
+            )
+
+    # 2. Alimentando Alertas Críticos a partir das Falhas de Pouso (Fase 2)
+    if res_f2:
+        for mod_falho in res_f2.get("em_espera", []):
+            dados["alertas"].append(
+                {
+                    "modulo": mod_falho,
+                    "tipo_ocorrencia": "falha_critica",
+                    "prioridade": "alta",
+                    "mensagem": "Módulo retido em órbita ou destruído durante a descida (Fase 2).",
+                    "data": datetime.now().strftime("%Y-%m-%d"),
+                }
+            )
+
+    # Salva o arquivo JSON integrando o pipeline todo
+    salvar_dados_json(dados)
+
+    alertas_criticos = [a for a in dados["alertas"] if validar_alerta_critico(a)]
     respostas_ia = []
+
     for alerta in alertas_criticos:
         prompt = montar_prompt_zero_shot(alerta)
         resposta = simular_resposta_assistente(prompt)
@@ -440,21 +469,21 @@ def executar_fase5(client=None) -> dict:
     imprimir_quadro(
         "RESUMO NCAS",
         [
-            f"Módulos cadastrados: {len(modulos)}",
-            f"Alertas registrados: {len(alertas)}",
-            f"Alertas críticos (regra ALERTA=FALHA): {len(alertas_criticos)}",
+            f"Módulos em rede (Fase 4): {len(dados['modulos'])}",
+            f"Alertas de Pouso (Fase 2): {len(dados['alertas'])}",
+            f"Alertas críticos (Regra Lógica): {len(alertas_criticos)}",
             f"Análises de IA geradas: {len(respostas_ia)}",
         ],
     )
 
     gravar_registro(
-        f"Fase 5 executada via pipeline integrado ({len(alertas_criticos)} alertas críticos).",
+        f"Fase 5 executada via pipeline integrado. {len(alertas_criticos)} alertas processados.",
         tipo="SISTEMA",
     )
 
     return {
-        "modulos": modulos,
-        "total_alertas": len(alertas),
+        "modulos": dados["modulos"],
+        "total_alertas": len(dados["alertas"]),
         "alertas_criticos": alertas_criticos,
         "respostas_ia": respostas_ia,
     }
