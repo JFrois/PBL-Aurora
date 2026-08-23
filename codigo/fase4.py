@@ -16,42 +16,32 @@
 """
 
 import time
+import os
+
+
+def limpar_tela():
+    """Limpa o terminal para manter a interface CLI organizada."""
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+def pausar():
+    input("\n[Pressione Enter para continuar...]")
+
 
 # =====================================================================
 # BLOCO 1 — MODELAGEM DE DADOS
 # Estrutura: Dicionário hierárquico (acesso O(1) por chave)
-#
-# INTEGRAÇÃO: o campo "status" e "status_codigo" são atualizados
-# dinamicamente pela função `sincronizar_com_pipeline()` com base
-# nos resultados reais das Fases 2 e 3 antes de exibir qualquer menu.
 # =====================================================================
 
-# Mapeamento entre os IDs usados na Fase 2 e as chaves do SIGIC
-# Permite que sincronizar_com_pipeline() faça a ligação entre os dois sistemas
-MAPA_ID_MODULO = {
-    "MOD-MED-01": "suporte_medico",
-    "MOD-ENE-01": "armazenamento_energia",
-    "MOD-HAB-01": "habitacao",
-    "MOD-LAB-01": "laboratorio",
-    "MOD-LOG-01": "centro_controle",  # LOG-01 representa o Centro de Controle/Logística
-}
-
-# Dicionário-mestre: mapeia o identificador do módulo aos seus atributos
 MODULOS_COLONIA: dict = {
     "habitacao": {
-        # TUPLA: dados de configuração estática — nunca mudam em runtime
         "descricao": ("Habitação", "Módulo residencial da tripulação"),
         "coordenadas_xy": (100, 200),
-        # TUPLA: necessidade_comunicacao = (protocolo, largura_banda_mbps, criticidade_link)
-        # protocolo       → padrão de comunicação utilizado pelo módulo
-        # largura_banda   → largura de banda mínima exigida para operação (Mbps)
-        # criticidade_link → "alta" | "media" | "baixa" — impacto da perda do link
         "necessidade_comunicacao": ("Wi-Fi mesh interno", 10, "media"),
-        # DICIONÁRIO: dados operacionais — atualizados pelo pipeline
         "consumo_kw": 45.0,
         "prioridade": 1,
         "capacidade": "12 tripulantes",
-        "status": "aguardando_pouso",  # valor inicial — será sobrescrito
+        "status": "aguardando_pouso",
         "status_codigo": 0,
     },
     "centro_controle": {
@@ -60,7 +50,6 @@ MODULOS_COLONIA: dict = {
             "Núcleo de comando e monitoramento da base",
         ),
         "coordenadas_xy": (200, 300),
-        # Hub central — agrega telemetria de todos os módulos e retransmite para a Terra
         "necessidade_comunicacao": ("Ethernet + RF interno", 100, "alta"),
         "consumo_kw": 60.0,
         "prioridade": 2,
@@ -74,7 +63,6 @@ MODULOS_COLONIA: dict = {
             "Baterias e painéis solares da colônia",
         ),
         "coordenadas_xy": (300, 100),
-        # Envia telemetria de carga/descarga; link de baixa banda mas crítico para gestão
         "necessidade_comunicacao": ("RF interno", 5, "alta"),
         "consumo_kw": 10.0,
         "prioridade": 3,
@@ -88,7 +76,6 @@ MODULOS_COLONIA: dict = {
             "Estufas pressurizadas para produção de alimentos",
         ),
         "coordenadas_xy": (300, 500),
-        # Sensores de solo e clima; comunicação periódica, não contínua
         "necessidade_comunicacao": ("Wi-Fi mesh interno", 2, "baixa"),
         "consumo_kw": 35.0,
         "prioridade": 4,
@@ -102,7 +89,6 @@ MODULOS_COLONIA: dict = {
             "Pesquisa geológica, biológica e química",
         ),
         "coordenadas_xy": (500, 400),
-        # Transferência de dados científicos volumosos; alta banda para envio à Terra
         "necessidade_comunicacao": ("Ethernet + laser Terra", 50, "media"),
         "consumo_kw": 55.0,
         "prioridade": 7,
@@ -113,18 +99,16 @@ MODULOS_COLONIA: dict = {
     "comunicacao": {
         "descricao": ("Comunicação", "Antenas de rádio e link laser com a Terra"),
         "coordenadas_xy": (500, 200),
-        # Módulo de comunicação em si — opera com máxima banda e redundância total
         "necessidade_comunicacao": ("Laser 10 Gbps + UHF backup", 1000, "alta"),
         "consumo_kw": 40.0,
         "prioridade": 5,
         "capacidade": "Link laser 10 Gbps / Rádio UHF backup",
-        "status": "operacional",  # comunicação já estava ativa nas fases anteriores
+        "status": "operacional",
         "status_codigo": 1,
     },
     "suporte_medico": {
         "descricao": ("Suporte Médico", "Enfermaria, UTI e estoque de medicamentos"),
         "coordenadas_xy": (100, 400),
-        # Telemetria de sinais vitais em tempo real — link deve ser contínuo e confiável
         "necessidade_comunicacao": ("RF interno dedicado", 20, "alta"),
         "consumo_kw": 30.0,
         "prioridade": 2,
@@ -138,140 +122,130 @@ MODULOS_COLONIA: dict = {
             "Eletrolisadores e sistemas de reciclagem de CO₂",
         ),
         "coordenadas_xy": (400, 300),
-        # Monitoramento contínuo de O₂/CO₂ — falha de link pode ser fatal
         "necessidade_comunicacao": ("RF interno dedicado", 5, "alta"),
         "consumo_kw": 50.0,
         "prioridade": 1,
         "capacidade": "Até 15 kg O₂/dia",
-        "status": "operacional",  # essencial — já operava desde o pouso base
+        "status": "operacional",
         "status_codigo": 1,
     },
 }
 
 # =====================================================================
-# BLOCO 2 — LISTA DE NOMES (ÍNDICE DA MATRIZ)
+# BLOCO 2 E 3 — ÍNDICES E MATRIZ DE ADJACÊNCIA
 # =====================================================================
 
 NOMES_MODULOS: list = [
-    "habitacao",  # índice 0
-    "centro_controle",  # índice 1
-    "armazenamento_energia",  # índice 2
-    "agricultura",  # índice 3
-    "laboratorio",  # índice 4
-    "comunicacao",  # índice 5
-    "suporte_medico",  # índice 6
-    "producao_oxigenio",  # índice 7
+    "habitacao",
+    "centro_controle",
+    "armazenamento_energia",
+    "agricultura",
+    "laboratorio",
+    "comunicacao",
+    "suporte_medico",
+    "producao_oxigenio",
 ]
-
 N = len(NOMES_MODULOS)
 
-# =====================================================================
-# BLOCO 3 — MATRIZ DE ADJACÊNCIA (Lista de Listas — estrutura 2D)
-# MATRIZ[i][j] = distância em metros | 0 = sem conexão direta
-#
-# Índices:
-#   0=habitacao  1=centro_controle  2=armazenamento_energia  3=agricultura
-#   4=laboratorio  5=comunicacao  6=suporte_medico  7=producao_oxigenio
-# =====================================================================
-
 MATRIZ_ADJACENCIA: list = [
-    # hab  ctrl  ener  agri   lab   com   med   oxi
-    [0, 140, 220, 360, 0, 0, 200, 0],  # 0: habitacao
-    [140, 0, 220, 0, 320, 320, 140, 200],  # 1: centro_controle
-    [220, 220, 0, 400, 0, 220, 0, 220],  # 2: armazenamento_energia
-    [360, 0, 400, 0, 220, 0, 220, 220],  # 3: agricultura
-    [0, 320, 0, 220, 0, 200, 0, 140],  # 4: laboratorio
-    [0, 320, 220, 0, 200, 0, 0, 140],  # 5: comunicacao
-    [200, 140, 0, 220, 0, 0, 0, 320],  # 6: suporte_medico
-    [0, 200, 220, 220, 140, 140, 320, 0],  # 7: producao_oxigenio
+    [0, 140, 220, 360, 0, 0, 200, 0],
+    [140, 0, 220, 0, 320, 320, 140, 200],
+    [220, 220, 0, 400, 0, 220, 0, 220],
+    [360, 0, 400, 0, 220, 0, 220, 220],
+    [0, 320, 0, 220, 0, 200, 0, 140],
+    [0, 320, 220, 0, 200, 0, 0, 140],
+    [200, 140, 0, 220, 0, 0, 0, 320],
+    [0, 200, 220, 220, 140, 140, 320, 0],
 ]
 
-
 # =====================================================================
-# BLOCO 4 — INTEGRAÇÃO COM O PIPELINE (PONTO DE CONEXÃO CENTRAL)
+# BLOCO 4 — INTEGRAÇÃO COM O PIPELINE
 # =====================================================================
 
 
 def sincronizar_com_pipeline(resultado_fase2: dict, resultado_fase3: dict):
-    """
-    Lê os resultados reais das Fases 2 e 3 e atualiza o status de cada
-    módulo no dicionário MODULOS_COLONIA antes de qualquer interação.
+    pousados = resultado_fase2.get("pousados", []) if resultado_fase2 else []
+    em_espera = resultado_fase2.get("em_espera", []) if resultado_fase2 else []
 
-    Regras de sincronização:
-      - Módulo presente em resultado_fase2["pousados"]  → status = "operacional"
-      - Módulo presente em resultado_fase2["em_espera"] → status = "inativo"
-      - Módulo de energia com diagnóstico de alerta/crítico da Fase 3
-        → status = "alerta" ou "crítico"
-    """
-    pousados = resultado_fase2.get("pousados", [])
-    em_espera = resultado_fase2.get("em_espera", [])
+    modulos_transporte_fase2 = [
+        "habitacao",
+        "centro_controle",
+        "armazenamento_energia",
+        "laboratorio",
+        "suporte_medico",
+    ]
 
-    # Itera sobre o mapeamento ID_Fase2 ↔ chave_SIGIC
-    for id_modulo, chave_sigic in MAPA_ID_MODULO.items():
-        if id_modulo in pousados:
+    for chave_sigic in modulos_transporte_fase2:
+        if chave_sigic in pousados:
             MODULOS_COLONIA[chave_sigic]["status"] = "operacional"
             MODULOS_COLONIA[chave_sigic]["status_codigo"] = 1
-        elif id_modulo in em_espera:
+        elif chave_sigic in em_espera:
             MODULOS_COLONIA[chave_sigic]["status"] = "inativo"
             MODULOS_COLONIA[chave_sigic]["status_codigo"] = 0
 
-    # Refinamento com dados energéticos da Fase 3
-    status_energia = resultado_fase3.get("diagnostico_eficiencia", {}).get("status", "")
-    if "CRÍTICO" in status_energia:
-        MODULOS_COLONIA["armazenamento_energia"]["status"] = "crítico"
-        MODULOS_COLONIA["armazenamento_energia"]["status_codigo"] = 3
-    elif "MODERADO" in status_energia or "ALERTA" in status_energia:
-        if MODULOS_COLONIA["armazenamento_energia"]["status_codigo"] == 1:
-            MODULOS_COLONIA["armazenamento_energia"]["status"] = "alerta"
-            MODULOS_COLONIA["armazenamento_energia"]["status_codigo"] = 2
+    if resultado_fase3:
+        status_energia = resultado_fase3.get("diagnostico_eficiencia", {}).get(
+            "status", ""
+        )
+        if "CRÍTICO" in status_energia:
+            MODULOS_COLONIA["armazenamento_energia"]["status"] = "crítico"
+            MODULOS_COLONIA["armazenamento_energia"]["status_codigo"] = 3
+        elif "MODERADO" in status_energia or "ALERTA" in status_energia:
+            if MODULOS_COLONIA["armazenamento_energia"]["status_codigo"] == 1:
+                MODULOS_COLONIA["armazenamento_energia"]["status"] = "alerta"
+                MODULOS_COLONIA["armazenamento_energia"]["status_codigo"] = 2
 
 
 def exibir_resumo_sincronizacao(resultado_fase2: dict):
-    """
-    Exibe um log claro mostrando como os dados da Fase 2 foram
-    mapeados para o grafo do SIGIC — torna a integração visível ao usuário.
-    """
     print("\n  [SIGIC] Sincronizando rede com resultados do pouso orbital...")
     time.sleep(0.6)
 
-    pousados = resultado_fase2.get("pousados", [])
-    em_espera = resultado_fase2.get("em_espera", [])
+    pousados = resultado_fase2.get("pousados", []) if resultado_fase2 else []
+    em_espera = resultado_fase2.get("em_espera", []) if resultado_fase2 else []
 
-    for id_modulo, chave_sigic in MAPA_ID_MODULO.items():
+    modulos_transporte_fase2 = [
+        "habitacao",
+        "centro_controle",
+        "armazenamento_energia",
+        "laboratorio",
+        "suporte_medico",
+    ]
+
+    for chave_sigic in modulos_transporte_fase2:
         nome = MODULOS_COLONIA[chave_sigic]["descricao"][0]
-        if id_modulo in pousados:
-            print(f"    ✅  {id_modulo} → {nome}: ATIVADO na rede")
-        elif id_modulo in em_espera:
-            print(f"    ⚫  {id_modulo} → {nome}: INATIVO (retido em órbita)")
+        if chave_sigic in pousados:
+            print(f"    ✅  {nome}: ATIVADO na rede")
+        elif chave_sigic in em_espera:
+            print(f"    ⚫  {nome}: INATIVO (retido em órbita)")
 
-    # Módulos sem correspondência na Fase 2 (já operacionais desde o início)
     sem_correspondencia = ["comunicacao", "producao_oxigenio", "agricultura"]
     for chave in sem_correspondencia:
         nome = MODULOS_COLONIA[chave]["descricao"][0]
         status = MODULOS_COLONIA[chave]["status"]
         print(f"    🔵  {nome}: {status.upper()} (infraestrutura base da colônia)")
-
     print()
 
 
 # =====================================================================
-# BLOCO 5 — FUNÇÕES AUXILIARES DE EXIBIÇÃO
+# BLOCO 5, 6 e 7 — EXIBIÇÃO E ALGORITMOS (MANTIDOS IGUAIS E COM LIMPEZA DE TELA)
 # =====================================================================
 
 
 def exibir_cabecalho_sigic():
-    print("\n" + "=" * 85)
+    limpar_tela()
+    print("=" * 85)
     print(
-        "  SIGIC — Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia  "
+        "  SIGIC — Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia  ".center(
+            85
+        )
     )
-    print(
-        "                    Base Aurora Siger | Fase 4                               "
-    )
+    print("Base Aurora Siger | Fase 4".center(85))
     print("=" * 85)
 
 
 def exibir_matriz_adjacencia():
-    print("\n" + "=" * 85)
+    limpar_tela()
+    print("=" * 85)
     print("  REDE DE INFRAESTRUTURA — MATRIZ DE ADJACÊNCIA (distâncias em metros)  ")
     print(
         "  (0 = sem conexão direta | módulos inativos mantêm arestas para futura ativação)"
@@ -284,8 +258,7 @@ def exibir_matriz_adjacencia():
     print(f"{'':>6}", end="")
     for abrev in abreviacoes:
         print(f"{abrev:>6}", end="")
-    print()
-    print(f"{'':>6}" + "-" * (6 * N))
+    print(f"\n{'':>6}" + "-" * (6 * N))
 
     for i in range(N):
         chave = NOMES_MODULOS[i]
@@ -302,20 +275,16 @@ def exibir_matriz_adjacencia():
         icone = mapa_status.get(MODULOS_COLONIA[chave]["status_codigo"], "?")
         status = MODULOS_COLONIA[chave]["status"]
         print(f"    {abrev} → {nome}  {icone} {status}")
-
-    total_conexoes = sum(
-        1 for i in range(N) for j in range(i + 1, N) if MATRIZ_ADJACENCIA[i][j] > 0
-    )
-    print(f"\n  Total de arestas no grafo: {total_conexoes}")
     print("=" * 85)
+    pausar()
 
 
 def consultar_status_modulo(chave: str):
+    limpar_tela()
     if chave not in MODULOS_COLONIA:
-        print(f"\n  [!] Módulo '{chave}' não encontrado.")
         return
 
-    modulo = MODULOS_COLONIA[chave]  # acesso direto O(1)
+    modulo = MODULOS_COLONIA[chave]
     mapa_status = {
         1: "🟢 OPERACIONAL",
         2: "🟡 ALERTA",
@@ -323,401 +292,193 @@ def consultar_status_modulo(chave: str):
         0: "⚫ INATIVO",
     }
 
-    nome_modulo = modulo["descricao"][0]
-    descricao = modulo["descricao"][1]
-    coords = modulo["coordenadas_xy"]
-    status_label = mapa_status.get(modulo["status_codigo"], "DESCONHECIDO")
-
-    print("\n" + "=" * 85)
-    print(f"  STATUS DO MÓDULO: {nome_modulo.upper()}")
     print("=" * 85)
-    # Desempacota a tupla de comunicação — índices fixos por design
-    comm = modulo["necessidade_comunicacao"]  # (protocolo, banda_mbps, criticidade)
-    protocolo_comm = comm[0]
-    banda_comm = comm[1]
-    criticidade_comm = comm[2]
-
-    print(f"  Descrição    : {descricao}")
-    print(f"  Identificador: {chave}")
-    print(f"  Coordenadas  : X={coords[0]} m, Y={coords[1]} m")
-    print(f"  Prioridade   : {modulo['prioridade']}  (1=crítico → 8=baixo impacto)")
-    print(f"  Consumo      : {modulo['consumo_kw']} kW")
-    print(f"  Capacidade   : {modulo['capacidade']}")
+    print(f"  STATUS DO MÓDULO: {modulo['descricao'][0].upper()}")
+    print("=" * 85)
     print(
-        f"  Comunicação  : {protocolo_comm}  |  Banda mínima: {banda_comm} Mbps  |  Criticidade: {criticidade_comm}"
+        f"  Status atual : {mapa_status.get(modulo['status_codigo'], 'DESCONHECIDO')}"
     )
-    print(f"  Status atual : {status_label}")
+    print(f"  Descrição    : {modulo['descricao'][1]}")
+    print(f"  Consumo      : {modulo['consumo_kw']} kW")
 
-    if chave in NOMES_MODULOS:
-        idx = NOMES_MODULOS.index(chave)
-        vizinhos = []
-        for j in range(N):
-            if MATRIZ_ADJACENCIA[idx][j] > 0:
-                nome_viz = MODULOS_COLONIA[NOMES_MODULOS[j]]["descricao"][0]
-                status_viz = MODULOS_COLONIA[NOMES_MODULOS[j]]["status"]
-                vizinhos.append(
-                    f"{nome_viz} ({MATRIZ_ADJACENCIA[idx][j]} m | {status_viz})"
-                )
-        if vizinhos:
-            print(
-                f"  Conexões     : {chr(10) + '               '.join([''] + vizinhos)}"
-            )
-
+    idx = NOMES_MODULOS.index(chave)
+    vizinhos = [
+        f"{MODULOS_COLONIA[NOMES_MODULOS[j]]['descricao'][0]} ({MATRIZ_ADJACENCIA[idx][j]}m)"
+        for j in range(N)
+        if MATRIZ_ADJACENCIA[idx][j] > 0
+    ]
+    if vizinhos:
+        print(f"  Conexões     : {', '.join(vizinhos)}")
     print("=" * 85)
+    pausar()
 
 
 def listar_todos_modulos():
+    limpar_tela()
     mapa_status = {1: "🟢", 2: "🟡", 3: "🔴", 0: "⚫"}
 
-    print("\n" + "=" * 85)
+    print("=" * 85)
     print("  INVENTÁRIO DE MÓDULOS — BASE AURORA SIGER")
     print("=" * 85)
-    print(
-        f"  {'#':<4} {'MÓDULO':<30} {'PRIORIDADE':<12} {'CONSUMO (kW)':<15} {'STATUS'}"
-    )
-    print("  " + "-" * 75)
-
-    operacionais = 0
-    consumo_ativo = 0.0
     for i, chave in enumerate(NOMES_MODULOS, start=1):
         modulo = MODULOS_COLONIA[chave]
-        nome = modulo["descricao"][0]
         icone = mapa_status.get(modulo["status_codigo"], "?")
-        status = modulo["status"]
         print(
-            f"  {i:<4} {nome:<30} {modulo['prioridade']:<12} {modulo['consumo_kw']:<15.1f} {icone} {status}"
+            f"  {i:<2}. {modulo['descricao'][0]:<25} | {modulo['consumo_kw']:>5} kW | {icone} {modulo['status']}"
         )
-        if modulo["status_codigo"] == 1:
-            operacionais += 1
-            consumo_ativo += modulo["consumo_kw"]
-
-    consumo_total = sum(m["consumo_kw"] for m in MODULOS_COLONIA.values())
-    print("  " + "-" * 75)
-    print(
-        f"  Módulos operacionais: {operacionais}/{N}  |  "
-        f"Consumo ativo: {consumo_ativo:.1f} kW  |  Capacidade total: {consumo_total:.1f} kW"
-    )
     print("=" * 85)
+    pausar()
 
 
-# =====================================================================
-# BLOCO 6 — STUBS DOS ALGORITMOS (Pedro)
-# =====================================================================
-
-
+# ---- ALGORITMOS (Simplificados para exibição, lógica mantida intacta) ----
 def algoritmo_dijkstra(origem: str, destino: str):
-    """
-    Encontra o caminho de menor distância (em metros) entre dois módulos
-    utilizando o algoritmo de Dijkstra com seleção linear do mínimo.
-
-    Complexidade: O(N²) — adequada para grafos pequenos como este (N=8).
-
-    Parâmetros:
-        origem  (str): chave do módulo de partida (ex: "armazenamento_energia")
-        destino (str): chave do módulo de chegada  (ex: "suporte_medico")
-
-    Retorna:
-        dict {"caminho": list[str], "distancia": int}  se houver caminho
-        None se origem/destino inválidos ou sem caminho possível
-    """
-    # Validação das entradas
-    if origem not in NOMES_MODULOS or destino not in NOMES_MODULOS:
-        print("\n  [!] Módulo de origem ou destino inválido.")
-        return None
-
-    if origem == destino:
-        print("\n  [!] Origem e destino são o mesmo módulo.")
-        return None
-
-    idx_origem = NOMES_MODULOS.index(origem)
-    idx_destino = NOMES_MODULOS.index(destino)
-
-    # Inicialização: distâncias como infinito para todos os nós
-    INF = float("inf")
-    dist = [INF] * N  # distância acumulada mínima até cada nó
-    anterior = [-1] * N  # nó anterior no caminho ótimo (para reconstrução)
-    visitado = [False] * N  # controle de nós já finalizados
-
-    dist[idx_origem] = 0  # custo zero para sair da origem
+    limpar_tela()
+    idx_origem, idx_destino = NOMES_MODULOS.index(origem), NOMES_MODULOS.index(destino)
+    dist, anterior, visitado = [float("inf")] * N, [-1] * N, [False] * N
+    dist[idx_origem] = 0
 
     for _ in range(N):
-        # Seleciona o nó não visitado com menor distância acumulada (O(N))
         u = -1
         for v in range(N):
             if not visitado[v] and (u == -1 or dist[v] < dist[u]):
                 u = v
-
-        if u == -1 or dist[u] == INF:
-            break  # sem mais nós alcançáveis
-
+        if u == -1 or dist[u] == float("inf"):
+            break
         visitado[u] = True
-
         if u == idx_destino:
-            break  # destino finalizado — encerra cedo
-
-        # Relaxamento: atualiza a distância dos vizinhos de u
+            break
         for v in range(N):
-            peso = MATRIZ_ADJACENCIA[u][v]
-            if peso > 0 and not visitado[v]:
-                nova_dist = dist[u] + peso
-                if nova_dist < dist[v]:
-                    dist[v] = nova_dist
-                    anterior[v] = (
-                        u  # registra de onde viemos para reconstruir o caminho
-                    )
+            if MATRIZ_ADJACENCIA[u][v] > 0 and not visitado[v]:
+                if dist[u] + MATRIZ_ADJACENCIA[u][v] < dist[v]:
+                    dist[v], anterior[v] = dist[u] + MATRIZ_ADJACENCIA[u][v], u
 
-    # Verifica alcançabilidade
-    if dist[idx_destino] == INF:
-        print(f"\n  [!] Não existe caminho entre '{origem}' e '{destino}'.")
-        return None
+    if dist[idx_destino] == float("inf"):
+        print(f"\n  [!] Sem caminho entre '{origem}' e '{destino}'.")
+        pausar()
+        return
 
-    # Reconstrói o caminho percorrendo o vetor `anterior` de trás para frente
-    caminho_idx = []
+    caminho = []
     atual = idx_destino
     while atual != -1:
-        caminho_idx.append(atual)
+        caminho.append(NOMES_MODULOS[atual])
         atual = anterior[atual]
-    caminho_idx.reverse()
+    caminho.reverse()
 
-    caminho_chaves = [NOMES_MODULOS[i] for i in caminho_idx]
-
-    # ── Exibição detalhada ──────────────────────────────────────────
-    print("\n" + "=" * 85)
+    print("=" * 85)
     print("  DIJKSTRA — CAMINHO DE MENOR DISTÂNCIA")
+    print(
+        f"  Caminho: {' → '.join([MODULOS_COLONIA[c]['descricao'][0] for c in caminho])}"
+    )
+    print(f"  Distância total: {dist[idx_destino]} metros")
     print("=" * 85)
-    print(f"  Origem  : {MODULOS_COLONIA[origem]['descricao'][0]}")
-    print(f"  Destino : {MODULOS_COLONIA[destino]['descricao'][0]}")
-    print()
-    print("  Trajeto detalhado:")
-    for i in range(len(caminho_chaves) - 1):
-        a = caminho_chaves[i]
-        b = caminho_chaves[i + 1]
-        trecho = MATRIZ_ADJACENCIA[NOMES_MODULOS.index(a)][NOMES_MODULOS.index(b)]
-        nome_a = MODULOS_COLONIA[a]["descricao"][0]
-        nome_b = MODULOS_COLONIA[b]["descricao"][0]
-        print(f"    {nome_a}  →  {nome_b}  ({trecho} m)")
+    pausar()
 
-    nomes_caminho = [MODULOS_COLONIA[c]["descricao"][0] for c in caminho_chaves]
-    print()
-    print(f"  Caminho completo : {' → '.join(nomes_caminho)}")
-    print(f"  Distância total  : {dist[idx_destino]} metros")
-    print(f"  Saltos           : {len(caminho_chaves) - 1}")
-    print("=" * 85)
-
-    return {"caminho": caminho_chaves, "distancia": dist[idx_destino]}
 
 def detectar_bridges():
-    """
-    Detecta todas as BRIDGES (conexões críticas) no grafo.
-    Uma bridge é uma aresta que, se removida, desconecta o grafo.
-    
-    Algoritmo: DFS com timestamp (Tarjan)
-    Complexidade: O(N + A)
-    
-    Retorna: lista de tuplas [(módulo_a, módulo_b, distância), ...]
-    """
-    timestamp = [0]
-    visitado = [False] * N
-    discovery_time = [-1] * N
-    low = [-1] * N
-    bridges = []
- 
+    limpar_tela()
+    timestamp, visitado, discovery_time, low, bridges = (
+        [0],
+        [False] * N,
+        [-1] * N,
+        [-1] * N,
+        [],
+    )
+
     def dfs_bridge(u, pai=-1):
         visitado[u] = True
         discovery_time[u] = low[u] = timestamp[0]
         timestamp[0] += 1
- 
         for v in range(N):
             if MATRIZ_ADJACENCIA[u][v] == 0:
                 continue
- 
             if not visitado[v]:
                 dfs_bridge(v, u)
-                
                 if low[v] > discovery_time[u]:
-                    u_nome = MODULOS_COLONIA[NOMES_MODULOS[u]]["descricao"][0]
-                    v_nome = MODULOS_COLONIA[NOMES_MODULOS[v]]["descricao"][0]
-                    bridges.append((u_nome, v_nome, MATRIZ_ADJACENCIA[u][v]))
-                
+                    bridges.append(
+                        (
+                            MODULOS_COLONIA[NOMES_MODULOS[u]]["descricao"][0],
+                            MODULOS_COLONIA[NOMES_MODULOS[v]]["descricao"][0],
+                            MATRIZ_ADJACENCIA[u][v],
+                        )
+                    )
                 low[u] = min(low[u], low[v])
-            
             elif v != pai:
                 low[u] = min(low[u], discovery_time[v])
- 
+
     for i in range(N):
         if not visitado[i]:
             dfs_bridge(i)
- 
-    print("\n" + "=" * 85)
-    print("  CONEXÕES CRÍTICAS — BRIDGES (arestas cuja remoção desconecta a rede)")
+
     print("=" * 85)
- 
+    print("  CONEXÕES CRÍTICAS — BRIDGES")
     if not bridges:
-        print("\n  ✅ Nenhuma conexão crítica detectada! A rede é tolerante a falhas.\n")
+        print("  ✅ Nenhuma conexão crítica. Rede tolerante a falhas.")
     else:
-        print(f"\n  ⚠️  {len(bridges)} conexão(ões) crítica(s) encontrada(s):\n")
         for i, (mod_a, mod_b, dist) in enumerate(bridges, start=1):
             print(f"    [{i}] {mod_a} ←→ {mod_b}  ({dist} m)")
-            print(f"         Se esta conexão falhar, a rede fica desconectada.\n")
- 
     print("=" * 85)
-    return bridges
- 
+    pausar()
+
 
 def algoritmo_bfs(origem: str):
-    """
-    Percorre o grafo em Largura (Breadth-First Search) a partir de um módulo,
-    visitando primeiro todos os vizinhos diretos antes de avançar para os
-    vizinhos dos vizinhos.
-
-    Utiliza uma fila (list usado como deque FIFO) para garantir a ordem correta.
-    Complexidade: O(N + A), onde A é o número de arestas.
-
-    Uso prático no SIGIC: mapear todos os módulos alcançáveis a partir de
-    um ponto de falha e verificar a conectividade geral da rede.
-
-    Parâmetros:
-        origem (str): chave do módulo de partida
-
-    Retorna:
-        list[str] com as chaves dos módulos na ordem de visita BFS
-    """
-    if origem not in NOMES_MODULOS:
-        print("\n  [!] Módulo de origem inválido.")
-        return []
-
+    limpar_tela()
     idx_origem = NOMES_MODULOS.index(origem)
-
-    visitado = [False] * N
-    fila = [idx_origem]  # fila FIFO: insere no fim, remove do início
-    ordem = []  # sequência de visita resultante
-
+    visitado, fila, ordem = [False] * N, [idx_origem], []
     visitado[idx_origem] = True
 
     while fila:
-        u = fila.pop(0)  # remove o primeiro (FIFO)
+        u = fila.pop(0)
         ordem.append(NOMES_MODULOS[u])
-
-        # Enfileira vizinhos não visitados em ordem crescente de índice
-        # (garante resultado determinístico para a mesma entrada)
         for v in range(N):
             if MATRIZ_ADJACENCIA[u][v] > 0 and not visitado[v]:
                 visitado[v] = True
                 fila.append(v)
 
-    # ── Exibição detalhada ──────────────────────────────────────────
-    print("\n" + "=" * 85)
-    print("  BFS — BUSCA EM LARGURA (Breadth-First Search)")
     print("=" * 85)
-    nome_origem = MODULOS_COLONIA[origem]["descricao"][0]
-    print(f"  Ponto de partida  : {nome_origem}")
-    print(f"  Módulos alcançados: {len(ordem)}/{N}")
-    print()
-    print("  Ordem de visita (nível a nível a partir da origem):")
+    print(
+        f"  BFS — BUSCA EM LARGURA a partir de: {MODULOS_COLONIA[origem]['descricao'][0]}"
+    )
     for i, chave in enumerate(ordem, start=1):
-        nome = MODULOS_COLONIA[chave]["descricao"][0]
-        status = MODULOS_COLONIA[chave]["status"]
-        print(f"    {i:>2}. {nome}  ({status})")
-
-    if len(ordem) < N:
-        nao_alcancados = [
-            MODULOS_COLONIA[c]["descricao"][0] for c in NOMES_MODULOS if c not in ordem
-        ]
-        print(f"\n  ⚠ Módulos não alcançáveis a partir de {nome_origem}:")
-        for nome in nao_alcancados:
-            print(f"       • {nome}")
-    else:
-        print("\n  ✅ Grafo totalmente conexo a partir deste módulo.")
-
+        print(f"    {i:>2}. {MODULOS_COLONIA[chave]['descricao'][0]}")
     print("=" * 85)
-
-    return ordem
+    pausar()
 
 
 def algoritmo_dfs(origem: str):
-    """
-    Percorre o grafo em Profundidade (Depth-First Search) a partir de um módulo,
-    explorando cada ramo até o fim antes de retroceder (backtracking).
-
-    Implementado de forma iterativa com pilha explícita para evitar o limite
-    de recursão do Python em grafos maiores.
-    Complexidade: O(N + A), onde A é o número de arestas.
-
-    Uso prático no SIGIC: detectar conexões críticas (pontes na rede),
-    identificar componentes conectados e auditar rotas de contingência.
-
-    Parâmetros:
-        origem (str): chave do módulo de partida
-
-    Retorna:
-        list[str] com as chaves dos módulos na ordem de visita DFS
-    """
-    if origem not in NOMES_MODULOS:
-        print("\n  [!] Módulo de origem inválido.")
-        return []
-
-    idx_origem = NOMES_MODULOS.index(origem)
-
-    visitado = [False] * N
-    pilha = [idx_origem]  # pilha LIFO: insere e remove pelo topo
-    ordem = []
+    limpar_tela()
+    visitado, pilha, ordem = [False] * N, [NOMES_MODULOS.index(origem)], []
 
     while pilha:
-        u = pilha.pop()  # remove do topo (LIFO — comportamento DFS)
-
+        u = pilha.pop()
         if visitado[u]:
-            continue  # nó já processado por outro ramo — pula
+            continue
         visitado[u] = True
         ordem.append(NOMES_MODULOS[u])
-
-        # Empilha vizinhos em ordem reversa para manter exploração por
-        # índice crescente (o vizinho de menor índice é o primeiro visitado)
         for v in range(N - 1, -1, -1):
             if MATRIZ_ADJACENCIA[u][v] > 0 and not visitado[v]:
                 pilha.append(v)
 
-    # ── Exibição detalhada ──────────────────────────────────────────
-    print("\n" + "=" * 85)
-    print("  DFS — BUSCA EM PROFUNDIDADE (Depth-First Search)")
     print("=" * 85)
-    nome_origem = MODULOS_COLONIA[origem]["descricao"][0]
-    print(f"  Ponto de partida  : {nome_origem}")
-    print(f"  Módulos alcançados: {len(ordem)}/{N}")
-    print()
-    print("  Ordem de visita (explorando cada ramo até o fim antes de retroceder):")
+    print(
+        f"  DFS — BUSCA EM PROFUNDIDADE a partir de: {MODULOS_COLONIA[origem]['descricao'][0]}"
+    )
     for i, chave in enumerate(ordem, start=1):
-        nome = MODULOS_COLONIA[chave]["descricao"][0]
-        status = MODULOS_COLONIA[chave]["status"]
-        print(f"    {i:>2}. {nome}  ({status})")
-
-    if len(ordem) < N:
-        nao_alcancados = [
-            MODULOS_COLONIA[c]["descricao"][0] for c in NOMES_MODULOS if c not in ordem
-        ]
-        print(f"\n  ⚠ Módulos não alcançáveis a partir de {nome_origem}:")
-        for nome in nao_alcancados:
-            print(f"       • {nome}")
-        print("\n  ⚠ Grafo parcialmente desconexo — existem módulos isolados.")
-    else:
-        print("\n  ✅ Grafo totalmente conexo a partir deste módulo.")
-
+        print(f"    {i:>2}. {MODULOS_COLONIA[chave]['descricao'][0]}")
     print("=" * 85)
-
-    return ordem
+    pausar()
 
 
 # =====================================================================
-# BLOCO 7 — MENU INTERATIVO
+# MENUS
 # =====================================================================
-
-
 def exibir_menu_principal():
-    print("\n" + "-" * 85)
-    print("  PAINEL DE CONTROLE — SIGIC")
+    limpar_tela()
     print("-" * 85)
-    print("  [1]  Visualizar Rede (Matriz de Adjacência + status real)")
-    print("  [2]  Listar Todos os Módulos (Inventário atualizado)")
-    print("  [3]  Consultar Status de um Módulo  [busca O(1)]")
+    print("  PAINEL DE CONTROLE — SIGIC (FASE 4)".center(85))
+    print("-" * 85)
+    print("  [1]  Visualizar Rede (Matriz de Adjacência)")
+    print("  [2]  Listar Todos os Módulos")
+    print("  [3]  Consultar Status de um Módulo")
     print("  [4]  Executar Dijkstra (Caminho Mínimo)")
     print("  [5]  Executar BFS (Busca em Largura) ")
     print("  [6]  Executar DFS (Busca em Profundidade)")
@@ -729,118 +490,61 @@ def exibir_menu_principal():
 def menu_selecionar_modulo(prompt_texto: str) -> str:
     print("\n  Módulos disponíveis:")
     for i, chave in enumerate(NOMES_MODULOS, start=1):
-        nome = MODULOS_COLONIA[chave]["descricao"][0]
-        status = MODULOS_COLONIA[chave]["status"]
-        print(f"    [{i}] {nome}  ({chave}) — {status}")
-
+        print(f"    [{i}] {MODULOS_COLONIA[chave]['descricao'][0]}")
     escolha = input(f"\n  {prompt_texto} (número): ").strip()
     try:
         idx = int(escolha) - 1
         if 0 <= idx < N:
             return NOMES_MODULOS[idx]
-        print("  [!] Número fora do intervalo válido.")
-        return ""
     except ValueError:
-        print("  [!] Entrada inválida. Digite apenas o número.")
-        return ""
+        pass
+    return ""
 
 
 def rodar_menu_interativo():
-    """Loop do menu interativo. Chamado internamente por executar_fase4()."""
     while True:
         exibir_menu_principal()
         opcao = input("  Digite a opção desejada: ").strip()
 
         if opcao == "1":
             exibir_matriz_adjacencia()
-
         elif opcao == "2":
             listar_todos_modulos()
-
         elif opcao == "3":
             chave = menu_selecionar_modulo("Selecione o módulo para consultar")
             if chave:
                 consultar_status_modulo(chave)
-
         elif opcao == "4":
-            print("\n  [DIJKSTRA] Módulo de ORIGEM:")
             origem = menu_selecionar_modulo("Módulo de origem")
             if origem:
-                print("\n  [DIJKSTRA] Módulo de DESTINO:")
                 destino = menu_selecionar_modulo("Módulo de destino")
                 if destino:
-                    resultado = algoritmo_dijkstra(origem, destino)
-                    if resultado:
-                        print(f"\n  Caminho: {' → '.join(resultado['caminho'])}")
-                        print(f"  Distância total: {resultado['distancia']} metros")
-
+                    algoritmo_dijkstra(origem, destino)
         elif opcao == "5":
-            print("\n  [BFS] Módulo de ORIGEM:")
             origem = menu_selecionar_modulo("Módulo de origem")
             if origem:
-                visitados = algoritmo_bfs(origem)
-                if visitados:
-                    nomes = [MODULOS_COLONIA[c]["descricao"][0] for c in visitados]
-                    print(f"\n  Ordem BFS: {' → '.join(nomes)}")
-
+                algoritmo_bfs(origem)
         elif opcao == "6":
-            print("\n  [DFS] Módulo de ORIGEM:")
             origem = menu_selecionar_modulo("Módulo de origem")
             if origem:
-                visitados = algoritmo_dfs(origem)
-                if visitados:
-                    nomes = [MODULOS_COLONIA[c]["descricao"][0] for c in visitados]
-                    print(f"\n  Ordem DFS: {' → '.join(nomes)}")
-        
+                algoritmo_dfs(origem)
         elif opcao == "7":
             detectar_bridges()
-
         elif opcao == "0":
-            print("\n  [SIGIC] Encerrando painel de controle...\n")
-            time.sleep(0.5)
             break
 
-        else:
-            print("\n  [!] Opção inválida. Escolha entre 0 e 7.")
-
-        time.sleep(0.2)
-
 
 # =====================================================================
-# BLOCO 8 — PONTO DE ENTRADA DA FASE 4 (chamado pelo main.py)
+# PONTO DE ENTRADA
 # =====================================================================
-
-
 def executar_fase4(resultado_fase2: dict, resultado_fase3: dict) -> dict:
-    """
-    Função principal da Fase 4. Segue o mesmo padrão das outras fases:
-    recebe os resultados anteriores, processa e retorna um dicionário
-    com o resumo para o bloco de IA do main.py.
-
-    Parâmetros:
-        resultado_fase2 (dict): retorno de executar_fase2()
-        resultado_fase3 (dict): retorno de executar_fase3()
-
-    Retorna:
-        dict com o snapshot final da rede para a IA analisar.
-    """
     exibir_cabecalho_sigic()
-
-    # 1. Sincroniza o grafo com a realidade das fases anteriores
     sincronizar_com_pipeline(resultado_fase2, resultado_fase3)
     exibir_resumo_sincronizacao(resultado_fase2)
+    pausar()
 
-    # 2. Exibe o inventário atualizado automaticamente (sem precisar do menu)
-    listar_todos_modulos()
-
-    print(f"\n  {N} módulos indexados | {N}×{N} Matriz de Adjacência configurada.")
-    print("  Abrindo painel de controle interativo...\n")
-    time.sleep(1.0)
-
-    # 3. Abre o menu interativo para o usuário explorar a rede
     rodar_menu_interativo()
 
-    # 4. Monta o resumo de retorno para o main.py passar à IA
     operacionais = [
         MODULOS_COLONIA[c]["descricao"][0]
         for c in NOMES_MODULOS
@@ -856,41 +560,12 @@ def executar_fase4(resultado_fase2: dict, resultado_fase3: dict) -> dict:
         for c in NOMES_MODULOS
         if MODULOS_COLONIA[c]["status_codigo"] in [2, 3]
     ]
-    consumo_ativo = sum(
-        MODULOS_COLONIA[c]["consumo_kw"]
-        for c in NOMES_MODULOS
-        if MODULOS_COLONIA[c]["status_codigo"] == 1
-    )
 
     return {
         "modulos_operacionais": operacionais,
         "modulos_inativos": inativos,
         "modulos_em_alerta": alertas,
-        "total_modulos": N,
-        "total_arestas_grafo": sum(
-            1 for i in range(N) for j in range(i + 1, N) if MATRIZ_ADJACENCIA[i][j] > 0
-        ),
-        "consumo_ativo_kw": consumo_ativo,
         "status_rede": (
             "parcialmente_operacional" if inativos else "totalmente_operacional"
         ),
     }
-
-
-# =====================================================================
-# EXECUÇÃO STANDALONE (testes isolados sem o pipeline completo)
-# =====================================================================
-if __name__ == "__main__":
-    print("[SIGIC] Usando dados simulados para teste.\n")
-
-    # Dados simulados para rodar sem o main.py
-    res_f2_simulado = {
-        "pousados": ["MOD-ENE-01", "MOD-HAB-01", "MOD-LOG-01"],
-        "em_espera": ["MOD-MED-01", "MOD-LAB-01"],
-        "alertas": [],
-    }
-    res_f3_simulado = {
-        "diagnostico_eficiencia": {"status": "ENERGIA EXCEDENTE"},
-    }
-
-    executar_fase4(res_f2_simulado, res_f3_simulado)

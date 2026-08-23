@@ -1,0 +1,62 @@
+{
+  "modulos": [
+    {
+      "nome": "Habitação",
+      "tipo": "residencial",
+      "status": "operacional",
+      "consumo_kw": 45.0,
+      "ultima_manutencao": "2026-08-01"
+    },
+    {
+      "nome": "Centro de Controle",
+      "tipo": "comando",
+      "status": "operacional",
+      "consumo_kw": 60.0,
+      "ultima_manutencao": "2026-08-10"
+    },
+    {
+      "nome": "Armazenamento de Energia",
+      "tipo": "energia",
+      "status": "manutencao",
+      "consumo_kw": 10.0,
+      "ultima_manutencao": "2026-07-22"
+    },
+    {
+      "nome": "Laboratório Científico",
+      "tipo": "pesquisa",
+      "status": "operacional",
+      "consumo_kw": 55.0,
+      "ultima_manutencao": "2026-08-05"
+    },
+    {
+      "nome": "Produção de Oxigênio",
+      "tipo": "suporte_vital",
+      "status": "inativo",
+      "consumo_kw": 50.0,
+      "ultima_manutencao": "2026-06-30"
+    }
+  ],
+  "alertas": [
+    {
+      "modulo": "Produção de Oxigênio",
+      "tipo_ocorrencia": "falha_critica",
+      "prioridade": "alta",
+      "data": "2026-08-20",
+      "mensagem": "Queda no eletrolisador principal, produção abaixo do mínimo seguro."
+    },
+    {
+      "modulo": "Armazenamento de Energia",
+      "tipo_ocorrencia": "consumo_elevado",
+      "prioridade": "media",
+      "data": "2026-08-21",
+      "mensagem": "Consumo acima da média durante a última janela de recarga."
+    },
+    {
+      "modulo": "Laboratório Científico",
+      "tipo_ocorrencia": "manutencao_preventiva",
+      "prioridade": "baixa",
+      "data": "2026-08-19",
+      "mensagem": "Sensor de temperatura com leitura instável, recomendada calibração."
+    }
+  ]
+}

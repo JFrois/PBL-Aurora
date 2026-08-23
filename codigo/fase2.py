@@ -48,7 +48,8 @@ def analisar_clima_marciano():
     return True, []
 
 
-def executar_fase2():
+# NOVO: A Fase 2 agora exige o resultado da Fase 1 para iniciar
+def executar_fase2(res_f1: dict):
     """
     Processa a chegada dos módulos à órbita de Marte.
     Gere a Fila de Pouso (FIFO), Histórico de Sucesso (Lista) e Alertas (LIFO/Pilha).
@@ -57,16 +58,32 @@ def executar_fase2():
     print("INICIANDO FASE 2: APROXIMAÇÃO E POUSO (MGPEB)".center(85))
     print("=" * 85)
 
+    # VALIDAÇÃO DE CONTEXTO: O foguete chegou em Marte?
+    if not res_f1 or res_f1.get("status") != "GO":
+        print("\n[!] ALERTA CRÍTICO: Telemetria da Fase 1 não autorizou a viagem.")
+        print("    -> Os módulos não chegaram a Marte. Pouso abortado.")
+        return {
+            "pousados": [],
+            "em_espera": [
+                "MOD-LOG-01",
+                "MOD-HAB-01",
+                "MOD-MED-01",
+                "MOD-LAB-01",
+                "MOD-ENE-01",
+            ],
+            "alertas": ["Missão abortada por falha na telemetria (Fase 1)"],
+        }
+
     # Inicialização da Fila de Pouso com os 5 módulos base da missão
     fila_pouso = [
-        criar_modulo("MOD-LOG-01", 4, round(random.uniform(5, 100), 1)),
-        criar_modulo("MOD-HAB-01", 3, round(random.uniform(5, 100), 1)),
-        criar_modulo("MOD-MED-01", 1, round(random.uniform(5, 100), 1)),
-        criar_modulo("MOD-LAB-01", 5, round(random.uniform(5, 100), 1)),
+        criar_modulo("MOD-LOG-01", 4, round(random.uniform(15, 100), 1)),
+        criar_modulo("MOD-HAB-01", 3, round(random.uniform(15, 100), 1)),
+        criar_modulo("MOD-MED-01", 1, round(random.uniform(15, 100), 1)),
+        criar_modulo("MOD-LAB-01", 5, round(random.uniform(15, 100), 1)),
         criar_modulo(
             "MOD-ENE-01",
             2,
-            round(random.uniform(5, 100), 1),
+            round(random.uniform(15, 100), 1),
             random.choice([True, False]),
         ),
     ]
@@ -75,14 +92,13 @@ def executar_fase2():
     ordenar_fila_por_prioridade(fila_pouso)
 
     # Estruturas para armazenar o destino das entidades
-    lista_pousados = []  # Armazena os IDs dos módulos que pousaram com sucesso
-    lista_espera = []  # Armazena IDs dos módulos retidos em órbita devido a falhas
-    pilha_alertas = []  # Pilha LIFO para os registos de anomalias
-    area_livre = True  # Validação de espaço no espaçoporto
+    lista_pousados = []
+    lista_espera = []
+    pilha_alertas = []
+    area_livre = True
 
     print("\n--- INICIANDO PROTOCOLO DE POUSO ---")
 
-    # Processa enquanto houver elementos na fila (Conceito FIFO: pop(0))
     while len(fila_pouso) > 0:
         modulo = fila_pouso.pop(0)
 
@@ -94,24 +110,17 @@ def executar_fase2():
         combustivel_ok = modulo["combustivel"] > 15
         sensores_ok = modulo["sensores_ok"]
 
-        # ----------------------------------------------------------------------
         # REGRA EXCEPCIONAL 1: Sem combustível e não é prioridade máxima
-        # ----------------------------------------------------------------------
         if not combustivel_ok and modulo["prioridade"] > 2:
             print("   -> ALERTA: Combustível crítico! Reavaliando prioridade.")
             pilha_alertas.append(f"Alerta de Combustível: {modulo['ID_MODULO']}")
 
-            # Força prioridade máxima e devolve à fila
             modulo["prioridade"] = 1
             fila_pouso.append(modulo)
-
-            # Aplica o Insertion Sort para garantir que ele vá pro topo da fila
             ordenar_fila_por_prioridade(fila_pouso)
             continue
 
-        # ----------------------------------------------------------------------
         # REGRA EXCEPCIONAL 2: Clima ruim AND sensores pifados (Perigo de queda)
-        # ----------------------------------------------------------------------
         if not clima_ok and not sensores_ok:
             msg_alerta = f"ALERTA MÁXIMO: Falha de Sensores + Clima Adverso ({problemas_clima[0]}) no módulo {modulo['ID_MODULO']}"
             print(f"   -> {msg_alerta}")
@@ -119,18 +128,15 @@ def executar_fase2():
             lista_espera.append(modulo["ID_MODULO"])
             continue
 
-        # ----------------------------------------------------------------------
         # PORTA LÓGICA PRINCIPAL (AND Estrito)
-        # ----------------------------------------------------------------------
         if clima_ok and sensores_ok and combustivel_ok and area_livre:
             print(f"   -> SUCESSO: Pouso autorizado.")
             lista_pousados.append(modulo["ID_MODULO"])
-            area_livre = False  # Simula que a área foi momentaneamente ocupada
+            area_livre = False
         else:
             print("   -> FALHA: Pouso negado.")
             lista_espera.append(modulo["ID_MODULO"])
 
-            # Registro detalhado do motivo da retenção
             if not sensores_ok:
                 print(
                     "      Motivo: Falha nos sensores. Adiado para análise em órbita."
@@ -142,10 +148,9 @@ def executar_fase2():
                 fenomenos_str = ", ".join(problemas_clima)
                 print(f"      Motivo: Condição atmosférica adversa ({fenomenos_str}).")
 
-        # Reseta o booleano de área para o próximo loop (liberação da pista)
+        # Reseta o booleano de área para o próximo loop
         area_livre = True
 
-    # Retorna o resultado estruturado e super detalhado para o orquestrador (main.py)
     return {
         "pousados": lista_pousados,
         "em_espera": lista_espera,
