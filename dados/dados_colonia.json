@@ -17,13 +17,6 @@
   ],
   "alertas": [
     {
-      "modulo": "MOD-MED-01",
-      "tipo_ocorrencia": "falha_critica",
-      "prioridade": "alta",
-      "mensagem": "Módulo retido em órbita ou destruído durante a descida (Fase 2).",
-      "data": "2026-08-22"
-    },
-    {
       "modulo": "MOD-ENE-01",
       "tipo_ocorrencia": "falha_critica",
       "prioridade": "alta",
@@ -31,7 +24,7 @@
       "data": "2026-08-22"
     },
     {
-      "modulo": "MOD-HAB-01",
+      "modulo": "MOD-LAB-01",
       "tipo_ocorrencia": "falha_critica",
       "prioridade": "alta",
       "mensagem": "Módulo retido em órbita ou destruído durante a descida (Fase 2).",

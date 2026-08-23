@@ -81,9 +81,9 @@ def pausar():
 def exibir_cabecalho(titulo):
     """Exibe um cabeçalho padronizado para as telas."""
     limpar_tela()
-    print("=" * 60)
-    print(titulo.center(60))
-    print("=" * 60)
+    print("=" * 70)
+    print(titulo.center(70))
+    print("=" * 70)
 
 
 def verificar_dependencias(fases_necessarias):
@@ -109,9 +109,11 @@ def verificar_dependencias(fases_necessarias):
 def gerar_resumo_fase_ia(fase_num, dados):
     """Gera um resumo dinâmico da fase executada utilizando o Gemini."""
     if not client:
-        return f"[Mock local] Fase {fase_num} concluída com sucesso. Dados salvos em memória."
+        return f"[Mock local] Fase {fase_num} concluída com sucesso. Dados gravados."
 
-    print("\n[IA] Gerando resumo da atividade...")
+    print("\n[IA] Sincronizando dados com o servidor para resumo...")
+    time.sleep(1)  # Efeito visual de carregamento
+
     prompt = (
         f"Você é a IA da Aurora Siger. A Fase {fase_num} ({estado_projeto[fase_num]['nome']}) "
         f"acabou de ser executada e gerou os seguintes dados brutos: {json.dumps(dados, ensure_ascii=False)}.\n"
@@ -136,7 +138,10 @@ def gerar_resumo_final_ia():
         f for f in range(1, 6) if estado_projeto[f]["status"] == "Concluída"
     ]
     if not fases_concluidas:
-        print("Nenhuma fase foi concluída ainda. Não há dados para o relatório final.")
+        print("\n[!] Nenhuma fase foi concluída ainda.")
+        print(
+            "    Execute pelo menos uma fase no Menu Principal para gerar o relatório."
+        )
         pausar()
         return
 
@@ -144,17 +149,27 @@ def gerar_resumo_final_ia():
         f"Resumo_Fase_{i}": estado_projeto[i]["resumo_ia"] for i in fases_concluidas
     }
 
+    # Se a IA estiver desativada, exibe uma tela clara de fallback
     if not client:
-        print(
-            f"[Mock local] Projeto Aurora Siger concluído. Fases executadas: {fases_concluidas}"
-        )
-        fase5.gravar_registro("Resumo final (Mock) exibido.", "SISTEMA")
+        print("\n" + "-" * 70)
+        print(" ⚠️  IA DESATIVADA OU BIBLIOTECA NÃO ENCONTRADA".center(70))
+        print("-" * 70)
+        print(" Não foi possível conectar à API do Gemini. O sistema gerou um")
+        print(" relatório local (Mock) com base nas fases concluídas:\n")
+        for fase in fases_concluidas:
+            print(f"   -> Fase {fase} ({estado_projeto[fase]['nome']}): Concluída.")
+
+        fase5.gravar_registro("Resumo final (Mock local) exibido.", "SISTEMA")
         pausar()
         return
 
-    print(">> Sintetizando Boletim Executivo das fases concluídas...\n")
+    # Interface de carregamento para a IA
+    print("\n>> Conectando aos servidores da Google (Gemini)...")
+    time.sleep(1)
+    print(">> Sintetizando o Boletim Executivo. Por favor, aguarde...\n")
+
     prompt = (
-        f"Com base nos resumos individuais de cada fase concluída da Missão Aurora Siger: {json.dumps(contexto)}\n"
+        f"Com base nos resumos individuais de cada fase concluída da Missão Aurora Siger: {json.dumps(contexto, ensure_ascii=False)}\n"
         "Atue como Diretor de Voo e escreva o Boletim Operacional Final. "
         "Use o seguinte layout:\n"
         "STATUS GERAL: [Resumo de 1 linha]\n\n"
@@ -166,13 +181,18 @@ def gerar_resumo_final_ia():
         resposta = client.models.generate_content(
             model="gemini-2.5-flash", contents=prompt
         )
+        print("-" * 70)
+        print(" BOLETIM DO DIRETOR DE VOO ".center(70))
+        print("-" * 70)
         print(resposta.text)
+        print("-" * 70)
+
         # Loga a geração bem-sucedida do relatório final
         fase5.gravar_registro(
             "Boletim Executivo Final gerado pela IA com sucesso.", "IA_RELATORIO"
         )
     except Exception as e:
-        print(f"[Erro IA] Falha ao gerar boletim final: {e}")
+        print(f"\n[❌ Erro na IA] Falha ao comunicar com a API: {e}")
         fase5.gravar_registro(f"Falha ao gerar Boletim IA: {e}", "ERRO_IA")
 
     pausar()
@@ -428,7 +448,7 @@ def menu_principal():
             print(">> Encerrando o Project Validation System. Até logo!")
             break
         else:
-            print("Opção inválida!")
+            print("\n[!] Opção inválida!")
             time.sleep(1)
 
 
