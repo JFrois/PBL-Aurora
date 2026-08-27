@@ -218,18 +218,49 @@ def validar_alerta_critico(alerta: dict) -> bool:
     Ou seja: para o disparo do alerta importa apenas se houve falha —
     a criticidade adicional não muda o resultado da expressão.
     """
-    falha = alerta.get("tipo_ocorrencia") == "falha_critica"
-    return falha
+
+    if not isinstance(alerta, dict):
+        return False
+    return alerta.get("tipo_ocorrencia") == "falha_critica"
+
+
+
+def liberar_consulta(usuario_autorizado: bool, modulo_ativo: bool) -> bool:
+    """
+    Segunda regra lógica do sistema, usando os teoremas de De Morgan
+    (item 5.4 do enunciado: "liberar consulta apenas se o usuário estiver
+    autorizado e o módulo estiver ativo").
+ 
+    Regra de liberação:
+        LIBERAR = AUTORIZADO AND ATIVO
+ 
+    Regra complementar de bloqueio (a negação da liberação), aplicando
+    De Morgan:
+        NAO LIBERAR = NOT (AUTORIZADO AND ATIVO)
+                     = NOT AUTORIZADO OR NOT ATIVO
+ 
+    Ou seja: basta o usuário NÃO estar autorizado OU o módulo estar
+    INATIVO para que a consulta seja bloqueada — não é preciso avaliar
+    as duas condições negadas separadamente antes de decidir, o que
+    simplifica a checagem de bloqueio no restante do sistema.
+    """
+    return usuario_autorizado and modulo_ativo
+ 
+ 
+def bloquear_consulta(usuario_autorizado: bool, modulo_ativo: bool) -> bool:
+    """Forma equivalente (via De Morgan) da negação de liberar_consulta()."""
+    return (not usuario_autorizado) or (not modulo_ativo)
+
 
 
 def montar_prompt_zero_shot(alerta: dict) -> str:
     """Prompt zero-shot: pede um resumo do alerta sem exemplos prévios."""
     return (
         "Resuma em uma frase, em tom técnico e objetivo, o seguinte alerta "
-        f"operacional da colônia: módulo '{alerta['modulo']}', "
-        f"ocorrência '{alerta['tipo_ocorrencia']}', "
-        f"prioridade '{alerta['prioridade']}', "
-        f"descrição: '{alerta['mensagem']}'."
+        f"operacional da colônia: módulo '{alerta.get('modulo', 'desconhecido')}', "
+        f"ocorrência '{alerta.get('tipo_ocorrencia', 'nao_informada')}', "
+        f"prioridade '{alerta.get('prioridade', 'nao_informada')}', "
+        f"descrição: '{alerta.get('mensagem', '')}'."
     )
 
 
@@ -253,6 +284,22 @@ def montar_prompt_saida_estruturada(alerta: dict) -> str:
     )
 
 
+def _resposta_mock(contexto: str = "geral") -> str:
+    """
+    Centraliza o texto de resposta simulada, evitando duplicidade entre
+    os diferentes pontos onde simular_resposta_assistente() pode cair
+    no fallback local.
+    """
+    textos = {
+        "geral": (
+            "[Resposta simulada] Alerta reconhecido. Recomenda-se isolar o "
+            "módulo afetado e acionar a equipe de manutenção com "
+            "prioridade compatível ao nível informado."
+        ),
+    }
+    return textos.get(contexto, textos["geral"])
+
+
 def simular_resposta_assistente(prompt: str) -> str:
     """
     Retorna a resposta do assistente inteligente.
@@ -266,7 +313,7 @@ def simular_resposta_assistente(prompt: str) -> str:
         try:
             resposta = _client.models.generate_content(
                 model="gemini-2.5-flash", contents=prompt
-            )
+            ) 
             return resposta.text.strip()
         except Exception as erro:  # falha de rede/quota etc. -> cai para o mock
             return (
@@ -274,15 +321,11 @@ def simular_resposta_assistente(prompt: str) -> str:
                 "e registrado para acompanhamento do Centro de Controle."
             )
 
-    return (
-        "[Resposta simulada] Alerta reconhecido. Recomenda-se isolar o módulo "
-        "afetado e acionar a equipe de manutenção com prioridade compatível "
-        "ao nível informado."
-    )
+    return _resposta_mock()
 
 
 def analisar_alerta_operacional() -> None:
-    """Opção 6 do menu: aplica a regra lógica sobre os alertas e chama a IA para os críticos."""
+    """Opção 6 do menu: aplica a regra lógica sobre os alertas e chama a IA para os alertas críticos."""
     dados = carregar_dados_json()
     alertas = dados.get("alertas", [])
 
@@ -290,62 +333,145 @@ def analisar_alerta_operacional() -> None:
         print(">> Nenhum alerta cadastrado para analisar.")
         return
 
-    print("\n--- ANÁLISE LÓGICA DE ALERTAS ---")
-    for a in alertas:
+
+    print("\n" + "=" * 70)
+    print("--- ANÁLISE LÓGICA DE ALERTAS E RESPOSTAS DO ASSISTENTE ---".center(70))
+    print("=" * 70)
+
+    for i, a in enumerate(alertas, start=1):
         critico = validar_alerta_critico(a)
-        status = "CRÍTICO" if critico else "não crítico"
-        print(f"  {a['modulo']:<25} -> {status}")
+        status = "🔴 CRÍTICO" if critico else "🟢 NÃO CRÍTICO"
+        modulo_nome = a.get('modulo', 'Desconhecido')
+        
+        print(f"\n[{i}] Módulo: {modulo_nome:<20} | Status: {status}")
+        print(f"    Tipo de Ocorrência : {a.get('tipo_ocorrencia', 'N/A')}")
+        print(f"    Prioridade         : {a.get('prioridade', 'N/A').upper()}")
+        print(f"    Descrição          : {a.get('mensagem', 'N/A')}")
 
         if critico:
             prompt = montar_prompt_zero_shot(a)
             resposta = simular_resposta_assistente(prompt)
-            print(f"    Prompt (zero-shot): {prompt}")
-            print(f"    Resposta da IA: {resposta}")
+            
+            print(f"\n    PROMPT ZERO-SHOT:")
+            print(f"      \"{prompt}\"")
+            print(f"\n     RESPOSTA DA IA:")
+            print(f"       \"{resposta}\"")
+            
             gravar_registro(
-                f"Alerta crítico analisado ({a['modulo']}): {resposta}",
+                f"Alerta crítico analisado ({modulo_nome}): {resposta}",
                 tipo="RESPOSTA_IA",
             )
-    print("-" * 70)
+            print("-" * 70)
+
 
 
 def simular_interacao_assistente() -> None:
     """Opção 7 do menu: demonstra os três tipos de prompt exigidos no item 1.5."""
     dados = carregar_dados_json()
     alertas = dados.get("alertas", [])
-    alerta_exemplo = (
-        alertas[0]
-        if alertas
-        else {
-            "modulo": "Produção de Oxigênio",
-            "tipo_ocorrencia": "falha_critica",
-            "prioridade": "alta",
-            "mensagem": "Exemplo genérico de alerta.",
-            "data": datetime.now().strftime("%Y-%m-%d"),
-        }
-    )
+    alerta_exemplo = _escolher_alerta_exemplo(alertas)
 
-    print("\n--- SIMULAÇÃO DE INTERAÇÃO COM O ASSISTENTE INTELIGENTE ---")
-
+    print("\n" + "=" * 70)
+    print("SIMULAÇÃO DE INTERAÇÃO COM O ASSISTENTE INTELIGENTE".center(70))
+    print("=" * 70)
+ 
     print("\n[1] Prompt ZERO-SHOT (resumo de alerta):")
     prompt_zs = montar_prompt_zero_shot(alerta_exemplo)
     print(f"  Prompt: {prompt_zs}")
     print(f"  Resposta: {simular_resposta_assistente(prompt_zs)}")
-
+ 
     print("\n[2] Prompt FEW-SHOT (classificação de solicitação):")
+    print("    Dica: Digite uma demanda da colônia (ex: 'Falta oxigênio no setor B','Preciso de troca de filtro' ou 'Qual a previsão do tempo?')")
     solicitacao = (
-        input("  Digite uma solicitação da tripulação para classificar: ").strip()
-        or "Preciso de mais água na Habitação até amanhã"
+        input("  Digite uma solicitação da tripulação para classificar: ").strip() or "Preciso de mais água na Habitação até amanhã"
     )
     prompt_fs = montar_prompt_few_shot(solicitacao)
     print(f"  Resposta: {simular_resposta_assistente(prompt_fs)}")
-
+ 
     print("\n[3] Prompt de SAÍDA ESTRUTURADA (JSON):")
     prompt_est = montar_prompt_saida_estruturada(alerta_exemplo)
     print(f"  Resposta: {simular_resposta_assistente(prompt_est)}")
     print("-" * 70)
-
+ 
     gravar_registro(
         "Simulação de interação com o assistente executada.", tipo="RESPOSTA_IA"
+    )
+
+
+def _escolher_alerta_exemplo(alertas: list) -> dict:
+    """
+    Deixa o usuário escolher qual alerta salvo usar como exemplo nos
+    prompts (opção 7), em vez de sempre pegar o primeiro da lista.
+    Se não houver alertas ou a escolha for inválida, usa um exemplo padrão.
+    """
+    padrao = {
+        "modulo": "MOD-OXY-01",
+        "tipo_ocorrencia": "falha_critica",
+        "prioridade": "alta",
+        "mensagem": "Exemplo genérico de alerta para demonstração de prompts.",
+        "data": datetime.now().strftime("%Y-%m-%d"),
+    }
+ 
+    if not alertas:
+        print("\n>> Nenhum alerta cadastrado no sistema. Usando exemplo padrão.")
+        return padrao
+        
+    print("\n" + "-" * 70)
+    print("SELECIONE UM ALERTA PARA A SIMULAÇÃO DOS PROMPTS".center(70))
+    print("=" * 70)
+
+    print(f"\n  [0] - Módulo: {padrao['modulo']} - Exemplo padrão de alerta")
+    for i, a in enumerate(alertas, start=1):
+        print(f"  [{i}] - Módulo: {a.get('modulo', '???')} — {a.get('tipo_ocorrencia', '???')}")
+    print("=" * 70)
+ 
+    while True:
+        escolha = input("Digite o número da opção desejada: ").strip()
+        
+        if escolha == "": # Se o usuário apertar Enter direto, assume 0
+            print(f">> Usando o exemplo padrão: {padrao['modulo']}")
+            return padrao
+
+        if escolha.isdigit():
+            indice = int(escolha)
+            if indice == 0:
+                print(f">> Usando o exemplo padrão: {padrao['modulo']}")
+                return padrao
+            elif 1 <= indice <= len(alertas):
+                alerta_escolhido = alertas[indice - 1]
+                print(f">> Alerta selecionado: {alerta_escolhido.get('modulo')}")
+                return alerta_escolhido
+
+        print(">> Opção inválida! Digite um número válido listado acima.")
+ 
+ 
+def verificar_liberacao_consulta() -> None:
+    """
+    Demonstra a segunda regra lógica (De Morgan), aplicando liberar_consulta()/bloquear_consulta() de forma interativa.
+    """
+
+    print("\n" + "=" * 70)
+    print("VALIDAÇÃO LÓGICA DE ACESSO".center(70))
+    print("=" * 70)
+
+    resposta_autorizado = input("Usuário está autorizado? (s/n): ").strip().lower()
+    resposta_ativo = input("Módulo está ativo? (s/n): ").strip().lower()
+ 
+    autorizado = resposta_autorizado == "s"
+    ativo = resposta_ativo == "s"
+ 
+    liberado = liberar_consulta(autorizado, ativo)
+    bloqueado = bloquear_consulta(autorizado, ativo)
+ 
+    print(f"\n>> LIBERAR = AUTORIZADO AND ATIVO -> {liberado}")
+    print(f">> NAO LIBERAR (De Morgan) = NOT AUTORIZADO OR NOT ATIVO -> {bloqueado}")
+    print(">> Consulta LIBERADA." if liberado else ">> Consulta BLOQUEADA.")
+    print("=" * 70)
+ 
+    gravar_registro(
+        f"Verificação de liberação de consulta: autorizado={autorizado}, "
+        f"ativo={ativo}, resultado={'liberado' if liberado else 'bloqueado'}",
+        tipo="VALIDACAO_LOGICA",
     )
 
 
@@ -355,9 +481,9 @@ def simular_interacao_assistente() -> None:
 
 
 def exibir_menu() -> None:
-    print("\n" + "=" * 55)
-    print("NÚCLEO COGNITIVO DA AURORA SIGER (NCAS)".center(55))
-    print("=" * 55)
+    print("\n" + "=" * 70)
+    print("NÚCLEO COGNITIVO DA AURORA SIGER (NCAS)".center(70))
+    print("=" * 70)
     print("1 - Cadastrar novo módulo")
     print("2 - Consultar registros salvos (TXT)")
     print("3 - Adicionar registro manual (TXT)")
@@ -365,39 +491,46 @@ def exibir_menu() -> None:
     print("5 - Exibir alertas operacionais (JSON)")
     print("6 - Analisar alerta operacional (validação lógica + IA)")
     print("7 - Simular resposta do assistente inteligente")
+    print("8 - Verificar liberação de consulta a módulo (regra De Morgan)")
     print("0 - Sair")
-    print("=" * 55)
+    print("=" * 70)
 
 
 def main() -> None:
     """Loop interativo — usado quando o arquivo é executado diretamente."""
     gravar_registro("Sistema NCAS iniciado.", tipo="SISTEMA")
-
-    while True:
-        exibir_menu()
-        opcao = input("Escolha uma opção: ").strip()
-
-        if opcao == "1":
-            cadastrar_modulo()
-        elif opcao == "2":
-            ler_registros()
-        elif opcao == "3":
-            mensagem = input("Digite o registro a ser salvo: ").strip()
-            gravar_registro(mensagem, tipo="MANUAL")
-        elif opcao == "4":
-            exibir_modulos()
-        elif opcao == "5":
-            exibir_alertas()
-        elif opcao == "6":
-            analisar_alerta_operacional()
-        elif opcao == "7":
-            simular_interacao_assistente()
-        elif opcao == "0":
-            gravar_registro("Sistema NCAS encerrado.", tipo="SISTEMA")
-            print(">> Encerrando o Núcleo Cognitivo. Até logo!")
-            break
-        else:
-            print(">> Opção inválida. Tente novamente.")
+ 
+    acoes = {
+        "1": cadastrar_modulo,
+        "2": ler_registros,
+        "4": exibir_modulos,
+        "5": exibir_alertas,
+        "6": analisar_alerta_operacional,
+        "7": simular_interacao_assistente,
+        "8": verificar_liberacao_consulta,
+    }
+ 
+    try:
+        while True:
+            exibir_menu()
+            opcao = input("Escolha uma opção: ").strip()
+ 
+            if opcao == "3":
+                mensagem = input("Digite o registro a ser salvo: ").strip()
+                gravar_registro(mensagem, tipo="MANUAL")
+            elif opcao == "0":
+                gravar_registro("Sistema NCAS encerrado.", tipo="SISTEMA")
+                print(">> Encerrando o Núcleo Cognitivo. Até logo!")
+                break
+            elif opcao in acoes:
+                acoes[opcao]()
+            else:
+                print(">> Opção inválida. Tente novamente.")
+    except (KeyboardInterrupt, EOFError):
+        # Garante que o encerramento seja registrado mesmo se o usuário
+        # sair com Ctrl+C ou fechar a entrada abruptamente.
+        gravar_registro("Sistema NCAS encerrado (interrupção do usuário).", tipo="SISTEMA")
+        print("\n>> Encerrando o Núcleo Cognitivo. Até logo!")
 
 
 # ==============================================================================
@@ -407,11 +540,6 @@ def main() -> None:
 # imprime um relatório e devolve um dicionário-resumo para o Data Lake
 # consolidado em main.py.
 # ==============================================================================
-
-# ==============================================================================
-# BLOCO 5 — PONTO DE ENTRADA NÃO INTERATIVO PARA O main.py (PIPELINE INTEGRADO)
-# ==============================================================================
-
 
 def executar_fase5(client=None, res_f2=None, res_f4=None) -> dict:
     """
