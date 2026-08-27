@@ -375,22 +375,24 @@ def simular_interacao_assistente() -> None:
     print("SIMULAÇÃO DE INTERAÇÃO COM O ASSISTENTE INTELIGENTE".center(70))
     print("=" * 70)
  
-    print("\n[1] Prompt ZERO-SHOT (resumo de alerta):")
+    print("\n[1] PROMPT ZERO-SHOT (resumo de alerta):")
     prompt_zs = montar_prompt_zero_shot(alerta_exemplo)
-    print(f"  Prompt: {prompt_zs}")
-    print(f"  Resposta: {simular_resposta_assistente(prompt_zs)}")
+    print(f"\n    Prompt: {prompt_zs}")
+    print(f" \n   Resposta: {simular_resposta_assistente(prompt_zs)}")
+    print("-" * 70)
  
-    print("\n[2] Prompt FEW-SHOT (classificação de solicitação):")
+    print("\n[2] PROMPT FEW-SHOT (classificação de solicitação):")
     print("    Dica: Digite uma demanda da colônia (ex: 'Falta oxigênio no setor B','Preciso de troca de filtro' ou 'Qual a previsão do tempo?')")
     solicitacao = (
         input("  Digite uma solicitação da tripulação para classificar: ").strip() or "Preciso de mais água na Habitação até amanhã"
     )
     prompt_fs = montar_prompt_few_shot(solicitacao)
-    print(f"  Resposta: {simular_resposta_assistente(prompt_fs)}")
+    print(f" \n   Resposta: {simular_resposta_assistente(prompt_fs)}")
+    print("-" * 70)
  
-    print("\n[3] Prompt de SAÍDA ESTRUTURADA (JSON):")
+    print("\n[3] PROMPT DE SAÍDA ESTRUTURADA (JSON):")
     prompt_est = montar_prompt_saida_estruturada(alerta_exemplo)
-    print(f"  Resposta: {simular_resposta_assistente(prompt_est)}")
+    print(f" \n Resposta: {simular_resposta_assistente(prompt_est)}")
     print("-" * 70)
  
     gravar_registro(
