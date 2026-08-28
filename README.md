@@ -1,15 +1,18 @@
 # 🚀 Missão Aurora Siger 
 
 ![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)
-![Status](https://img.shields.io/badge/status-Concluído-green.svg)
+![Status](https://img.shields.io/badge/Status-Em_Andamento-orange.svg)
+![Status](https://img.shields.io/badge/Progresso-Fase_5%2F7-blue.svg)
 
-Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional de uma missão em Marte, integrando análise de telemetria, gerenciamento de pouso, inteligência operacional e modelagem da infraestrutura da colônia.
-
+Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional de uma missão em Marte, integrando análise de telemetria, 
+gerenciamento de pouso, inteligência operacional, modelagem de infraestrutura e tomada de decisão cognitiva com inteligência artificial.
 <br>
 
 ## Visão Geral
 
-O projeto evolui em quatro fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente da base marciana. Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática e otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
+O projeto evolui em cinco fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente e o núcleo cognitivo da base marciana. 
+Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática, lógica booleana, engenharia de prompts e 
+otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
 
 <br>
 
@@ -17,7 +20,7 @@ O projeto evolui em quatro fases integradas, cobrindo desde a validação inicia
   
 ### 🚀 Fase 1: Simulação de telemetria e validação de lançamento
 
-Realiza a validação inicial da missão por meio da análise de telemetria, da checagem automatizada de pré-lançamento e da identificação de anomalias, verificando se as condições operacionais permitem autorizar ou abortar a decolagem.
+Realiza a validação inicial da missão por meio da análise de telemetria, da checagem de pré-lançamento e identificação de anomalias, verificando se as condições operacionais permitem autorizar ou abortar a decolagem.
 
 <details>
 <summary>Clique para ver a Fase 1 em detalhe</summary>
@@ -673,20 +676,317 @@ Digite a opção desejada: 4
 
 <br>
 
+### 🚀 Fase 5: Núcleo Cognitivo da Aurora Siger (NCAS)
+Representa o sistema de suporte cognitivo e tomada de decisão da colônia, aplicando lógica booleana simplificada (Teoremas e Leis de De Morgan), 
+engenharia de prompts estruturada (Zero-shot, Few-shot e Structured Outputs) e integração resiliente com IA Generativa (Google Gemini) com suporte a fallback local.
+<details>
+<summary>Clique para ver a fase 5 em detalhe:</summary>
+
+## Visão Geral da Fase
+A Fase 5 introduz o Núcleo Cognitivo da Aurora Siger (`codigo_fonte.py`), unificando a persistência de dados estruturados (`dados_colonia.json`) e 
+logs operacionais (`registros_colonia.txt`) com regras formais de lógica booleana e interações avançadas com modelos de linguagem (LLMs).
+
+## Objetivo da Fase
+- Aplicar o Teorema da Simplificação para otimizar a validação de alertas críticos e as Leis de De Morgan no controle de acesso e consulta a módulos restritos.
+- Desenvolver e disparar prompts especializados (`Zero-Shot` para resumos executivos, `Few-Shot` para triagem de solicitações e `Structured Outputs` para retorno em JSON).
+- Integrar de forma opcional a API do Google Gemini (`google-genai`), garantindo tratamento de exceções robusto (fallback para respostas *mock* em caso de falha de rede ou esgotamento de cota `429`).
+- Orquestrar o fluxo de dados desde o pouso (Fase 2) e a topologia de rede (Fase 4) diretamente para as análises cognitivas do NCAS.
+
+
+## Regras Lógicas Aplicadas
+Nas especificações iniciais do sistema de monitoramento da colônia, o disparo e a classificação de um Alerta Crítico exigiam a verificação simultânea de múltiplos estados operacionais. 
+A regra de negócio original era representada pela seguinte expressão booleana:
+
+`ALERTA_CRITICO = (FALHA ∧ CRITICO) ∨ (FALHA ∧ ¬CRITICO)`
+
+Onde as variáveis lógicas assumem os valores:
+- FALHA: Indica a ocorrência de uma anomalia ou falha estrutural/operacional no módulo `True ou False`.
+- CRITICO: Indica o nível de severidade ou criticidade adicional atribuído ao evento `True ou False`.
+
+
+### Desenvolvimento da Simplificação Algébrica
+Para eliminar redundâncias lógicas e reduzir o custo computacional das validações executadas pelo script em Python, aplicamos o Teorema da Simplificação da álgebra booleana `X . Y + X  ~ Y = X`: 
+
+- **Fatoração por Distributiva (Evidenciando o termo comum FALHA):** `ALERTA_CRITICO = FALHA AND (CRITICO OR NOT CRITICO)`
+
+
+- **Aplicação da Lei do Complemento (CRITICO OR NOT CRITICO):** `ALERTA_CRITICO = FALHA AND 1`
+
+
+- **Aplicação da Lei da Identidade (FALHA AND 1 = FALHA):** `ALERTA_CRITICO = FALHA`
+
+
+A simplificação matemática demonstra que a variável de criticidade secundária CRITICO é totalmente redundante para o disparo primário do alerta. Se houver uma falha catalogada, o evento já é considerado crítico por definição.
+No código-fonte do projeto, essa lógica otimizada foi implementada na função validar_alerta_critico, garantindo um código limpo e direto:
+
+```text
+def validar_alerta_critico(alerta: dict) -> bool:
+    """
+    Regra de negócio original (item 1.4 do enunciado):
+        ALERTA_CRITICO = (FALHA AND CRITICO) OR (FALHA AND NOT CRITICO)
+
+    Aplicando o Teorema da Simplificação (X.Y + X.~Y = X), com X = FALHA
+    e Y = CRITICO, a variável CRITICO se cancela e a regra se reduz a:
+        ALERTA_CRITICO = FALHA
+
+    Ou seja: para o disparo do alerta importa apenas se houve falha —
+    a criticidade adicional não muda o resultado da expressão.
+    """
+
+    if not isinstance(alerta, dict):
+        return False
+    return alerta.get("tipo_ocorrencia") == "falha_critica"
+```
+
+## Engenharia de Prompts e IA Generativa
+
+O sistema implementa três abordagens distintas de engenharia de prompts para lidar com diferentes cenários operacionais da colônia:
+
+
+#### **Prompt Zero-Shot (resumo de alertas operacionais)**
+O modelo recebe uma instrução direta e clara sobre o que deve fazer, sem que nenhum exemplo prévio seja fornecido. Tem como objetivo operacional fornecer um resumo executivo imediato e direto de falhas críticas detectadas nos módulos, auxiliando a equipe a priorizar ações de manutenção. 
+```text
+def montar_prompt_zero_shot(alerta: dict) -> str:
+    """Prompt zero-shot: pede um resumo do alerta sem exemplos prévios."""
+    return (
+        "Resuma em uma frase, em tom técnico e objetivo, o seguinte alerta "
+        f"operacional da colônia: módulo '{alerta.get('modulo', 'desconhecido')}', "
+        f"ocorrência '{alerta.get('tipo_ocorrencia', 'nao_informada')}', "
+        f"prioridade '{alerta.get('prioridade', 'nao_informada')}', "
+        f"descrição: '{alerta.get('mensagem', '')}'."
+    )
+```
+
+#### **Prompt Few-Shot (classificação de solicitações da tripulação)**
+A técnica consiste em fornecer exemplos práticos e resolvidos do padrão de comportamento esperado antes de apresentar a solicitação real. Isso direciona a precisão e o estilo da resposta da IA. Tem como objetivo garantir que a triagem de chamados enviados pelos tripulantes seja categorizada uniformemente.
+```text
+def montar_prompt_few_shot(solicitacao: str) -> str:
+    """Prompt few-shot: dá exemplos de classificação antes de pedir a nova."""
+    return (
+        "Classifique solicitações da tripulação em: URGENTE, ROTINA ou INFORMATIVA.\n\n"
+        "Exemplo 1: 'Vazamento de ar na Habitação' -> URGENTE\n"
+        "Exemplo 2: 'Solicito troca de filtro na próxima manutenção' -> ROTINA\n"
+        "Exemplo 3: 'Qual o horário do próximo pouso de suprimentos?' -> INFORMATIVA\n\n"
+        f"Solicitação: '{solicitacao}' -> "
+    )
+```
+
+#### **Prompt de Saída Estruturada / Structured Outputs (Formato JSON)**
+Restringe o comportamento gerativo do modelo exigindo que a resposta siga estritamente um formato computacional padronizado (como JSON), sem textos explicativos adicionais. Tem como objetivo permitir que outras partes do software processem a resposta da IA de forma automática e segura, integrando o núcleo cognitivo ao restante do pipeline da colônia.
+```text
+def montar_prompt_saida_estruturada(alerta: dict) -> str:
+    """Prompt que exige explicitamente uma saída estruturada em JSON."""
+    return (
+        "Responda APENAS com um JSON válido, sem texto adicional, no formato "
+        '{"modulo": str, "critico": bool, "acao_recomendada": str}, '
+        f"considerando o alerta: {json.dumps(alerta, ensure_ascii=False)}"
+    )
+```
+
+#### **Mecanismo de Resiliência e Fallback (Mock Local)**
+Para assegurar que o sistema funcione de maneira ininterrupta (mesmo diante de falhas de conexão ou esgotamento de cota da API (como o erro `429 RESOURCE_EXHAUSTED`), o NCAS conta com um sub sistema inteligente de resiliência implementado em `simular_resposta_assistente()`:
+Caso a chave de API não esteja configurada ou ocorra uma exceção de rede/quota, o software aciona automaticamente um fallback local `resposta_mock`, retornando uma resposta estruturada de segurança.Essa estratégia cumpre integralmente os requisitos de robustez do projeto, garantindo que o programa nunca sofra crash na frente dos avaliadores.
+```text
+def _resposta_mock(contexto: str = "geral") -> str:
+    """
+    Centraliza o texto de resposta simulada, evitando duplicidade entre
+    os diferentes pontos onde simular_resposta_assistente() pode cair
+    no fallback local.
+    """
+    textos = {
+        "geral": (
+            "[Resposta simulada] Alerta reconhecido. Recomenda-se isolar o "
+            "módulo afetado e acionar a equipe de manutenção com "
+            "prioridade compatível ao nível informado."
+        ),
+    }
+    return textos.get(contexto, textos["geral"])
+```
+```text
+def simular_resposta_assistente(prompt: str) -> str:
+    """
+    Retorna a resposta do assistente inteligente.
+
+    Se houver uma GEMINI_API_KEY configurada e a biblioteca google-genai
+    instalada, faz a chamada real (mesmo cliente usado em main.py).
+    Caso contrário, devolve uma resposta simulada localmente — o item 2.3
+    do enunciado permite explicitamente essa simulação.
+    """
+    if _client:
+        try:
+            resposta = _client.models.generate_content(
+                model="gemini-2.5-flash", contents=prompt
+            ) 
+            return (resposta.text or "").strip()
+        except Exception as erro:  # falha de rede/quota etc. -> cai para o mock
+            return (
+                f"[IA indisponível ({erro}); resposta simulada] Alerta reconhecido "
+                "e registrado para acompanhamento do Centro de Controle."
+            )
+
+    return _resposta_mock()
+```
+
+## Exemplo de saída no terminal
+```text
+======================================================================
+               NÚCLEO COGNITIVO DA AURORA SIGER (NCAS)                
+======================================================================
+1 - Cadastrar novo módulo
+2 - Consultar registros salvos (TXT)
+3 - Adicionar registro manual (TXT)
+4 - Exibir módulos cadastrados (JSON)
+5 - Exibir alertas operacionais (JSON)
+6 - Analisar alerta operacional (validação lógica + IA)
+7 - Simular resposta do assistente inteligente
+8 - Verificar liberação de consulta a módulo (regra De Morgan)
+0 - Sair
+======================================================================
+Escolha uma opção: 6
+
+======================================================================
+     --- ANÁLISE LÓGICA DE ALERTAS E RESPOSTAS DO ASSISTENTE ---      
+======================================================================
+
+[1] Módulo: MOD-ENE-01 
+    Status             : 🔴 CRÍTICO
+    Tipo de Ocorrência : falha_critica
+    Prioridade         : ALTA
+    Descrição          : Módulo retido em órbita ou destruído durante a descida (Fase 2).
+
+    PROMPT ZERO-SHOT:
+      "Resuma em uma frase, em tom técnico e objetivo, o seguinte alerta operacional da colônia: módulo 'MOD-ENE-01', ocorrência 'falha_critica', prioridade 'alta', descrição: 'Módulo retido em órbita ou destruído durante a descida (Fase 2).'."
+
+     RESPOSTA DA IA:
+       "Módulo MOD-ENE-01 apresenta falha crítica de alta prioridade, resultando em sua retenção em órbita ou destruição durante a Fase 2 da descida."
+
+ >> Registro salvo com sucesso.
+----------------------------------------------------------------------
+
+[2] Módulo: MOD-LAB-01 
+    Status             : 🔴 CRÍTICO
+    Tipo de Ocorrência : falha_critica
+    Prioridade         : ALTA
+    Descrição          : Módulo retido em órbita ou destruído durante a descida (Fase 2).
+
+    PROMPT ZERO-SHOT:
+      "Resuma em uma frase, em tom técnico e objetivo, o seguinte alerta operacional da colônia: módulo 'MOD-LAB-01', ocorrência 'falha_critica', prioridade 'alta', descrição: 'Módulo retido em órbita ou destruído durante a descida (Fase 2).'."
+
+     RESPOSTA DA IA:
+       "**MOD-LAB-01: Falha crítica confirmada durante a Fase 2 de descida, resultando em retenção orbital ou destruição.**"
+
+ >> Registro salvo com sucesso.
+----------------------------------------------------------------------
+```
+```text
+======================================================================
+               NÚCLEO COGNITIVO DA AURORA SIGER (NCAS)                
+======================================================================
+1 - Cadastrar novo módulo
+2 - Consultar registros salvos (TXT)
+3 - Adicionar registro manual (TXT)
+4 - Exibir módulos cadastrados (JSON)
+5 - Exibir alertas operacionais (JSON)
+6 - Analisar alerta operacional (validação lógica + IA)
+7 - Simular resposta do assistente inteligente
+8 - Verificar liberação de consulta a módulo (regra De Morgan)
+0 - Sair
+======================================================================
+Escolha uma opção: 7
+
+----------------------------------------------------------------------
+           SELECIONE UM ALERTA PARA A SIMULAÇÃO DOS PROMPTS           
+======================================================================
+
+  [0] - Módulo: MOD-OXY-01 - Exemplo padrão de alerta
+  [1] - Módulo: MOD-ENE-01 — falha_critica
+  [2] - Módulo: MOD-LAB-01 — falha_critica
+======================================================================
+Digite o número da opção desejada: 2
+>> Alerta selecionado: MOD-LAB-01
+
+======================================================================
+         SIMULAÇÃO DE INTERAÇÃO COM O ASSISTENTE INTELIGENTE          
+======================================================================
+
+[1] PROMPT ZERO-SHOT (resumo de alerta):
+
+    Prompt: Resuma em uma frase, em tom técnico e objetivo, o seguinte alerta operacional da colônia: módulo 'MOD-LAB-01', ocorrência 'falha_critica', prioridade 'alta', descrição: 'Módulo retido em órbita ou destruído durante a descida (Fase 2).'.
+ 
+   Resposta: Módulo MOD-LAB-01 sofreu falha crítica de alta prioridade, resultando em sua retenção em órbita ou destruição durante a Fase 2 da descida.
+----------------------------------------------------------------------
+
+[2] PROMPT FEW-SHOT (classificação de solicitação):
+    Dica: Digite uma demanda da colônia (ex: 'Falta oxigênio no setor B','Preciso de troca de filtro' ou 'Qual a previsão do tempo?')
+  Digite uma solicitação da tripulação para classificar: previsao do tempo
+ 
+   Resposta: INFORMATIVA
+----------------------------------------------------------------------
+
+[3] PROMPT DE SAÍDA ESTRUTURADA (JSON):
+ 
+ Resposta: ```json
+{
+  "modulo": "MOD-LAB-01",
+  "critico": true,
+  "acao_recomendada": "Iniciar investigação de falha imediata, avaliar impacto na missão e planejar ações corretivas ou de substituição do módulo."
+}
+
+----------------------------------------------------------------------
+
+ >> Registro salvo com sucesso.
+```
+```text
+ >> Registro salvo com sucesso.
+
+======================================================================
+               NÚCLEO COGNITIVO DA AURORA SIGER (NCAS)                
+======================================================================
+1 - Cadastrar novo módulo
+2 - Consultar registros salvos (TXT)
+3 - Adicionar registro manual (TXT)
+4 - Exibir módulos cadastrados (JSON)
+5 - Exibir alertas operacionais (JSON)
+6 - Analisar alerta operacional (validação lógica + IA)
+7 - Simular resposta do assistente inteligente
+8 - Verificar liberação de consulta a módulo (regra De Morgan)
+0 - Sair
+======================================================================
+Escolha uma opção: 8
+
+======================================================================
+                      VALIDAÇÃO LÓGICA DE ACESSO                      
+======================================================================
+Usuário está autorizado? (s/n): s
+Módulo está ativo? (s/n): n
+
+>> LIBERAR = AUTORIZADO AND ATIVO -> False
+>> NAO LIBERAR (De Morgan) = NOT AUTORIZADO OR NOT ATIVO -> True
+>> Consulta BLOQUEADA.
+======================================================================
+```
+
+
+</details>
+<br>
+
+
 ## Tecnologias Utilizadas
 
 - Python 3.9+
-- Estruturas condicionais
-- Estruturas de repetição
+- Estruturas condicionais e de repetição
 - Listas, filas e pilhas
 - Algoritmos de busca e ordenação
 - Regressão linear
 - Organização modular em arquivos Python
 - Grafos e matriz de adjacência
 - Algoritmos de grafos (BFS, DFS e Dijkstra)
-- Estruturas de dados em Python (dicionários, tuplas, listas)
+- Lógica Booleana, Teorema da Simplificação e Leis de De Morgan
+- Engenharia de Prompts (Zero-Shot, Few-Shot, Structured Outputs)
+- Integração com IA Generativa (Google Gemini API via google-genai) e tratamento de Fallback (Mock)
+- Manipulação de arquivos de Texto (.txt) e Estruturados (.json)
 - Simulação e interação via menu em terminal
-- Integração entre microsserviços em pipeline
+- Integração entre microsserviços em pipeline unificado (main.py)
 
 <br>
 
@@ -754,15 +1054,22 @@ PBL-Aurora/
 ├── .gitignore                      # Regras de exclusão do Git
 ├── README.md                       # Documentação do projeto
 ├── requirements.txt                # Dependências do projeto
+├── dados/
+│   ├── dados_colonia.json          # Base de dados estruturada (JSON)
+│   └── registros_colonia.txt       # Arquivo de logs e eventos (TXT)
 ├── codigo/
 │   ├── fase1.py                    # Simulação de telemetria e validação de lançamento
 │   ├── fase2.py                    # MGPEB: gestão de pouso e estabilização da base
 │   ├── fase3.py                    # Sistema de funcionamento inteligente da colônia
 │   ├── fase4.py                    # SIGIC: gerenciamento da infraestrutura da colônia
-│   └── main.py                     # Orquestrador Central e Integração IA
+│   ├── codigo_fonte.py             # NCAS: Núcleo Cognitivo, Lógica Booleana e IA (Fase 5)
+│   └── main.py                     # Orquestrador Central e Pipeline Integrado
 └── Documentos/
     ├── rede_colonia.pdf            # Diagrama visual da rede da colônia
     └── relatorio_pbl_fase4.pdf     # Documentação complementar / relatório técnico da Fase 4
+    ├── regras_logicas.pdf          # Documentação da modelagem booleana e De Morgan (Fase 5)
+    └── prompts_utilizados.pdf      # Documentação de Engenharia de Prompts (Fase 5)
+    └── estrutura_de_dados_NCAS.pdf # Justificativa de Armazenamento e Fluxo de Dados (Fase 5)
 ```
 
 <br>
@@ -773,7 +1080,7 @@ PBL-Aurora/
 | **Juan de Lucas Frois** | RM563260 |
 | **Flávia Roberta Pennachin** | RM561860 |
 | **Pedro Valente Toledo** | RM570394 |
-| **Renan Mano Otero** | RM573615 |
+
 
 **Instituição:** FIAP - Faculdade de Informática e Administração Paulista\
 **Turma:** 1CCOA-2026\
