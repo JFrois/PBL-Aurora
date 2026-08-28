@@ -314,7 +314,7 @@ def simular_resposta_assistente(prompt: str) -> str:
             resposta = _client.models.generate_content(
                 model="gemini-2.5-flash", contents=prompt
             ) 
-            return resposta.text.strip()
+            return (resposta.text or "").strip()
         except Exception as erro:  # falha de rede/quota etc. -> cai para o mock
             return (
                 f"[IA indisponível ({erro}); resposta simulada] Alerta reconhecido "
@@ -343,7 +343,8 @@ def analisar_alerta_operacional() -> None:
         status = "🔴 CRÍTICO" if critico else "🟢 NÃO CRÍTICO"
         modulo_nome = a.get('modulo', 'Desconhecido')
         
-        print(f"\n[{i}] Módulo: {modulo_nome:<20} | Status: {status}")
+        print(f"\n[{i}] Módulo: {modulo_nome} ")
+        print(f"    Status             : {status}")
         print(f"    Tipo de Ocorrência : {a.get('tipo_ocorrencia', 'N/A')}")
         print(f"    Prioridade         : {a.get('prioridade', 'N/A').upper()}")
         print(f"    Descrição          : {a.get('mensagem', 'N/A')}")
