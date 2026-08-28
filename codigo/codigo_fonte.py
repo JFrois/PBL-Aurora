@@ -83,20 +83,20 @@ def gravar_registro(mensagem: str, tipo: str = "LOG") -> None:
     linha = f"[{timestamp}] [{tipo}] {mensagem}\n"
     with open(ARQUIVO_REGISTROS, "a", encoding="utf-8") as arquivo:
         arquivo.write(linha)
-    print(">> Registro salvo com sucesso.")
+    print("\n >> Registro salvo com sucesso.")
 
 
 def ler_registros() -> None:
     """Lê e exibe todo o conteúdo do arquivo de registros (modo read)."""
     if not os.path.exists(ARQUIVO_REGISTROS):
-        print(f">> Nenhum registro encontrado ainda em: {ARQUIVO_REGISTROS}")
+        print(f"\n >> Nenhum registro encontrado ainda em: {ARQUIVO_REGISTROS}")
         return
 
     with open(ARQUIVO_REGISTROS, "r", encoding="utf-8") as arquivo:
         linhas = [linha.strip() for linha in arquivo.readlines() if linha.strip()]
 
     if not linhas:
-        print(">> O arquivo de registros existe, mas está vazio.")
+        print("\n >> O arquivo de registros existe, mas está vazio.")
         return
 
     print(f"\n--- REGISTROS DA COLÔNIA ({len(linhas)} entradas) ---")
@@ -120,8 +120,8 @@ def ler_registros() -> None:
 def carregar_dados_json() -> dict:
     """Carrega os dados estruturados (módulos e alertas) do arquivo JSON."""
     if not os.path.exists(ARQUIVO_DADOS):
-        print(f">> Arquivo de dados JSON não encontrado em: {ARQUIVO_DADOS}")
-        print(">> Iniciando estrutura vazia.")
+        print(f"\n >> Arquivo de dados JSON não encontrado em: {ARQUIVO_DADOS}")
+        print("\n >> Iniciando estrutura vazia.")
         return {"modulos": [], "alertas": []}
 
     with open(ARQUIVO_DADOS, "r", encoding="utf-8") as arquivo:
@@ -132,7 +132,7 @@ def salvar_dados_json(dados: dict) -> None:
     """Salva a estrutura completa de dados (módulos e alertas) no arquivo JSON."""
     with open(ARQUIVO_DADOS, "w", encoding="utf-8") as arquivo:
         json.dump(dados, arquivo, indent=2, ensure_ascii=False)
-    print(">> Dados JSON atualizados com sucesso.")
+    print("\n >> Dados JSON atualizados com sucesso.")
 
 
 def exibir_modulos() -> None:
@@ -141,7 +141,7 @@ def exibir_modulos() -> None:
     modulos = dados.get("modulos", [])
 
     if not modulos:
-        print(">> Nenhum módulo cadastrado.")
+        print("\n >> Nenhum módulo cadastrado.")
         return
 
     print(f"\n--- MÓDULOS DA COLÔNIA ({len(modulos)} cadastrados) ---")
