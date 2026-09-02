@@ -55,6 +55,91 @@ except ImportError:
     _client = None
 
 
+# ------------------------------------------------------------------------
+# FUNÇÕES AUXILIARES DE VALIDAÇÃO E ERRO
+# ------------------------------------------------------------------------
+def validar_nome_modulo(nome: str) -> bool:
+    """Valida se o nome do módulo é válido (não vazio e tamanho razoável)."""
+    return bool(nome and len(nome.strip()) >= 2 and len(nome) <= 50)
+
+
+def validar_tipo_modulo(tipo: str) -> bool:
+    """Valida se o tipo do módulo é válido."""
+    tipos_validos = {"habitacao", "energia", "laboratorio", "comunicacao",
+                     "controle", "logistica", "medico", "agricultura", "infraestrutura"}
+    return bool(tipo and tipo.lower() in tipos_validos)
+
+
+def validar_status_modulo(status: str) -> bool:
+    """Valida se o status do módulo é válido."""
+    status_validos = {"operacional", "inativo", "manutencao"}
+    return bool(status and status.lower() in status_validos)
+
+
+def validar_consumo_kw(consumo: float) -> bool:
+    """Valida se o consumo em kW está dentro de limites razoáveis."""
+    return isinstance(consumo, (int, float)) and 0 <= consumo <= 10000  # 0 a 10MW
+
+
+def validar_dados_modulo(nome: str, tipo: str, status: str, consumo: float) -> tuple[bool, str]:
+    """
+    Valida todos os dados de um módulo.
+    Retorna (é_válido, mensagem_de_erro).
+    """
+    if not validar_nome_modulo(nome):
+        return False, "Nome do módulo inválido (deve ter entre 2 e 50 caracteres)"
+
+    if not validar_tipo_modulo(tipo):
+        return False, "Tipo de módulo inválido"
+
+    if not validar_status_modulo(status):
+        return False, "Status inválido (use: operacional, inativo ou manutencao)"
+
+    if not validar_consumo_kw(consumo):
+        return False, "Consumo deve ser um número entre 0 e 10000 kW"
+
+    return True, ""
+
+
+def carregar_dados_com_seguranca() -> dict:
+    """
+    Carrega os dados JSON com tratamento de erros.
+    Retorna os dados ou uma estrutura vazia em caso de erro.
+    """
+    try:
+        if not os.path.exists(ARQUIVO_DADOS):
+            return {"modulos": [], "alertas": []}
+
+        with open(ARQUIVO_DADOS, "r", encoding="utf-8") as arquivo:
+            dados = json.load(arquivo)
+
+        # Garante que a estrutura esperada existe
+        if not isinstance(dados, dict):
+            return {"modulos": [], "alertas": []}
+
+        dados.setdefault("modulos", [])
+        dados.setdefault("alertas", [])
+
+        return dados
+    except (json.JSONDecodeError, IOError, OSError) as e:
+        gravar_registro(f"Erro ao carregar dados JSON: {str(e)}", tipo="ERRO")
+        return {"modulos": [], "alertas": []}
+
+
+def salvar_dados_com_seguranca(dados: dict) -> bool:
+    """
+    Salva os dados JSON com tratamento de erros.
+    Retorna True se salvou com sucesso, False caso contrário.
+    """
+    try:
+        with open(ARQUIVO_DADOS, "w", encoding="utf-8") as arquivo:
+            json.dump(dados, arquivo, indent=2, ensure_ascii=False)
+        return True
+    except (IOError, OSError) as e:
+        gravar_registro(f"Erro ao salvar dados JSON: {str(e)}", tipo="ERRO")
+        return False
+
+
 def imprimir_quadro(titulo: str, linhas: list) -> None:
     """Exibe um bloco de texto formatado no terminal (padrão usado nas outras fases)."""
     largura = 70
@@ -137,7 +222,7 @@ def salvar_dados_json(dados: dict) -> None:
 
 def exibir_modulos() -> None:
     """Exibe todos os módulos cadastrados no JSON."""
-    dados = carregar_dados_json()
+    dados = carregar_dados_com_seguranca()
     modulos = dados.get("modulos", [])
 
     if not modulos:
@@ -147,10 +232,19 @@ def exibir_modulos() -> None:
     print(f"\n--- MÓDULOS DA COLÔNIA ({len(modulos)} cadastrados) ---")
     consumo_total = 0.0
     for i, m in enumerate(modulos, start=1):
-        consumo_total += float(m.get("consumo_kw", 0))
+        # Garante que o consumo é um número válido
+        try:
+            consumo = float(m.get("consumo_kw", 0))
+            if consumo < 0:
+                consumo = 0.0
+        except (ValueError, TypeError):
+            consumo = 0.0
+        consumo_total += consumo
         print(
-            f"  {i:>2}. {m['nome']:<25} | tipo: {m['tipo']:<15} | "
-            f"status: {m['status']:<12} | consumo: {m['consumo_kw']:>6.1f} kW"
+            f"  {i:>2}. {m.get('nome', 'Desconhecido'):<25} | "
+            f"tipo: {m.get('tipo', 'N/A'):<15} | "
+            f"status: {m.get('status', 'N/A'):<12} | "
+            f"consumo: {consumo:>6.1f} kW"
         )
     print("-" * 70)
     print(f"  Consumo total estimado: {consumo_total:.1f} kW")
@@ -159,7 +253,7 @@ def exibir_modulos() -> None:
 
 def exibir_alertas() -> None:
     """Exibe todos os alertas operacionais cadastrados no JSON."""
-    dados = carregar_dados_json()
+    dados = carregar_dados_com_seguranca()
     alertas = dados.get("alertas", [])
 
     if not alertas:
@@ -170,35 +264,50 @@ def exibir_alertas() -> None:
     for i, a in enumerate(alertas, start=1):
         marcador = "🔴" if validar_alerta_critico(a) else "🟡"
         print(
-            f"  {i:>2}. {marcador} [{a['prioridade'].upper()}] {a['modulo']} — "
-            f"{a['tipo_ocorrencia']}: {a['mensagem']} ({a['data']})"
+            f"  {i:>2}. {marcador} [{a.get('prioridade', 'N/A').upper()}] {a.get('modulo', 'Desconhecido')} — "
+            f"{a.get('tipo_ocorrencia', 'N/A')}: {a.get('mensagem', 'N/A')} ({a.get('data', 'N/A')})"
         )
     print("-" * 70)
 
 
 def cadastrar_modulo() -> None:
     """Cadastra um novo módulo interativamente e persiste no JSON."""
-    dados = carregar_dados_json()
+    dados = carregar_dados_com_seguranca()
 
+    print("\n--- CADASTRO DE NOVO MÓDULO ---")
     nome = input("Nome do módulo: ").strip()
     tipo = input("Tipo (ex: habitacao, energia, laboratorio): ").strip()
     status = input("Status (operacional/inativo/manutencao): ").strip()
-    try:
-        consumo = float(input("Consumo em kW: ").strip())
-    except ValueError:
-        consumo = 0.0
+
+    while True:
+        try:
+            consumo_input = input("Consumo em kW: ").strip()
+            consumo = float(consumo_input) if consumo_input else 0.0
+            break
+        except ValueError:
+            print(">> Por favor, digite um número válido para o consumo.")
+
+    # Validação dos dados
+    eh_valido, mensagem_erro = validar_dados_modulo(nome, tipo, status, consumo)
+    if not eh_valido:
+        print(f">> Erro no cadastro: {mensagem_erro}")
+        gravar_registro(f"Tentativa falha de cadastro de módulo: {mensagem_erro}", tipo="ERRO")
+        return
 
     novo_modulo = {
         "nome": nome,
-        "tipo": tipo,
-        "status": status,
+        "tipo": tipo.lower(),  # Normaliza para lowercase
+        "status": status.lower(),  # Normaliza para lowercase
         "consumo_kw": consumo,
         "ultima_manutencao": datetime.now().strftime("%Y-%m-%d"),
     }
 
     dados.setdefault("modulos", []).append(novo_modulo)
-    salvar_dados_json(dados)
-    gravar_registro(f"Novo módulo cadastrado: {nome} ({status})", tipo="CADASTRO")
+    if salvar_dados_com_seguranca(dados):
+        gravar_registro(f"Novo módulo cadastrado: {nome} ({status})", tipo="CADASTRO")
+        print("\n >> Módulo cadastrado com sucesso.")
+    else:
+        print("\n >> Erro ao salvar os dados do módulo.")
 
 
 # ==============================================================================
@@ -478,6 +587,16 @@ def verificar_liberacao_consulta() -> None:
     )
 
 
+def adicionar_registro_manual() -> None:
+    """Adiciona um registro manual ao arquivo de registros (TXT)."""
+    mensagem = input("Digite o registro a ser salvo: ").strip()
+    if mensagem:
+        gravar_registro(mensagem, tipo="MANUAL")
+        print("\n >> Registro manual salvo com sucesso.")
+    else:
+        print("\n >> Registro vazio não foi salvo.")
+
+
 # ==============================================================================
 # BLOCO 4 — MENU DE NAVEGAÇÃO (execução interativa/standalone)
 # ==============================================================================
@@ -502,26 +621,24 @@ def exibir_menu() -> None:
 def main() -> None:
     """Loop interativo — usado quando o arquivo é executado diretamente."""
     gravar_registro("Sistema NCAS iniciado.", tipo="SISTEMA")
- 
+
     acoes = {
         "1": cadastrar_modulo,
         "2": ler_registros,
+        "3": adicionar_registro_manual,
         "4": exibir_modulos,
         "5": exibir_alertas,
         "6": analisar_alerta_operacional,
         "7": simular_interacao_assistente,
         "8": verificar_liberacao_consulta,
     }
- 
+
     try:
         while True:
             exibir_menu()
             opcao = input("Escolha uma opção: ").strip()
- 
-            if opcao == "3":
-                mensagem = input("Digite o registro a ser salvo: ").strip()
-                gravar_registro(mensagem, tipo="MANUAL")
-            elif opcao == "0":
+
+            if opcao == "0":
                 gravar_registro("Sistema NCAS encerrado.", tipo="SISTEMA")
                 print(">> Encerrando o Núcleo Cognitivo. Até logo!")
                 break
