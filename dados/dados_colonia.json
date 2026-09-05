@@ -5,14 +5,14 @@
       "tipo": "infraestrutura",
       "status": "operacional",
       "consumo_kw": 0.0,
-      "ultima_manutencao": "2026-08-22"
+      "ultima_manutencao": "2026-09-05"
     },
     {
       "nome": "Produção de Oxigênio",
       "tipo": "infraestrutura",
       "status": "operacional",
       "consumo_kw": 0.0,
-      "ultima_manutencao": "2026-08-22"
+      "ultima_manutencao": "2026-09-05"
     }
   ],
   "alertas": [
@@ -21,14 +21,14 @@
       "tipo_ocorrencia": "falha_critica",
       "prioridade": "alta",
       "mensagem": "Módulo retido em órbita ou destruído durante a descida (Fase 2).",
-      "data": "2026-08-22"
+      "data": "2026-09-05"
     },
     {
-      "modulo": "MOD-LAB-01",
+      "modulo": "MOD-HAB-01",
       "tipo_ocorrencia": "falha_critica",
       "prioridade": "alta",
       "mensagem": "Módulo retido em órbita ou destruído durante a descida (Fase 2).",
-      "data": "2026-08-22"
+      "data": "2026-09-05"
     }
   ]
 }

@@ -46,6 +46,7 @@ except ImportError:
     pass
 
 _API_KEY = os.getenv("GEMINI_API_KEY")
+_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
 
 try:
     from google import genai
@@ -421,7 +422,7 @@ def simular_resposta_assistente(prompt: str) -> str:
     if _client:
         try:
             resposta = _client.models.generate_content(
-                model="gemini-2.5-flash", contents=prompt
+                model=_GEMINI_MODEL, contents=prompt
             ) 
             return (resposta.text or "").strip()
         except Exception as erro:  # falha de rede/quota etc. -> cai para o mock

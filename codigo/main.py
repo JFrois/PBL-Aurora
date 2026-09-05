@@ -20,6 +20,7 @@ import codigo_fonte as fase5  # Importa o módulo da Fase 5 (NCAS) e as funçõe
 # ==============================================================================
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
+gemini_model = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
 
 try:
     from google import genai
@@ -122,7 +123,7 @@ def gerar_resumo_fase_ia(fase_num, dados):
     )
     try:
         resposta = client.models.generate_content(
-            model="gemini-2.5-flash", contents=prompt
+            model=gemini_model, contents=prompt
         )
         return resposta.text.strip()
     except Exception as e:
@@ -179,7 +180,7 @@ def gerar_resumo_final_ia():
 
     try:
         resposta = client.models.generate_content(
-            model="gemini-2.5-flash", contents=prompt
+            model=gemini_model, contents=prompt
         )
         print("-" * 70)
         print(" BOLETIM DO DIRETOR DE VOO ".center(70))
