@@ -9,11 +9,11 @@ import time
 from dotenv import load_dotenv
 
 # Importação dos módulos das fases
-from fase1 import executar_fase1
-from fase2 import executar_fase2
-from fase3 import executar_fase3
-from fase4 import executar_fase4
-import codigo.fase5 as fase5  # Importa o módulo da Fase 5 (NCAS) e as funções de log
+from src.fases_anteriores.fase1 import executar_fase1
+from src.fases_anteriores.fase2 import executar_fase2
+from src.fases_anteriores.fase3 import executar_fase3
+from src.fases_anteriores.fase4 import executar_fase4
+import src.fases_anteriores.fase5 as fase5
 
 # ==============================================================================
 # CONFIGURAÇÃO DE IA
@@ -122,9 +122,7 @@ def gerar_resumo_fase_ia(fase_num, dados):
         "e qual foi o resultado final desta fase. Não use formatação exagerada."
     )
     try:
-        resposta = client.models.generate_content(
-            model=gemini_model, contents=prompt
-        )
+        resposta = client.models.generate_content(model=gemini_model, contents=prompt)
         return resposta.text.strip()
     except Exception as e:
         return f"[Erro IA] Não foi possível gerar resumo: {e}"
@@ -179,9 +177,7 @@ def gerar_resumo_final_ia():
     )
 
     try:
-        resposta = client.models.generate_content(
-            model=gemini_model, contents=prompt
-        )
+        resposta = client.models.generate_content(model=gemini_model, contents=prompt)
         print("-" * 70)
         print(" BOLETIM DO DIRETOR DE VOO ".center(70))
         print("-" * 70)
