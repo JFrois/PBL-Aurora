@@ -354,8 +354,12 @@ Reavaliar perfis de reentrada dos demais módulos e janelas de pouso conforme da
 
 ### 🚀 Fase 3: Sistema de Funcionamento Inteligente da Colônia
 Representa o funcionamento operacional da base após o pouso dos módulos, analisando consumo, desempenho e comportamento dos sistemas internos da colônia.
+
 <details>
-<summary>Clique para ver a fase 3 em detalhe:</summary><br>
+<summary>
+Clique para ver a fase 3 em detalhe:
+</summary>
+<br>
 
 ## Visão Geral da Fase
 A Fase 3 concentra a lógica de operação da colônia, monitorando o funcionamento dos módulos já ativados e avaliando condições de consumo, desempenho e equilíbrio energético da base.
@@ -501,9 +505,8 @@ INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA
 -> A gestão de energia otimizada é um marco crítico para a sobrevivência a longo prazo da missão.
 -> Recomenda-se monitorização contínua para otimização e validação dos modelos de desempenho.
 ===========================================================================
-```
+````
 </details>
-
 <br>
 
 ### 🚀 Fase 4: Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia (SIGIC)
