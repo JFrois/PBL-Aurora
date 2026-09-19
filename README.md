@@ -991,85 +991,114 @@ Módulo está ativo? (s/n): n
 <br>
 
 ## Configuração e Instalação
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
 
 ### Pré-requisitos
-- [Python 3.9+](https://www.python.org/downloads/)
-- Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey), necessária apenas para a execução integrada com IA
-<br>
+- [Python 3.12+](https://www.python.org/downloads/) (ou gestor de ambientes [uv](https://docs.astral.sh/uv/))
+- Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey) *(opcional; o sistema possui fallback local)*
 
-### Passo a Passo Para Executar
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/JFrois/PBL-Aurora.git
-    cd PBL-Aurora
-    ```
+### Passo a Passo
 
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    # Para Windows
-    python -m venv venv
-    .\venv\Scripts\activate
+1. **Clonar o repositório:**
+   ```bash
+   git clone [https://github.com/JFrois/PBL-Aurora.git](https://github.com/JFrois/PBL-Aurora.git)
+   cd PBL-Aurora
+   ```
 
-    # Para macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+2. **Criar e ativar o ambiente virtual:**
+   ```bash
+   # Com uv (recomendado)
+   uv venv
+   source .venv/bin/activate  # macOS/Linux
+   # .venv\Scripts\activate   # Windows
 
-3.  **Instale as dependências:**
-    O projeto utiliza um arquivo `requirements.txt` para gerenciar as bibliotecas.
-    ```bash
-    pip install -r requirements.txt
-    ```
+   # Ou com venv nativo
+   python3 -m venv venv
+   source venv/bin/activate   # macOS/Linux
+   # .\venv\Scripts\activate  # Windows
+   ```
 
-4.  **Configure as variáveis de ambiente:**
-    - Crie um arquivo chamado `.env` na raiz do projeto.
-    - Adicione sua chave da API do Gemini, como no exemplo abaixo:
-    ```
-    GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
-    ``` 
+3. **Instalar dependências:**
+   ```bash
+   # Usando uv:
+   uv sync
 
-### Executando o projeto
+   # Ou usando pip:
+   pip install -r requirements.txt
+   ```
 
-O projeto possui duas formas principais de execução:
+4. **Configuração de Variáveis de Ambiente:**
+   Copie o ficheiro de exemplo e insira a sua credencial:
+   ```bash
+   cp .env.example .env
+   ```
+   Abra o ficheiro `.env` e configure:
+   ```env
+   GEMINI_API_KEY="SUA_CHAVE_AQUI"
+   GEMINI_MODEL="gemini-3.1-flash-lite"
+   ```
 
-- **Para executar a simulação integrada, digite no console:**
-  ```bash
-  python codigo/main.py
-  ```
+---
 
-- **Para executar a simulação isolada, digite no console:**
-  ```bash
-  python codigo/fase4.py
-  ```
+## Execução
 
-Observação: o arquivo requirements.txt é utilizado para o projeto integrado, especialmente para as fases com apoio de IA. A Fase 4/SIGIC pode ser executada isoladamente com recursos básicos de Python pelo arquivo codigo/fase4.py.
+O sistema é centralizado através do orquestrador principal de estados da missão:
 
-<br>
+```bash
+python main.py
+```
+
+Também é possível inspecionar módulos e testes de forma isolada:
+```bash
+# Execução da suíte de testes unitários:
+pytest
+
+# Teste direto do Ncleo Cognitivo (NCAS - Fase 5):
+python -m src.fases_anteriores.fase5
+
+# Teste da infraestrutura de grafos (SIGIC - Fase 4):
+python -m src.fases_anteriores.fase4
+```
+
+---
 
 ## Estrutura do Projeto
+
 ```plaintext
 PBL-Aurora/
-├── .env                            # Chave de segurança da IA
-├── .gitignore                      # Regras de exclusão do Git
-├── README.md                       # Documentação do projeto
-├── requirements.txt                # Dependências do projeto
-├── dados/
-│   ├── dados_colonia.json          # Base de dados estruturada (JSON)
-│   └── registros_colonia.txt       # Arquivo de logs e eventos (TXT)
-├── codigo/
-│   ├── fase1.py                    # Simulação de telemetria e validação de lançamento
-│   ├── fase2.py                    # MGPEB: gestão de pouso e estabilização da base
-│   ├── fase3.py                    # Sistema de funcionamento inteligente da colônia
-│   ├── fase4.py                    # SIGIC: gerenciamento da infraestrutura da colônia
-│   ├── codigo_fonte.py             # NCAS: Núcleo Cognitivo, Lógica Booleana e IA (Fase 5)
-│   └── main.py                     # Orquestrador Central e Pipeline Integrado
-└── Documentos/
-    ├── rede_colonia.pdf            # Diagrama visual da rede da colônia
-    └── relatorio_pbl_fase4.pdf     # Documentação complementar / relatório técnico da Fase 4
-    ├── regras_logicas.pdf          # Documentação da modelagem booleana e De Morgan (Fase 5)
-    └── prompts_utilizados.pdf      # Documentação de Engenharia de Prompts (Fase 5)
-    └── estrutura_de_dados_NCAS.pdf # Justificativa de Armazenamento e Fluxo de Dados (Fase 5)
+├── .env.example                               # Modelo de credenciais
+├── .gitignore                                 # Regras de exclusão do Git
+├── README.md                                  # Documentação central do projeto
+├── pyproject.toml                             # Configuração moderna de empacotamento
+├── requirements.txt                           # Dependências do projeto
+├── uv.lock                                    # Lockfile de resolução exata de dependências
+├── main.py                                    # Orquestrador central e máquina de estados
+│
+├── assets/
+│   └── fase6/                                 # Gráficos e evidências visuais
+│
+├── data/
+│   ├── raw/                                   # Dados brutos de telemetria
+│   └── processed/                             # Dados processados e persistidos
+│       ├── dados_aurora_siger.csv
+│       ├── dados_colonia.json
+│       └── registros_colonia.txt
+│
+├── docs/                                      # Relatórios técnicos e diagramas formais
+│   ├── analise_tecnica_organizacao_computacional.pdf
+│   ├── estrutura_de_dados_NCAS.pdf
+│   ├── prompts_utilizados.pdf
+│   ├── rede_colonia.pdf
+│   └── reflexao_teorica_etica_diversidade.pdf
+│
+└── src/
+    ├── core/                                  # Utilitários partilhados
+    ├── fases_anteriores/                      # Módulos operacionais das Fases 1 a 5
+    │   ├── fase1.py                           # Validação de telemetria e pré-lançamento
+    │   ├── fase2.py                           # Pouso orbital e gestão de contingência
+    │   ├── fase3.py                           # Balanço de energia e regressão linear
+    │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
+    │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
+    └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
 ```
 
 <br>

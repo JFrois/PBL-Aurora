@@ -1,10 +1,24 @@
-# Ignora o arquivo de variáveis de ambiente (Senhas e Chaves API)
+# Ambientes virtuais
+venv/
+.env/
+env/
+ENV/
 .env
 
-# Ignora a pasta do ambiente virtual Python
-venv/
+# Byte-code e cache Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.pytest_cache/
 
-# macOS
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Arquivos de sistema / IDEs
 .DS_Store
+.vscode/
+.idea/
+
+
+# Saídas temporárias ou logs grandes
+*.log
