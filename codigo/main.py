@@ -13,7 +13,7 @@ from fase1 import executar_fase1
 from fase2 import executar_fase2
 from fase3 import executar_fase3
 from fase4 import executar_fase4
-import codigo_fonte as fase5  # Importa o módulo da Fase 5 (NCAS) e as funções de log
+import codigo.fase5 as fase5  # Importa o módulo da Fase 5 (NCAS) e as funções de log
 
 # ==============================================================================
 # CONFIGURAÇÃO DE IA
