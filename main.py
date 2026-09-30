@@ -2,18 +2,27 @@
 # PROJETO AURORA SIGER - ORQUESTRADOR CENTRAL E MÁQUINA DE ESTADOS
 # Interface Interativa CLI, Log Global e Sumarização via IA
 # ==============================================================================
-
 import os
 import json
 import time
 from dotenv import load_dotenv
 
+# Importação dos utilitários globais
+from src.core.utils import limpar_tela, pausar, exibir_cabecalho
+
 # Importação dos módulos das fases
-from fase1 import executar_fase1
-from fase2 import executar_fase2
-from fase3 import executar_fase3
-from fase4 import executar_fase4
-import codigo_fonte as fase5  # Importa o módulo da Fase 5 (NCAS) e as funções de log
+from src.fases_anteriores.fase1 import executar_fase1
+from src.fases_anteriores.fase2 import executar_fase2
+from src.fases_anteriores.fase3 import executar_fase3
+from src.fases_anteriores.fase4 import executar_fase4
+import src.fases_anteriores.fase5 as fase5
+
+# Importação da Fase 6 (Analista 1)
+from src.fase6_scic.dados import gerar_dataset_telemetria, salvar_telemetria_csv
+from src.fase6_scic.hardware import (
+    diagnosticar_circuito,
+    decodificar_registrador_telemetria,
+)
 
 # ==============================================================================
 # CONFIGURAÇÃO DE IA
@@ -60,6 +69,12 @@ estado_projeto = {
     5: {
         "status": "Não iniciada",
         "nome": "NCAS — Núcleo Cognitivo",
+        "resultado": None,
+        "resumo_ia": "",
+    },
+    6: {
+        "status": "Não iniciada",
+        "nome": "SCIC — Sistema Computacional e Hardware",
         "resultado": None,
         "resumo_ia": "",
     },
@@ -122,9 +137,7 @@ def gerar_resumo_fase_ia(fase_num, dados):
         "e qual foi o resultado final desta fase. Não use formatação exagerada."
     )
     try:
-        resposta = client.models.generate_content(
-            model=gemini_model, contents=prompt
-        )
+        resposta = client.models.generate_content(model=gemini_model, contents=prompt)
         return resposta.text.strip()
     except Exception as e:
         return f"[Erro IA] Não foi possível gerar resumo: {e}"
@@ -179,9 +192,7 @@ def gerar_resumo_final_ia():
     )
 
     try:
-        resposta = client.models.generate_content(
-            model=gemini_model, contents=prompt
-        )
+        resposta = client.models.generate_content(model=gemini_model, contents=prompt)
         print("-" * 70)
         print(" BOLETIM DO DIRETOR DE VOO ".center(70))
         print("-" * 70)
@@ -380,6 +391,63 @@ def menu_fase5():
             break
 
 
+def menu_fase6():
+    if not verificar_dependencias([1, 2, 3, 4, 5]):
+        return
+    while True:
+        exibir_cabecalho("FASE 6 — SCIC (HARDWARE E DADOS)")
+        print(f"Status atual: {estado_projeto[6]['status']}\n")
+        print("[1] Gerar e Persistir Dataset de Telemetria (CSV)")
+        print("[2] Executar Diagnóstico de Circuito Elétrico (Lei de Ohm)")
+        print("[3] Decodificar Registrador Hexadecimal")
+        print("[0] Voltar ao Menu Principal")
+
+        op = input("\nEscolha uma opção: ").strip()
+        if op == "1":
+            limpar_tela()
+            print(">> Gerando dataset sintético de telemetria marciana...")
+            df = gerar_dataset_telemetria(amostras=100)
+            caminho = salvar_telemetria_csv(df)
+            print(f">> Dataset gerado e salvo com sucesso em:\n   {caminho}")
+            estado_projeto[6]["status"] = "Concluída"
+            fase5.gravar_registro(
+                "Fase 6 (SCIC - Dados) executada com sucesso.", "FASE_6"
+            )
+            pausar()
+        elif op == "2":
+            limpar_tela()
+            print("--- DIAGNÓSTICO DE HARDWARE ---")
+            try:
+                v = float(input("Tensão (V) [ex: 220]: ") or 220.0)
+                i = float(input("Corrente (A) [ex: 12.5]: ") or 12.5)
+                limite = float(
+                    input("Limite Térmico de Potência (W) [ex: 3000]: ") or 3000.0
+                )
+                res = diagnosticar_circuito(v, i, limite)
+                print(f"\nResultado da Análise:")
+                for k, val in res.items():
+                    print(f"  > {k}: {val}")
+            except ValueError as e:
+                print(f"[!] Erro nos valores informados: {e}")
+            pausar()
+        elif op == "3":
+            limpar_tela()
+            hex_input = input(
+                "Digite o valor do registrador em Hex (ex: 0x2A ou FF): "
+            ).strip()
+            try:
+                res = decodificar_registrador_telemetria(hex_input)
+                print(f"\nDecodificação de Registrador:")
+                print(f"  > Hexadecimal : {res['hex']}")
+                print(f"  > Decimal     : {res['decimal']}")
+                print(f"  > Binário     : {res['binario']}")
+            except Exception as e:
+                print(f"[!] Erro ao decodificar: {e}")
+            pausar()
+        elif op == "0":
+            break
+
+
 # ==============================================================================
 # MENU PRINCIPAL (ORQUESTRADOR)
 # ==============================================================================
@@ -396,15 +464,13 @@ def menu_principal():
         print("============================================================")
 
         # Desenha os status de forma visual
-        for i in range(1, 6):
+        for i in range(1, 7):
             status = estado_projeto[i]["status"]
-            if status == "Concluída":
-                simbolo = "✓"
-            elif status == "Em andamento":
-                simbolo = "→"
-            else:
-                simbolo = "○"
-
+            simbolo = (
+                "✅"
+                if status == "Concluída"
+                else ("⏳" if status == "Em andamento" else "⭕")
+            )
             print(f" [{i}] Fase {i} — {estado_projeto[i]['nome']}")
             print(f"     Status: {simbolo} {status}\n")
 
@@ -438,6 +504,10 @@ def menu_principal():
             if estado_projeto[5]["status"] != "Concluída":
                 estado_projeto[5]["status"] = "Em andamento"
             menu_fase5()
+        elif op == "6":
+            if estado_projeto[6]["status"] != "Concluída":
+                estado_projeto[6]["status"] = "Em andamento"
+            menu_fase6()
         elif op == "S":
             gerar_resumo_final_ia()
         elif op == "X":

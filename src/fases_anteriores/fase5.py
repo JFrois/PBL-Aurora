@@ -29,7 +29,7 @@ from datetime import datetime
 # arquivos em ../dados/, independentemente da pasta atual do terminal.
 # ------------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DADOS_DIR = os.path.normpath(os.path.join(BASE_DIR, "..", "dados"))
+DADOS_DIR = os.path.normpath(os.path.join(BASE_DIR, "..", "..", "data", "processed"))
 ARQUIVO_REGISTROS = os.path.join(DADOS_DIR, "registros_colonia.txt")
 ARQUIVO_DADOS = os.path.join(DADOS_DIR, "dados_colonia.json")
 
