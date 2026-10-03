@@ -76,7 +76,13 @@ def decodificar_registrador_telemetria(hex_str: str) -> Dict[str, Union[int, str
     if limpo.startswith("0x"):
         limpo = limpo[2:]
 
-    valor_dec = int(limpo, 16)
+    try:
+        valor_dec = int(limpo, 16)
+    except ValueError:
+        raise ValueError(
+            f"O valor introduzido ('{hex_str}') não é um hexadecimal válido."
+        )
+
     return {
         "hex": f"0x{limpo.upper().zfill(2)}",
         "decimal": valor_dec,

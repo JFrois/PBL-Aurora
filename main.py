@@ -23,6 +23,7 @@ from src.fase6_scic.hardware import (
     diagnosticar_circuito,
     decodificar_registrador_telemetria,
 )
+from src.fase6_scic.modelagem import executar_fase6_analista2
 
 # ==============================================================================
 # CONFIGURAÇÃO DE IA
@@ -149,7 +150,7 @@ def gerar_resumo_final_ia():
 
     # Verifica se pelo menos alguma fase foi feita
     fases_concluidas = [
-        f for f in range(1, 6) if estado_projeto[f]["status"] == "Concluída"
+        f for f in range(1, 7) if estado_projeto[f]["status"] == "Concluída"
     ]
     if not fases_concluidas:
         print("\n[!] Nenhuma fase foi concluída ainda.")
@@ -409,11 +410,29 @@ def menu_fase6():
             df = gerar_dataset_telemetria(amostras=100)
             caminho = salvar_telemetria_csv(df)
             print(f">> Dataset gerado e salvo com sucesso em:\n   {caminho}")
+
+            print("\n>> Treinando Modelo de Regressão Linear e Otimização...")
+            # Roda o pipeline de Machine Learning
+            resultado_ml = executar_fase6_analista2(df, exibir=True)
+            # Gera o resumo usando o Gemini passando as métricas e o RMSE
+            dados_para_ia = {
+                "metricas_avaliacao": resultado_ml["metricas"],
+                "rmse_medio": resultado_ml.get("rmse_validacao_medio"),
+            }
+            resumo = gerar_resumo_fase_ia(6, dados_para_ia)
+            # Salva no estado global do Orquestrador
+            estado_projeto[6]["resultado"] = resultado_ml
+            estado_projeto[6]["resumo_ia"] = resumo
             estado_projeto[6]["status"] = "Concluída"
+
             fase5.gravar_registro(
-                "Fase 6 (SCIC - Dados) executada com sucesso.", "FASE_6"
+                "Fase 6 (SCIC - Dados e IA/Machine Learning) executada com sucesso.",
+                "FASE_6",
             )
+
+            print(f"\n--- RESUMO GERADO PELA IA ---\n{resumo}")
             pausar()
+
         elif op == "2":
             limpar_tela()
             print("--- DIAGNÓSTICO DE HARDWARE ---")
