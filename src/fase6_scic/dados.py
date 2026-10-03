@@ -18,25 +18,25 @@ Colunas geradas (20):
   status_operacional, prioridade, mensagem_alerta           -> alertas
 """
 
-import os
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
 # A potência (P = V * I) é calculada no hardware.py
 try:
-    from .hardware import (
-        calcular_potencia,
-    )  # quando roda como pacote: python -m src.fase6_scic.dados
+    from .hardware import calcular_potencia
 except ImportError:
-    from hardware import calcular_potencia  # quando roda o arquivo direto
+    from hardware import calcular_potencia
 
+# =====================================================================
+# CONFIGURAÇÃO DE CAMINHOS COM PATHLIB (MODERNO E SEGURO)
+# =====================================================================
+# Resolve o caminho absoluto do arquivo atual e volta duas pastas
+BASE_DIR = Path(__file__).resolve().parent
+RAIZ_PROJETO = BASE_DIR.parent.parent
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RAIZ_PROJETO = os.path.normpath(os.path.join(BASE_DIR, "..", ".."))
-CSV_FILE_PATH = os.path.join(
-    RAIZ_PROJETO, "data", "processed", "dados_aurora_siger.csv"
-)
-
+# Usa a barra (/) para unir caminhos de forma segura em qualquer SO
+CSV_FILE_PATH = RAIZ_PROJETO / "data" / "processed" / "dados_aurora_siger.csv"
 
 MODULOS = [
     ("MOD-01", "Habitação Alfa", "habitacao", 1, 28.0, 6800.0, ("0x1A", "0x1B")),
