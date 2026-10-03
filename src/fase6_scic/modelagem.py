@@ -114,8 +114,6 @@ def demonstrar_ponto_flutuante():
 # =====================================================================
 # 2. MODELO DE REGRESSÃO
 # =====================================================================
-
-
 def treinar_modelo_regressao(df):
     """
     Treina uma regressão linear para estimar a latência observada.
@@ -129,35 +127,55 @@ def treinar_modelo_regressao(df):
 
     dados = df.reset_index(drop=True)
 
-    # O tipo do módulo é texto; o modelo precisa de números. get_dummies cria uma
-    # coluna 0/1 para cada tipo (drop_first evita uma coluna redundante).
-    tipos = pd.get_dummies(
-        dados["tipo_modulo"], prefix="tipo", drop_first=True, dtype=float
-    )
-    dados = pd.concat([dados, tipos], axis=1)
-    features = FEATURES_BASE + list(tipos.columns)
-
-    X = dados[features]
+    # Separar os dados ANTES de aplicar transformações (Evita Data Leakage)
+    X = dados[FEATURES_BASE + ["tipo_modulo"]]
     y = dados[COL_OBSERVADA]
+
     X_treino, X_teste, y_treino, y_teste = train_test_split(
         X, y, test_size=0.2, random_state=SEMENTE
     )
 
-    modelo = LinearRegression()
-    rmse_validacao = -cross_val_score(
-        modelo, X_treino, y_treino, cv=5, scoring="neg_root_mean_squared_error"
+    # Aplicar o get_dummies separadamente no treino e no teste
+    X_treino_enc = pd.get_dummies(
+        X_treino, columns=["tipo_modulo"], drop_first=True, dtype=float
     )
-    modelo.fit(X_treino, y_treino)
+    X_teste_enc = pd.get_dummies(
+        X_teste, columns=["tipo_modulo"], drop_first=True, dtype=float
+    )
+
+    # Alinhar as colunas para garantir que o teste tem exatamente as mesmas colunas do treino
+    X_treino_enc, X_teste_enc = X_treino_enc.align(
+        X_teste_enc, join="left", axis=1, fill_value=0.0
+    )
+
+    features = list(X_treino_enc.columns)
+
+    modelo = LinearRegression()
+
+    # Nota: a métrica devolve valores negativos no scikit-learn por convenção de otimização,
+    # por isso invertemos o sinal com o "-" antes do cross_val_score.
+    rmse_validacao = -cross_val_score(
+        modelo, X_treino_enc, y_treino, cv=5, scoring="neg_root_mean_squared_error"
+    )
+
+    modelo.fit(X_treino_enc, y_treino)
+
+    # Recriamos um DataFrame unificado simulando o comportamento original para não quebrar outras funções
+    dados_enc = pd.concat([X_treino_enc, X_teste_enc]).sort_index()
+    dados_completos = dados.copy()
+    for col in features:
+        if col not in dados_completos.columns:
+            dados_completos[col] = dados_enc[col]
 
     return {
         "modelo": modelo,
         "features": features,
-        "dados": dados,
-        "X_teste": X_teste,
+        "dados": dados_completos,
+        "X_teste": X_teste_enc,
         "y_treino": y_treino,
         "y_teste": y_teste,
-        "y_pred_treino": modelo.predict(X_treino),
-        "y_pred_teste": modelo.predict(X_teste),
+        "y_pred_treino": modelo.predict(X_treino_enc),
+        "y_pred_teste": modelo.predict(X_teste_enc),
         "rmse_validacao_medio": float(rmse_validacao.mean()),
     }
 

@@ -18,25 +18,25 @@ Colunas geradas (20):
   status_operacional, prioridade, mensagem_alerta           -> alertas
 """
 
-import os
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
 # A potência (P = V * I) é calculada no hardware.py
 try:
-    from .hardware import (
-        calcular_potencia,
-    )  # quando roda como pacote: python -m src.fase6_scic.dados
+    from .hardware import calcular_potencia
 except ImportError:
-    from hardware import calcular_potencia  # quando roda o arquivo direto
+    from hardware import calcular_potencia
 
+# =====================================================================
+# CONFIGURAÇÃO DE CAMINHOS COM PATHLIB (MODERNO E SEGURO)
+# =====================================================================
+# Resolve o caminho absoluto do arquivo atual e volta duas pastas
+BASE_DIR = Path(__file__).resolve().parent
+RAIZ_PROJETO = BASE_DIR.parent.parent
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RAIZ_PROJETO = os.path.normpath(os.path.join(BASE_DIR, "..", ".."))
-CSV_FILE_PATH = os.path.join(
-    RAIZ_PROJETO, "data", "processed", "dados_aurora_siger.csv"
-)
-
+# Usa a barra (/) para unir caminhos de forma segura em qualquer SO
+CSV_FILE_PATH = RAIZ_PROJETO / "data" / "processed" / "dados_aurora_siger.csv"
 
 MODULOS = [
     ("MOD-01", "Habitação Alfa", "habitacao", 1, 28.0, 6800.0, ("0x1A", "0x1B")),
@@ -306,26 +306,29 @@ def calcular_indicadores(df):
 # =====================================================================
 # 4. SALVAR E CARREGAR O CSV
 # =====================================================================
-
-
 def salvar_telemetria_csv(df, caminho=None):
     """Valida a base e salva em CSV. Retorna o caminho do arquivo."""
-    destino = caminho or CSV_FILE_PATH
+    destino = Path(caminho) if caminho else CSV_FILE_PATH
+
     problemas = verificar_problemas(df)
     if problemas:
         raise ValueError(
             "Base inválida, nada foi salvo:\n - " + "\n - ".join(problemas)
         )
 
-    os.makedirs(os.path.dirname(destino), exist_ok=True)
+    # Cria as pastas pai automaticamente se não existirem (substitui o os.makedirs)
+    destino.parent.mkdir(parents=True, exist_ok=True)
+
     df.to_csv(destino, index=False, encoding="utf-8")
     return destino
 
 
 def carregar_telemetria_csv(caminho=None):
     """Lê o CSV, limpa e valida. Se o arquivo for de uma versão antiga, avisa o que falta."""
-    origem = caminho or CSV_FILE_PATH
-    if not os.path.exists(origem):
+    origem = Path(caminho) if caminho else CSV_FILE_PATH
+
+    # Verifica a existência com .exists()
+    if not origem.exists():
         raise FileNotFoundError(f"Arquivo de telemetria não encontrado em: {origem}")
 
     df = pd.read_csv(origem, encoding="utf-8")
@@ -342,25 +345,25 @@ def carregar_telemetria_csv(caminho=None):
 
 
 def exportar_para_entrega(df, pasta=None):
-    """Salva 'dados_aurora_siger.csv' na raiz do projeto (nome exigido no .zip)."""
-    destino = os.path.join(pasta or RAIZ_PROJETO, "dados_aurora_siger.csv")
+    """Salva 'dados_aurora_siger.csv' na raiz do projeto."""
+    diretorio_base = Path(pasta) if pasta else RAIZ_PROJETO
+    destino = diretorio_base / "dados_aurora_siger.csv"
     return salvar_telemetria_csv(df, destino)
 
 
 # =====================================================================
 # 5. RESUMO NO TERMINAL
 # =====================================================================
-
-
 def imprimir_resumo_terminal(df, caminho):
     """Mostra a base de forma organizada no terminal."""
+    import os  # Usado apenas aqui para pegar o caminho relativo no print visual
+
     linha = "-" * 80
     print("\n" + "=" * 80)
     print("BASE DE DADOS DA COLÔNIA - SCIC / AURORA SIGER".center(80))
     print("=" * 80)
-
     print("\n[1] ARQUIVO GERADO\n" + linha)
-    print(f"Arquivo : {os.path.relpath(caminho, RAIZ_PROJETO)}")
+    print(f"Arquivo : {os.path.relpath(str(caminho), str(RAIZ_PROJETO))}")
     print(
         f"Registros: {len(df)}  ({df['ciclo'].nunique()} ciclos x {df['modulo_id'].nunique()} módulos)"
     )
