@@ -973,6 +973,54 @@ Módulo está ativo? (s/n): n
 </details>
 <br>
 
+### 🚀 Fase 6: Sistema Computacional Integrado da Colônia (SCIC)
+Une telemetria elétrica e de comunicação, análise numérica, um modelo de regressão para a latência e estruturas de dados avançadas (Heap e Trie) num pipeline único, operado por menu de terminal.
+<details>
+<summary>Clique para ver a fase 6 em detalhe:</summary>
+
+## Visão Geral da Fase
+O SCIC coleta e valida a telemetria dos 8 módulos da colônia (`dados_aurora_siger.csv`), calcula potência elétrica ($P = V \times I$) e converte códigos de sensor (hex ↔ dec ↔ bin). Também estima a latência de comunicação com scikit-learn e mede os erros dessa estimativa. Por fim, transforma os resultados em ação: uma **fila de prioridade (Heap)** para alertas críticos e uma **Trie** para localizar módulos, sensores e comandos por prefixo.
+
+Relatório completo: [`docs/fase6/relatorio_tecnico.md`](docs/fase6/relatorio_tecnico.md) · Roteiro do vídeo: [`docs/fase6/roteiro_video.md`](docs/fase6/roteiro_video.md)
+
+## Divisão por analista
+| Analista | Arquivo | Entregas |
+|---|---|---|
+| 1 — Dados, Eletricidade & Hardware | `src/fase6_scic/dados.py`, `hardware.py` | Base de 120 registros, limpeza/validação, $P = V \times I$, Lei de Ohm, conversões hex/dec/bin |
+| 2 — Modelagem & Métricas | `src/fase6_scic/modelagem.py` | Erro absoluto/relativo, ponto flutuante (IEEE 754), regressão linear 80/20 + validação cruzada, MAE/MSE/RMSE/R², gráficos |
+| 3 — Estruturas & Documentação | `src/fase6_scic/estruturas.py`, `fase6_scic.py` | `HeapAlertas`, `TrieModulos`, benchmark, orquestrador CLI, relatório e roteiro |
+
+## Resultados do modelo (conjunto de teste)
+| MAE | MSE | RMSE | R² | Erro relativo médio |
+|---|---|---|---|---|
+| 3,60 ms | 34,42 ms² | 5,87 ms | 0,776 | 7,92% |
+
+RMSE/MAE ≈ 1,6: os picos de latência (outliers) pesam mais no RMSE.
+
+## Estruturas de Dados
+- **`HeapAlertas` (max-heap feito à mão):** recebe os registros em `alerta`, com sobrecarga ou com erro PREOCUPANTE (28 na base) e os ordena por uma criticidade explicável (status, tipo de alerta, faixa de erro, módulo essencial, prioridade, excesso de potência e desvio de latência). Inserir e extrair custam **O(log n)** e consultar o topo, O(1). Uma lista comum custa O(n) em uma das duas operações. No benchmark com 5 000 alertas, o heap foi ~9× mais rápido.
+- **`TrieModulos`:** busca por prefixo em **O(m + k)**, ignorando acentos e maiúsculas. Ex.: `com` → Comunicação Central, `0x2` → sensores 0x2A/0x2B, `di` → comando `/diagnosticar`.
+
+## Exemplo de saída no terminal
+```plaintext
+[1] HEAP DE ALERTAS CRÍTICOS (max-heap)
+Registros na base: 120 | alertas na fila: 28
+#1 [ 146.0] ciclo 15 | MOD-03 Controle de Missão       | 0x3A | Latência acima do previsto
+      latência obs/prev: 58.84/34.22 ms | erro 41.84% (PREOCUPANTE) | P = 3500/6600 W
+      motivos: status=alerta, Latência acima do previsto, erro do modelo PREOCUPANTE, módulo essencial, latência 71.9% acima da prevista
+
+[3] TRIE: BUSCA POR PREFIXO
+Prefixo '0x2' -> 2 resultado(s)
+  [sensor ] 0x2A (sensor do MOD-02 - Comunicação Central)           dec 42 | bin 00101010
+  [sensor ] 0x2B (sensor do MOD-02 - Comunicação Central)           dec 43 | bin 00101011
+```
+
+## Reflexão
+O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontuação e o atendimento fica com o operador humano. Os pesos da criticidade são escolhas de valor e devem ser discutidos com toda a colônia. A manutenção preditiva (desvio entre latência observada e prevista) e a detecção de sobrecarga evitam desperdício de peças e de energia, que são recursos escassos em Marte.
+
+</details>
+<br>
+
 
 ## Tecnologias Utilizadas
 
@@ -990,6 +1038,8 @@ Módulo está ativo? (s/n): n
 - Manipulação de arquivos de Texto (.txt) e Estruturados (.json)
 - Simulação e interação via menu em terminal
 - Integração entre microsserviços em pipeline unificado (main.py)
+- pandas, NumPy, scikit-learn e Matplotlib (ingestão, regressão, métricas e gráficos)
+- Heap binário (fila de prioridade) e Trie (árvore de prefixos)
 
 <br>
 
@@ -1060,6 +1110,11 @@ python -m src.fases_anteriores.fase5
 
 # Teste da infraestrutura de grafos (SIGIC - Fase 4):
 python -m src.fases_anteriores.fase4
+
+# SCIC - Fase 6 (menu próprio, não exige as fases anteriores):
+python -m src.fase6_scic.fase6_scic
+python -m src.fase6_scic.fase6_scic --auto   # pipeline completo sem menu
+pytest tests/test_estruturas.py               # testes do Heap e da Trie
 ```
 
 ---
@@ -1102,6 +1157,16 @@ PBL-Aurora/
     │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
     │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
     └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
+        ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
+        ├── hardware.py                        # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
+        ├── modelagem.py                       # Regressão, erros e métricas (Analista 2)
+        ├── estruturas.py                      # HeapAlertas e TrieModulos (Analista 3)
+        └── fase6_scic.py                      # Orquestrador/menu CLI do SCIC (Analista 3)
+
+docs/fase5/                                   # FASE5.zip, link_video.txt
+docs/fase6/                                   # relatorio_tecnico.md, roteiro_video.md, link_video.txt
+graficos_ou_imagens/                           # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
+tests/test_estruturas.py                       # Testes unitários do Heap e da Trie
 ```
 
 <br>
