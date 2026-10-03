@@ -188,3 +188,52 @@
 [2026-09-05 14:01:55] [FASE_5] Fase 5 (Pipeline Automático do NCAS) executada com sucesso.
 [2026-09-05 14:02:10] [IA_RELATORIO] Boletim Executivo Final gerado pela IA com sucesso.
 [2026-09-05 14:02:30] [SISTEMA] Project Validation System (PVS) - Orquestrador Encerrado
+[2026-10-03 14:01:47] [SISTEMA] Project Validation System (PVS) - Orquestrador Iniciado
+[2026-10-03 14:03:13] [FASE_1] Fase 1 (Telemetria) executada com sucesso.
+[2026-10-03 14:03:19] [FASE_2] Fase 2 (Pouso Orbital) executada com sucesso.
+[2026-10-03 14:07:10] [SISTEMA] Project Validation System (PVS) - Orquestrador Iniciado
+[2026-10-03 14:07:36] [FASE_1] Fase 1 (Telemetria) executada com sucesso.
+[2026-10-03 14:07:54] [FASE_2] Fase 2 (Pouso Orbital) executada com sucesso.
+[2026-10-03 14:08:03] [FASE_3] Fase 3 (Diagnóstico Energético) executada com sucesso.
+[2026-10-03 14:08:22] [FASE_4] Fase 4 (SIGIC - Grafos) inspecionada e concluída.
+[2026-10-03 14:09:22] [SISTEMA] Sistema NCAS iniciado.
+[2026-10-03 14:09:23] [SISTEMA] Sistema NCAS encerrado.
+[2026-10-03 14:09:26] [SISTEMA] Sistema NCAS iniciado.
+[2026-10-03 14:09:30] [SISTEMA] Sistema NCAS encerrado.
+[2026-10-03 14:09:33] [SISTEMA] Sistema NCAS iniciado.
+[2026-10-03 14:09:46] [CADASTRO] Novo módulo cadastrado: Peps Bonitão (operacional)
+[2026-10-03 14:09:47] [SISTEMA] Sistema NCAS encerrado.
+[2026-10-03 14:10:06] [SISTEMA] Fase 5 executada via pipeline integrado. 1 alertas processados.
+[2026-10-03 14:10:07] [FASE_5] Fase 5 (Pipeline Automático do NCAS) executada com sucesso.
+[2026-10-03 14:10:42] [FASE_6] Fase 6 (SCIC - Dados e IA/Machine Learning) executada com sucesso.
+[2026-10-03 14:12:27] [FASE_6] Fase 6 (SCIC - Dados e IA/Machine Learning) executada com sucesso.
+[2026-10-03 14:31:39] [FASE_6] Fase 6 (SCIC - Pipeline completo: dados, modelo, Heap e Trie) executada.
+[2026-10-03 14:31:53] [SISTEMA] Project Validation System (PVS) - Orquestrador Encerrado
+[2026-10-03 14:44:02] [SISTEMA] Project Validation System (PVS) - Orquestrador Iniciado
+[2026-10-03 14:46:03] [FASE_1] Fase 1 (Telemetria) executada. Telemetria nominal: True. Módulos pré-checados: 0.
+[2026-10-03 14:46:18] [FASE_2] Fase 2 (Pouso Orbital - MGPEB) executada com sucesso. Módulos pousados: 1. Status: OK.
+[2026-10-03 14:46:24] [FASE_3] Fase 3 (Diagnóstico Energético) executada. Consumo total calculado: N/A kW.
+[2026-10-03 14:46:28] [FASE_3] Fase 3 (Diagnóstico Energético) executada. Consumo total calculado: N/A kW.
+[2026-10-03 14:46:42] [FASE_4] Fase 4 (SIGIC - Redes em Grafos) executada e inspecionada com sucesso.
+[2026-10-03 14:46:56] [SISTEMA] Fase 5 executada via pipeline integrado. 4 alertas processados.
+[2026-10-03 14:46:56] [FASE_5] Fase 5 (NCAS - Núcleo Cognitivo) executada. Regras lógicas de De Morgan aplicadas.
+[2026-10-03 14:47:11] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-03 14:47:23] [HARDWARE] Diagnóstico elétrico executado: V=220.0V, I=20.0A, P=4400.0W (CRÍTICO: Sobrecarga Térmica).
+[2026-10-03 14:48:35] [FASE_6] Fase 6 (SCIC - Pipeline Completo) executada. Alertas no Heap: 28, Chaves na Trie: 62. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-03 14:48:49] [FASE_6] Fase 6 (SCIC - Pipeline Completo) executada. Alertas no Heap: 28, Chaves na Trie: 62. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-03 14:49:06] [IA_ANALISE] Análise integrada unificada gerada pela IA com sucesso.
+[2026-10-03 14:49:21] [IA_ANALISE] Análise integrada unificada gerada pela IA com sucesso.
+[2026-10-03 15:04:32] [SISTEMA] Project Validation System (PVS) - Orquestrador Iniciado
+[2026-10-03 15:04:41] [FASE_1] Fase 1 (Telemetria) executada. Telemetria nominal: True. Módulos pré-checados: 0.
+[2026-10-03 15:04:44] [FASE_2] Fase 2 (Pouso Orbital - MGPEB) executada com sucesso. Módulos pousados: 3. Status: OK.
+[2026-10-03 15:04:48] [FASE_3] Fase 3 (Diagnóstico Energético) executada. Consumo total calculado: N/A kW.
+[2026-10-03 15:05:04] [FASE_4] Fase 4 (SIGIC - Redes em Grafos) executada e inspecionada com sucesso.
+[2026-10-03 15:05:17] [SISTEMA] Fase 5 executada via pipeline integrado. 2 alertas processados.
+[2026-10-03 15:05:17] [FASE_5] Fase 5 (NCAS - Núcleo Cognitivo) executada. Regras lógicas de De Morgan aplicadas.
+[2026-10-03 15:14:46] [SISTEMA] Project Validation System (PVS) - Orquestrador Iniciado
+[2026-10-03 15:23:08] [FASE_1] Fase 1 (Telemetria) executada. Telemetria nominal: True. Módulos pré-checados: 0.
+[2026-10-03 15:23:12] [FASE_2] Fase 2 (Pouso Orbital - MGPEB) executada com sucesso. Módulos pousados: 2. Status: OK.
+[2026-10-03 15:23:14] [FASE_3] Fase 3 (Diagnóstico Energético) executada. Consumo total calculado: N/A kW.
+[2026-10-03 15:23:20] [FASE_4] Fase 4 (SIGIC - Redes em Grafos) executada e inspecionada com sucesso.
+[2026-10-03 15:24:04] [SISTEMA] Fase 5 executada via pipeline integrado. 3 alertas processados.
+[2026-10-03 15:24:04] [FASE_5] Fase 5 (NCAS - Núcleo Cognitivo) executada. Regras lógicas de De Morgan aplicadas.
