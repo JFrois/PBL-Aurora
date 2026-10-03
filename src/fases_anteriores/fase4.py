@@ -521,17 +521,24 @@ def rodar_menu_interativo():
                 if destino:
                     algoritmo_dijkstra(origem, destino)
         elif opcao == "5":
-            origem = menu_selecionar_modulo("Módulo de origem")
+            origem = menu_selecionar_modulo("Módulo de origem para BFS")
             if origem:
                 algoritmo_bfs(origem)
         elif opcao == "6":
-            origem = menu_selecionar_modulo("Módulo de origem")
+            origem = menu_selecionar_modulo("Módulo de origem para DFS")
             if origem:
                 algoritmo_dfs(origem)
         elif opcao == "7":
             detectar_bridges()
         elif opcao == "0":
+            print(
+                "\n  [SIGIC] Encerrando terminal interativo e retornando ao pipeline..."
+            )
+            time.sleep(1)
             break
+        else:
+            print("\n  [!] Opção inválida. Tente novamente.")
+            time.sleep(1)
 
 
 # =====================================================================
