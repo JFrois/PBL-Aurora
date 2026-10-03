@@ -66,8 +66,17 @@ def validar_nome_modulo(nome: str) -> bool:
 
 def validar_tipo_modulo(tipo: str) -> bool:
     """Valida se o tipo do módulo é válido."""
-    tipos_validos = {"habitacao", "energia", "laboratorio", "comunicacao",
-                     "controle", "logistica", "medico", "agricultura", "infraestrutura"}
+    tipos_validos = {
+        "habitacao",
+        "energia",
+        "laboratorio",
+        "comunicacao",
+        "controle",
+        "logistica",
+        "medico",
+        "agricultura",
+        "infraestrutura",
+    }
     return bool(tipo and tipo.lower() in tipos_validos)
 
 
@@ -82,7 +91,9 @@ def validar_consumo_kw(consumo: float) -> bool:
     return isinstance(consumo, (int, float)) and 0 <= consumo <= 10000  # 0 a 10MW
 
 
-def validar_dados_modulo(nome: str, tipo: str, status: str, consumo: float) -> tuple[bool, str]:
+def validar_dados_modulo(
+    nome: str, tipo: str, status: str, consumo: float
+) -> tuple[bool, str]:
     """
     Valida todos os dados de um módulo.
     Retorna (é_válido, mensagem_de_erro).
@@ -292,7 +303,9 @@ def cadastrar_modulo() -> None:
     eh_valido, mensagem_erro = validar_dados_modulo(nome, tipo, status, consumo)
     if not eh_valido:
         print(f">> Erro no cadastro: {mensagem_erro}")
-        gravar_registro(f"Tentativa falha de cadastro de módulo: {mensagem_erro}", tipo="ERRO")
+        gravar_registro(
+            f"Tentativa falha de cadastro de módulo: {mensagem_erro}", tipo="ERRO"
+        )
         return
 
     novo_modulo = {
@@ -334,33 +347,31 @@ def validar_alerta_critico(alerta: dict) -> bool:
     return alerta.get("tipo_ocorrencia") == "falha_critica"
 
 
-
 def liberar_consulta(usuario_autorizado: bool, modulo_ativo: bool) -> bool:
     """
     Segunda regra lógica do sistema, usando os teoremas de De Morgan
     (item 5.4 do enunciado: "liberar consulta apenas se o usuário estiver
     autorizado e o módulo estiver ativo").
- 
+
     Regra de liberação:
         LIBERAR = AUTORIZADO AND ATIVO
- 
+
     Regra complementar de bloqueio (a negação da liberação), aplicando
     De Morgan:
         NAO LIBERAR = NOT (AUTORIZADO AND ATIVO)
                      = NOT AUTORIZADO OR NOT ATIVO
- 
+
     Ou seja: basta o usuário NÃO estar autorizado OU o módulo estar
     INATIVO para que a consulta seja bloqueada — não é preciso avaliar
     as duas condições negadas separadamente antes de decidir, o que
     simplifica a checagem de bloqueio no restante do sistema.
     """
     return usuario_autorizado and modulo_ativo
- 
- 
+
+
 def bloquear_consulta(usuario_autorizado: bool, modulo_ativo: bool) -> bool:
     """Forma equivalente (via De Morgan) da negação de liberar_consulta()."""
     return (not usuario_autorizado) or (not modulo_ativo)
-
 
 
 def montar_prompt_zero_shot(alerta: dict) -> str:
@@ -423,7 +434,7 @@ def simular_resposta_assistente(prompt: str) -> str:
         try:
             resposta = _client.models.generate_content(
                 model=_GEMINI_MODEL, contents=prompt
-            ) 
+            )
             return (resposta.text or "").strip()
         except Exception as erro:  # falha de rede/quota etc. -> cai para o mock
             return (
@@ -443,7 +454,6 @@ def analisar_alerta_operacional() -> None:
         print(">> Nenhum alerta cadastrado para analisar.")
         return
 
-
     print("\n" + "=" * 70)
     print("--- ANÁLISE LÓGICA DE ALERTAS E RESPOSTAS DO ASSISTENTE ---".center(70))
     print("=" * 70)
@@ -451,8 +461,8 @@ def analisar_alerta_operacional() -> None:
     for i, a in enumerate(alertas, start=1):
         critico = validar_alerta_critico(a)
         status = "🔴 CRÍTICO" if critico else "🟢 NÃO CRÍTICO"
-        modulo_nome = a.get('modulo', 'Desconhecido')
-        
+        modulo_nome = a.get("modulo", "Desconhecido")
+
         print(f"\n[{i}] Módulo: {modulo_nome} ")
         print(f"    Status             : {status}")
         print(f"    Tipo de Ocorrência : {a.get('tipo_ocorrencia', 'N/A')}")
@@ -462,18 +472,17 @@ def analisar_alerta_operacional() -> None:
         if critico:
             prompt = montar_prompt_zero_shot(a)
             resposta = simular_resposta_assistente(prompt)
-            
+
             print(f"\n    PROMPT ZERO-SHOT:")
-            print(f"      \"{prompt}\"")
+            print(f'      "{prompt}"')
             print(f"\n     RESPOSTA DA IA:")
-            print(f"       \"{resposta}\"")
-            
+            print(f'       "{resposta}"')
+
             gravar_registro(
                 f"Alerta crítico analisado ({modulo_nome}): {resposta}",
                 tipo="RESPOSTA_IA",
             )
             print("-" * 70)
-
 
 
 def simular_interacao_assistente() -> None:
@@ -485,27 +494,30 @@ def simular_interacao_assistente() -> None:
     print("\n" + "=" * 70)
     print("SIMULAÇÃO DE INTERAÇÃO COM O ASSISTENTE INTELIGENTE".center(70))
     print("=" * 70)
- 
+
     print("\n[1] PROMPT ZERO-SHOT (resumo de alerta):")
     prompt_zs = montar_prompt_zero_shot(alerta_exemplo)
     print(f"\n    Prompt: {prompt_zs}")
     print(f" \n   Resposta: {simular_resposta_assistente(prompt_zs)}")
     print("-" * 70)
- 
+
     print("\n[2] PROMPT FEW-SHOT (classificação de solicitação):")
-    print("    Dica: Digite uma demanda da colônia (ex: 'Falta oxigênio no setor B','Preciso de troca de filtro' ou 'Qual a previsão do tempo?')")
+    print(
+        "    Dica: Digite uma demanda da colônia (ex: 'Falta oxigênio no setor B','Preciso de troca de filtro' ou 'Qual a previsão do tempo?')"
+    )
     solicitacao = (
-        input("  Digite uma solicitação da tripulação para classificar: ").strip() or "Preciso de mais água na Habitação até amanhã"
+        input("  Digite uma solicitação da tripulação para classificar: ").strip()
+        or "Preciso de mais água na Habitação até amanhã"
     )
     prompt_fs = montar_prompt_few_shot(solicitacao)
     print(f" \n   Resposta: {simular_resposta_assistente(prompt_fs)}")
     print("-" * 70)
- 
+
     print("\n[3] PROMPT DE SAÍDA ESTRUTURADA (JSON):")
     prompt_est = montar_prompt_saida_estruturada(alerta_exemplo)
     print(f" \n Resposta: {simular_resposta_assistente(prompt_est)}")
     print("-" * 70)
- 
+
     gravar_registro(
         "Simulação de interação com o assistente executada.", tipo="RESPOSTA_IA"
     )
@@ -524,24 +536,26 @@ def _escolher_alerta_exemplo(alertas: list) -> dict:
         "mensagem": "Exemplo genérico de alerta para demonstração de prompts.",
         "data": datetime.now().strftime("%Y-%m-%d"),
     }
- 
+
     if not alertas:
         print("\n>> Nenhum alerta cadastrado no sistema. Usando exemplo padrão.")
         return padrao
-        
+
     print("\n" + "-" * 70)
     print("SELECIONE UM ALERTA PARA A SIMULAÇÃO DOS PROMPTS".center(70))
     print("=" * 70)
 
     print(f"\n  [0] - Módulo: {padrao['modulo']} - Exemplo padrão de alerta")
     for i, a in enumerate(alertas, start=1):
-        print(f"  [{i}] - Módulo: {a.get('modulo', '???')} — {a.get('tipo_ocorrencia', '???')}")
+        print(
+            f"  [{i}] - Módulo: {a.get('modulo', '???')} — {a.get('tipo_ocorrencia', '???')}"
+        )
     print("=" * 70)
- 
+
     while True:
         escolha = input("Digite o número da opção desejada: ").strip()
-        
-        if escolha == "": # Se o usuário apertar Enter direto, assume 0
+
+        if escolha == "":  # Se o usuário apertar Enter direto, assume 0
             print(f">> Usando o exemplo padrão: {padrao['modulo']}")
             return padrao
 
@@ -556,8 +570,8 @@ def _escolher_alerta_exemplo(alertas: list) -> dict:
                 return alerta_escolhido
 
         print(">> Opção inválida! Digite um número válido listado acima.")
- 
- 
+
+
 def verificar_liberacao_consulta() -> None:
     """
     Demonstra a segunda regra lógica (De Morgan), aplicando liberar_consulta()/bloquear_consulta() de forma interativa.
@@ -569,18 +583,18 @@ def verificar_liberacao_consulta() -> None:
 
     resposta_autorizado = input("Usuário está autorizado? (s/n): ").strip().lower()
     resposta_ativo = input("Módulo está ativo? (s/n): ").strip().lower()
- 
+
     autorizado = resposta_autorizado == "s"
     ativo = resposta_ativo == "s"
- 
+
     liberado = liberar_consulta(autorizado, ativo)
     bloqueado = bloquear_consulta(autorizado, ativo)
- 
+
     print(f"\n>> LIBERAR = AUTORIZADO AND ATIVO -> {liberado}")
     print(f">> NAO LIBERAR (De Morgan) = NOT AUTORIZADO OR NOT ATIVO -> {bloqueado}")
     print(">> Consulta LIBERADA." if liberado else ">> Consulta BLOQUEADA.")
     print("=" * 70)
- 
+
     gravar_registro(
         f"Verificação de liberação de consulta: autorizado={autorizado}, "
         f"ativo={ativo}, resultado={'liberado' if liberado else 'bloqueado'}",
@@ -650,7 +664,9 @@ def main() -> None:
     except (KeyboardInterrupt, EOFError):
         # Garante que o encerramento seja registrado mesmo se o usuário
         # sair com Ctrl+C ou fechar a entrada abruptamente.
-        gravar_registro("Sistema NCAS encerrado (interrupção do usuário).", tipo="SISTEMA")
+        gravar_registro(
+            "Sistema NCAS encerrado (interrupção do usuário).", tipo="SISTEMA"
+        )
         print("\n>> Encerrando o Núcleo Cognitivo. Até logo!")
 
 
@@ -661,6 +677,7 @@ def main() -> None:
 # imprime um relatório e devolve um dicionário-resumo para o Data Lake
 # consolidado em main.py.
 # ==============================================================================
+
 
 def executar_fase5(client=None, res_f2=None, res_f4=None) -> dict:
     """
