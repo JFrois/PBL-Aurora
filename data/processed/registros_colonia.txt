@@ -237,3 +237,23 @@
 [2026-10-03 15:23:20] [FASE_4] Fase 4 (SIGIC - Redes em Grafos) executada e inspecionada com sucesso.
 [2026-10-03 15:24:04] [SISTEMA] Fase 5 executada via pipeline integrado. 3 alertas processados.
 [2026-10-03 15:24:04] [FASE_5] Fase 5 (NCAS - Núcleo Cognitivo) executada. Regras lógicas de De Morgan aplicadas.
+[2026-10-05 18:39:40] [SISTEMA] Project Validation System (PVS) - Orquestrador Iniciado
+[2026-10-05 18:39:47] [FASE_1] Fase 1 (Telemetria) executada. Telemetria nominal: True. Módulos pré-checados: 0.
+[2026-10-05 18:39:51] [FASE_2] Fase 2 (Pouso Orbital - MGPEB) executada com sucesso. Módulos pousados: 2. Status: OK.
+[2026-10-05 18:39:56] [FASE_3] Fase 3 (Diagnóstico Energético) executada. Consumo total calculado: N/A kW.
+[2026-10-05 18:40:08] [FASE_4] Fase 4 (SIGIC - Redes em Grafos) executada e inspecionada com sucesso.
+[2026-10-05 18:40:26] [SISTEMA] Fase 5 executada via pipeline integrado. 3 alertas processados.
+[2026-10-05 18:40:26] [FASE_5] Fase 5 (NCAS - Núcleo Cognitivo) executada. Regras lógicas de De Morgan aplicadas.
+[2026-10-05 18:44:03] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 18:45:49] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 18:51:23] [HARDWARE] Diagnóstico elétrico executado: V=220.0V, I=12.5A, P=2750.0W (NOMINAL).
+[2026-10-05 18:51:45] [HARDWARE] Diagnóstico elétrico executado: V=220.0V, I=12.5A, P=2750.0W (NOMINAL).
+[2026-10-05 18:52:09] [HARDWARE] Diagnóstico elétrico executado: V=230.0V, I=28.0A, P=6440.0W (NOMINAL).
+[2026-10-05 18:57:06] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 18:58:51] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 19:02:36] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 19:07:03] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 19:08:51] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 19:12:03] [FASE_6] Fase 6 (SCIC - Telemetria e ML) executada. Dataset salvo em C:\Users\pedro\Downloads\PBL02\PBL-Aurora\data\processed\dados_aurora_siger.csv. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
+[2026-10-05 19:14:02] [HARDWARE] Diagnóstico elétrico executado: V=230.0V, I=28.0A, P=6440.0W (NOMINAL).
+[2026-10-05 19:20:14] [FASE_6] Fase 6 (SCIC - Pipeline Completo) executada. Alertas no Heap: 28, Chaves na Trie: 62. Métricas ML: MAE=3.6014, RMSE=5.8667, R2=0.7761.
