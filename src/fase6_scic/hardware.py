@@ -8,7 +8,7 @@ Responsabilidades:
 - Conversão e codificação de bases numéricas para emulação de registradores (Hex, Bin, Dec).
 """
 
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 
 def calcular_potencia(tensao_v: float, corrente_a: float) -> float:
@@ -90,7 +90,7 @@ def decodificar_registrador_telemetria(hex_str: str) -> Dict[str, Union[int, str
     }
 
 
-def mapear_interfaces_io(modulo_id: str = None) -> Dict[str, Dict[str, str]]:
+def mapear_interfaces_io(modulo_id: Optional[str] = None) -> Dict[str, Dict[str, str]]:
     """
     Mapeamento conceitual de I/O e interfaces de transmissão da colônia Aurora Siger.
     Mapeia os módulos e sensores para protocolos físicos (CAN Bus, SpaceWire, 4-20mA, RS-485).
