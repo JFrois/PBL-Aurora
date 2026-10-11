@@ -1164,7 +1164,6 @@ PBL-Aurora/
 │   │   └── link_video.txt
 │   └── fase6/
 │       ├── relatorio_tecnico.md
-│       ├── roteiro_video.md
 │       ├── link_video.txt
 │       └── graficos_ou_imagens/               # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
 │
