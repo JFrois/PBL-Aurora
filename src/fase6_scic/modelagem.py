@@ -25,7 +25,7 @@ from sklearn.model_selection import cross_val_score, train_test_split
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RAIZ_PROJETO = os.path.normpath(os.path.join(BASE_DIR, "..", ".."))
 DADOS_DIR = os.path.join(RAIZ_PROJETO, "data", "processed")
-GRAFICOS_DIR = os.path.join(RAIZ_PROJETO, "graficos_ou_imagens")
+GRAFICOS_DIR = os.path.join(RAIZ_PROJETO,"docs", "fase6", "graficos_ou_imagens")
 
 SEMENTE = 42
 COL_OBSERVADA = "latencia_observada_ms"
@@ -105,7 +105,7 @@ def demonstrar_ponto_flutuante():
     return {
         "0.1 + 0.2 == 0.3": (0.1 + 0.2 == 0.3),
         "valor de 0.1 + 0.2": 0.1 + 0.2,
-        "0.1 + 0.2 ≈ 0.3 (np.isclose)": bool(np.isclose(0.1 + 0.2, 0.3)),
+        "0.1 + 0.2 ~= 0.3 (np.isclose)": bool(np.isclose(0.1 + 0.2, 0.3)),
         "dez somas de 0.1 == 1.0": (soma == 1.0),
         "erro acumulado": abs(soma - 1.0),
     }
