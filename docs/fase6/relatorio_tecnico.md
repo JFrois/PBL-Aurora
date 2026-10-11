@@ -1,6 +1,7 @@
-# Relatório Técnico — Fase 6: SCIC (Sistema Computacional Integrado da Colônia)
+# Relatório Técnico - Fase 6: SCIC (Sistema Computacional Integrado da Colônia)
 
 **Missão Aurora Siger · FIAP · 1CCOA-2026**
+
 Equipe: Juan de Lucas Frois (RM563260) · Flávia Roberta Pennachin (RM561860) · Pedro Valente Toledo (RM570394)
 
 
@@ -202,6 +203,7 @@ Saídas gráficas: `graficos_ou_imagens/avaliacao_modelo_scic.png` (real × prev
 
 Código: `src/fase6_scic/estruturas.py` · Testes: `tests/test_estruturas.py` (6 testes, todos passando).
 
+
 ### 5.1 `HeapAlertas` — fila de prioridade para alertas críticos
 
 **Problema:** a cada ciclo chegam alertas de vários módulos. O operador precisa sempre do **mais urgente** primeiro, e novos alertas continuam chegando enquanto os antigos são atendidos.
@@ -289,8 +291,7 @@ Com n pequeno a lista empata, porque as constantes pesam mais que a complexidade
 
 
 
-
-### 6. `TrieModulos` — busca por (Requisito 5.5)
+## 6. Busca de registros com Trie (Requisito 5.5)
 
 Durante uma emergência, o operador digita só o começo do nome ("com", "oxi", "0x2") e precisa achar o módulo, o sensor ou o comando na hora.
 
@@ -390,7 +391,7 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 
 ## 8. Gerenciamento inteligente da comunicação (Requisito 5.7)
 
-- **Telemetria/IoT:** cada módulo funciona como um nó IoT. Ele publica a cada ciclo leituras de tensão, corrente, temperatura, pressão, radiação e latência, identificadas pelo código hex do sensor. Na Terra o equivalente seria MQTT/LoRa. Na colônia, os pacotes passam pela rede de grafos da Fase 4.A base do SCIC (120 leituras, 15 ciclos × 8 módulos)
+- **Telemetria/IoT:** cada módulo funciona como um nó IoT. Ele publica a cada ciclo leituras de tensão, corrente, temperatura, pressão, radiação e latência, identificadas pelo código hex do sensor. Na Terra o equivalente seria MQTT/LoRa. Na colônia, os pacotes passam pela rede de infraestrutura da Fase 4, alimentando a base do SCIC com 120 leituras (15 ciclos × 8 módulos)
 - **Monitoramento contínuo e detecção de anomalias.** Comparar a latência **observada** com a **esperada** pelo modelo, a cada ciclo, é uma detecção de anomalias. Dos 120 registros, **28 (23,3%)** entraram na fila de alertas por status de alerta, sobrecarga ou erro PREOCUPANTE. Os **picos** de latência (6% das leituras, com até 24,49 ms de erro no teste) são justamente os eventos que um monitoramento contínuo precisa capturar.
 - **Automação e decisão rápida.** O heap transforma dezenas de alertas em uma **ordem de atendimento** em O(log n) por alerta, sem que o operador precise ler todos. A tela de atendimento encaminha o alerta mais crítico à equipe e deixa explícito que a **decisão final é do operador humano**: o sistema prioriza, não decide sozinho.
 - **Armazenamento de dados e enlaces redundantes.** O módulo de Armazenamento de Dados (MOD-07) guarda a telemetria para análise posterior. Os módulos críticos já aparecem no mapeamento com **enlaces redundantes** (CAN Bus redundante em Controle de Missão e Oxigênio, SpaceWire redundante em Suporte Médico) e o barramento de Comunicação Central tem *backup*. Quando o heap indica degradação de latência em um módulo essencial, a redundância permite desviar o tráfego para o enlace reserva enquanto a equipe investiga
@@ -409,6 +410,7 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 - **Diversidade e acessibilidade:** a busca da Trie ignora acentos e maiúsculas, o que facilita o uso por tripulantes de línguas e teclados diferentes e por quem está sob estresse. Os códigos hex e os comandos dão uma linguagem comum, independente do idioma.
 - **Cultura e trabalho:** automatizar a triagem reduz a carga cognitiva das equipes em turnos longos. Em contrapartida, exige treino para que as pessoas entendam o sistema e não percam a habilidade de operar sem ele, caso o computador falhe.
 - **Sustentabilidade:** detectar sobrecargas e prever falhas evita queimar componentes que não podem ser repostos e reduz o desperdício de energia. Estruturas eficientes (O(log n) em vez de O(n)) também consomem menos processamento, e portanto menos energia, num ambiente em que cada watt conta.
+- **Inspiração em conhecimentos tradicionais:** Muitas culturas indígenas orientam o uso de recursos pelo cuidado coletivo e pelo impacto de longo prazo. Essa ideia inspira o SCIC em dois pontos, priorizar a prevenção (manutenção preditiva, em vez de consertar depois que quebra) e tratar a energia e as peças como bens compartilhados e finitos da comunidade, e não como algo a ser consumido até acabar, assim evitando o colapso do ecossistema técnico da base antes que ocorra escassez de recursos vitais.
 
 
 
@@ -419,7 +421,6 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 - **Amostra pequena.** São 96 registros de treino e 24 de teste. Mais ciclos dariam métricas mais estáveis.
 - **Modelo simples.** A regressão linear não captura relações não lineares nem os picos. Como trabalho futuro, comparar com Ridge ou modelos não lineares usando Grid Search, AIC e BIC.
 - **Evolução temporal.** Não foi implementada simulação numérica da latência ao longo do tempo. Uma extensão natural seria evoluir a latência ciclo a ciclo com um método simples (como Euler).
-- **Pesos fixos.** A criticidade usa pesos definidos por nós. O ideal é calibrá-los com a equipe de operação.
 
 
 
