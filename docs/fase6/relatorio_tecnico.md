@@ -3,7 +3,7 @@
 **Missão Aurora Siger · FIAP · 1CCOA-2026**
 Equipe: Juan de Lucas Frois (RM563260) · Flávia Roberta Pennachin (RM561860) · Pedro Valente Toledo (RM570394)
 
----
+
 
 ## 1. Contexto
 
@@ -24,8 +24,6 @@ flowchart LR
     C --> E["fase6_scic.py / main.py<br/>Menu CLI"]
     D --> E
 ```
-
----
 
 
 ## 2. Organização dos dados operacionais e de comunicação (Requisito 5.1)
@@ -93,7 +91,6 @@ A função `calcular_indicadores` resume a saúde da colônia:
 | `potencia_media_w` | média da potência |
 | `registros_em_sobrecarga` | quantidade de registros com $P$ acima do limite |
 
----
 
 
 
@@ -140,7 +137,7 @@ Consequências práticas no SCIC:
 2. Diferenças da ordem de 10⁻¹⁶ são **ruído de representação**, não erro do modelo. O erro do modelo é da ordem de milissegundos, 15 ordens de grandeza maior.
 3. Os valores são **arredondados** na geração (2 casas) e nas previsões. O arredondamento introduz diferenças de até 0,005 em cada valor, e isso também precisa caber na tolerância. Um registro com ER muito próximo de 5% ou de 15% pode mudar de faixa só por arredondamento, o que é mais uma razão para ver o erro como uma faixa, e não como um limite rígido.
 
----
+
 
 
 ## 4. Modelo de previsão e avaliação de desempenho (Requisito 5.3)
@@ -192,13 +189,13 @@ Saídas gráficas: `graficos_ou_imagens/avaliacao_modelo_scic.png` (real × prev
 
 
 ### Avaliação do modelo
-![Avaliação do modelo](../../graficos_ou_imagens/avaliacao_modelo_scic.png)
+![Avaliação do modelo](graficos_ou_imagens/avaliacao_modelo_scic.png)
 
 
 ### Erro relativo médio por módulo
 ![Erro relativo médio por módulo](graficos_ou_imagens/erro_relativo_por_modulo.png)
 
----
+
 
 
 ## 5. Priorização de alertas com Heap (Requisito 5.4)
@@ -290,7 +287,7 @@ A lista é rápida em uma operação e lenta na outra. O heap é bom nas duas, q
 Com n pequeno a lista empata, porque as constantes pesam mais que a complexidade. Mas a diferença cresce junto com n, como a análise assintótica prevê: multiplicar n por 10 multiplicou o tempo da lista por ~120 (≈ quadrático) e o do heap por ~15 (≈ n log n).
 
 
----
+
 
 
 ### 6. `TrieModulos` — busca por (Requisito 5.5)
@@ -330,7 +327,6 @@ A mesma Trie é usada na central de alertas: ao registrar um alerta manual, o op
 
 O custo é **memória**: a Trie guarda um nó por caractere, e várias chaves por módulo multiplicam isso. Para uma colônia, o ganho de tempo de resposta compensa.
 
----
 
 
 ## 7. Dispositivos, bases numéricas e eletricidade aplicada à comunicação (Requisito 5.6)
@@ -389,7 +385,7 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
  
 **Ligação com a comunicação.** Em um transmissor, a potência consumida é a base para estimar a potência de transmissão. Na simulação, assumimos que cada 1 000 W adicionais no módulo somam cerca de 3 ms à latência (premissa do gerador de dados, não uma lei física). Por isso a potência é uma das variáveis de entrada do modelo de regressão.
  
----
+
 
 
 ## 8. Gerenciamento inteligente da comunicação (Requisito 5.7)
@@ -402,7 +398,7 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 - **Manutenção preditiva:** o modelo de regressão dá a latência **esperada**. Quando a observada se afasta muito dela (faixa PREOCUPANTE), o equipamento está se comportando fora do padrão, o que pode indicar degradação de antena, cabo ou fonte. Esse desvio entra no Heap e gera uma ordem de manutenção **antes** da falha. Assim a colônia sai da manutenção corretiva e passa para a preditiva, economizando peças, energia e horas de trabalho, que são os recursos mais escassos em Marte.
 - **Escalabilidade:** com mais módulos e sensores, o Heap (O(log n)) e a Trie (O(m + k)) mantêm o tempo de resposta adequado para operação em tempo real.
 
----
+
 
 
 ## 9. Reflexão social, cultural e sustentável (Requisito 5.8)
@@ -414,7 +410,7 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 - **Cultura e trabalho:** automatizar a triagem reduz a carga cognitiva das equipes em turnos longos. Em contrapartida, exige treino para que as pessoas entendam o sistema e não percam a habilidade de operar sem ele, caso o computador falhe.
 - **Sustentabilidade:** detectar sobrecargas e prever falhas evita queimar componentes que não podem ser repostos e reduz o desperdício de energia. Estruturas eficientes (O(log n) em vez de O(n)) também consomem menos processamento, e portanto menos energia, num ambiente em que cada watt conta.
 
----
+
 
 
 ## 10. Limitações e trabalhos futuros
@@ -425,7 +421,7 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 - **Evolução temporal.** Não foi implementada simulação numérica da latência ao longo do tempo. Uma extensão natural seria evoluir a latência ciclo a ciclo com um método simples (como Euler).
 - **Pesos fixos.** A criticidade usa pesos definidos por nós. O ideal é calibrá-los com a equipe de operação.
 
----
+
 
 
 ## 11. Como executar
@@ -457,7 +453,7 @@ pytest tests/test_estruturas.py
 | 7 | Benchmark Heap × lista comum |
 | 8 | Pipeline completo (dados → modelo → heap → trie) |
  
----
+
 
 ## 12. Conclusão
 
