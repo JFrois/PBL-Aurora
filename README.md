@@ -1,20 +1,22 @@
 # 🚀 Missão Aurora Siger 
 
-![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![Python Version](https://img.shields.io/badge/python-3.12%2B-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Em_Andamento-orange.svg)
-![Status](https://img.shields.io/badge/Progresso-Fase_5%2F7-blue.svg)
+![Status](https://img.shields.io/badge/Progresso-Fase_6%2F7-blue.svg)
 
 Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional de uma missão em Marte, integrando análise de telemetria, 
-gerenciamento de pouso, inteligência operacional, modelagem de infraestrutura e tomada de decisão cognitiva com inteligência artificial.
+gerenciamento de pouso, inteligência operacional, modelagem de infraestrutura, tomada de decisão cognitiva com inteligência artificial e um sistema computacional integrado de monitoramento da colônia.
 <br>
+
 
 ## Visão Geral
 
-O projeto evolui em cinco fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente e o núcleo cognitivo da base marciana. 
-Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática, lógica booleana, engenharia de prompts e 
-otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
+O projeto evolui em seis fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente  da base, passando pelo núcleo cognitivo e pelo sistema computacional integrado (SCIC). 
+Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática, lógica booleana, engenharia de prompts, análise numérica,
+aprendizado de máquina e otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
 
 <br>
+
 
 ## Fases do Projeto
   
@@ -974,7 +976,7 @@ Módulo está ativo? (s/n): n
 <br>
 
 ### 🚀 Fase 6: Sistema Computacional Integrado da Colônia (SCIC)
-Une telemetria elétrica e de comunicação, análise numérica, um modelo de regressão para a latência e estruturas de dados avançadas (Heap e Trie) num pipeline único, operado por menu de terminal.
+Une telemetria elétrica e de comunicação, análise numérica e modelo de regressão para a latência e estruturas de dados avançadas (Heap e Trie) num pipeline único, operado por menu de terminal.
 <details>
 <summary>Clique para ver a fase 6 em detalhe:</summary>
 
@@ -982,6 +984,15 @@ Une telemetria elétrica e de comunicação, análise numérica, um modelo de re
 O SCIC coleta e valida a telemetria dos 8 módulos da colônia (`dados_aurora_siger.csv`), calcula potência elétrica ($P = V \times I$) e converte códigos de sensor (hex ↔ dec ↔ bin). Também estima a latência de comunicação com scikit-learn e mede os erros dessa estimativa. Por fim, transforma os resultados em ação: uma **fila de prioridade (Heap)** para alertas críticos e uma **Trie** para localizar módulos, sensores e comandos por prefixo.
 
 Relatório completo: [`docs/fase6/relatorio_tecnico.md`](docs/fase6/relatorio_tecnico.md) · Roteiro do vídeo: [`docs/fase6/roteiro_video.md`](docs/fase6/roteiro_video.md)
+
+```mermaid
+flowchart LR
+    A["dados.py / hardware.py<br/>Dados e eletricidade"] --> B["modelagem.py<br/>Regressão e métricas"]
+    B --> C["estruturas.py<br/>Heap de alertas"]
+    B --> D["estruturas.py<br/>Trie de módulos"]
+    C --> E["fase6_scic.py<br/>Menu CLI"]
+    D --> E
+```
 
 ## Divisão por analista
 | Analista | Arquivo | Entregas |
@@ -1024,7 +1035,7 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 
 ## Tecnologias Utilizadas
 
-- Python 3.9+
+- Python 3.12+
 - Estruturas condicionais e de repetição
 - Listas, filas e pilhas
 - Algoritmos de busca e ordenação
@@ -1053,7 +1064,7 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 
 1. **Clonar o repositório:**
    ```bash
-   git clone [https://github.com/JFrois/PBL-Aurora.git](https://github.com/JFrois/PBL-Aurora.git)
+   git clone https://github.com/JFrois/PBL-Aurora.git
    cd PBL-Aurora
    ```
 
@@ -1105,7 +1116,7 @@ Também é possível inspecionar módulos e testes de forma isolada:
 # Execução da suíte de testes unitários:
 pytest
 
-# Teste direto do Ncleo Cognitivo (NCAS - Fase 5):
+# Teste direto do Núcleo Cognitivo (NCAS - Fase 5):
 python -m src.fases_anteriores.fase5
 
 # Teste da infraestrutura de grafos (SIGIC - Fase 4):
@@ -1113,7 +1124,7 @@ python -m src.fases_anteriores.fase4
 
 # SCIC - Fase 6 (menu próprio, não exige as fases anteriores):
 python -m src.fase6_scic.fase6_scic
-python -m src.fase6_scic.fase6_scic --auto   # pipeline completo sem menu
+python -m src.fase6_scic.fase6_scic --auto    # pipeline completo sem menu
 pytest tests/test_estruturas.py               # testes do Heap e da Trie
 ```
 
@@ -1125,48 +1136,55 @@ pytest tests/test_estruturas.py               # testes do Heap e da Trie
 PBL-Aurora/
 ├── .env.example                               # Modelo de credenciais
 ├── .gitignore                                 # Regras de exclusão do Git
+├── .python-version                            # Versão do Python do projeto
 ├── README.md                                  # Documentação central do projeto
-├── pyproject.toml                             # Configuração moderna de empacotamento
+├── pyproject.toml                             # Configuração de empacotamento
 ├── requirements.txt                           # Dependências do projeto
 ├── uv.lock                                    # Lockfile de resolução exata de dependências
-├── main.py                                    # Orquestrador central e máquina de estados
-│
-├── assets/
-│   └── fase6/                                 # Gráficos e evidências visuais
+├── main.py                                    # Orquestrador central e máquina de estados                             
 │
 ├── data/
-│   ├── raw/                                   # Dados brutos de telemetria
-│   └── processed/                             # Dados processados e persistidos
-│       ├── dados_aurora_siger.csv
-│       ├── dados_colonia.json
-│       └── registros_colonia.txt
+│   └── processed/                               # Dados processados e persistidos
+│       ├── dados_aurora_siger.csv               # Base de telemetria (Fase 6)
+│       ├── dados_aurora_siger_com_previsao.csv  # Base com previsões do modelo (Fase 6)
+│       ├── dados_colonia.json                   # Dados estruturados do NCAS (Fase 5)
+│       └── registros_colonia.txt                # Logs operacionais do NCAS (Fase 5)
 │
 ├── docs/                                      # Relatórios técnicos e diagramas formais
-│   ├── analise_tecnica_organizacao_computacional.pdf
-│   ├── estrutura_de_dados_NCAS.pdf
-│   ├── prompts_utilizados.pdf
-│   ├── rede_colonia.pdf
-│   └── reflexao_teorica_etica_diversidade.pdf
+│   ├── fase4/
+│   │   ├── rede_colonia.pdf
+│   │   └── relatorio_pbl_fase4.pdf
+│   ├── fase5/
+│   │   ├── analise_tecnica_organizacao_computacional.pdf
+│   │   ├── estrutura_de_dados_NCAS.pdf
+│   │   ├── prompts_utilizados.pdf
+│   │   ├── reflexao_teorica_etica_diversidade.pdf
+│   │   ├── regras_logicas.pdf
+│   │   ├── FASE5.zip
+│   │   └── link_video.txt
+│   └── fase6/
+│       ├── relatorio_tecnico.md
+│       ├── roteiro_video.md
+│       ├── link_video.txt
+│       └── graficos_ou_imagens/               # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
 │
-└── src/
-    ├── core/                                  # Utilitários partilhados
-    ├── fases_anteriores/                      # Módulos operacionais das Fases 1 a 5
-    │   ├── fase1.py                           # Validação de telemetria e pré-lançamento
-    │   ├── fase2.py                           # Pouso orbital e gestão de contingência
-    │   ├── fase3.py                           # Balanço de energia e regressão linear
-    │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
-    │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
-    └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
-        ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
-        ├── hardware.py                        # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
-        ├── modelagem.py                       # Regressão, erros e métricas (Analista 2)
-        ├── estruturas.py                      # HeapAlertas e TrieModulos (Analista 3)
-        └── fase6_scic.py                      # Orquestrador/menu CLI do SCIC (Analista 3)
-
-docs/fase5/                                   # FASE5.zip, link_video.txt
-docs/fase6/                                   # relatorio_tecnico.md, roteiro_video.md, link_video.txt
-graficos_ou_imagens/                           # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
-tests/test_estruturas.py                       # Testes unitários do Heap e da Trie
+├── src/
+│    ├── core/                                  # Utilitários partilhados
+│    ├── fases_anteriores/                      # Módulos operacionais das Fases 1 a 5
+│    │   ├── fase1.py                           # Validação de telemetria e pré-lançamento
+│    │   ├── fase2.py                           # Pouso orbital e gestão de contingência
+│    │   ├── fase3.py                           # Balanço de energia e regressão linear
+│    │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
+│    │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
+│    └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
+│        ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
+│        ├── hardware.py                        # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
+│        ├── modelagem.py                       # Regressão, erros e métricas (Analista 2)
+│        ├── estruturas.py                      # HeapAlertas e TrieModulos (Analista 3)
+│        └── fase6_scic.py                      # Orquestrador/menu CLI do SCIC (Analista 3)
+│
+└── tests/
+    └── test_estruturas.py                     # Testes unitários do Heap e da Trie
 ```
 
 <br>
