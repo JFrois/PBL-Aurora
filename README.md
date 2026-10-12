@@ -1032,16 +1032,199 @@ RMSE/MAE ≈ 1,6: os picos de latência (outliers) pesam mais no RMSE.
 
 ## Exemplo de saída no terminal
 ```plaintext
+===============================================================================
+                           PIPELINE COMPLETO DO SCIC                            
+================================================================================
+
+>>> ETAPA 1/3 — DADOS E TELEMETRIA (Analista 1)
+
+================================================================================
+                 BASE DE DADOS DA COLÔNIA - SCIC / AURORA SIGER                 
+================================================================================
+
+[1] ARQUIVO GERADO
+--------------------------------------------------------------------------------
+Arquivo : data\processed\dados_aurora_siger.csv
+Registros: 120  (15 ciclos x 8 módulos)
+Colunas  : 20
+
+[2] AMOSTRA (primeiro ciclo)
+--------------------------------------------------------------------------------
+ timestamp_id            nome_modulo codigo_sensor_hex  latencia_observada_ms  latencia_prevista_ms status_operacional  prioridade
+            1         Habitação Alfa              0x1A                  44.32                 38.86              ativo     4
+            2    Comunicação Central              0x2B                  29.25                 29.55              ativo     3
+            3     Controle de Missão              0x3B                  48.35                 39.10             alerta     4
+            4 Laboratório Científico              0x4B                  46.42                 54.55              ativo     2
+            5         Suporte Médico              0x5A                  49.13                 46.75              ativo     4
+            6        Estufa Agrícola              0x6A                  71.29                 67.52              ativo     1
+            7 Armazenamento de Dados              0x7A                  40.20                 40.32         manutencao     1
+            8   Produção de Oxigênio              0x8B                  44.72                 36.85              ativo     4
+
+[3] VALIDAÇÃO
+--------------------------------------------------------------------------------
+OK - nenhum problema encontrado.
+
+[4] INDICADORES
+--------------------------------------------------------------------------------
+total_registros                  120
+disponibilidade_%                75.0
+taxa_alertas_%                   15.83
+em_manutencao_%                  9.17
+latencia_media_ms                44.98
+latencia_acima_do_previsto_%     49.17
+potencia_media_w                 4062.08
+registros_em_sobrecarga          4
+
+[5] SITUAÇÃO DOS REGISTROS
+--------------------------------------------------------------------------------
+status_operacional
+ativo         90
+alerta        19
+manutencao    11
+
+[6] LATÊNCIA MÉDIA POR MÓDULO (ms)
+--------------------------------------------------------------------------------
+                        latencia_observada_ms  latencia_prevista_ms
+nome_modulo                                                        
+Estufa Agrícola                         69.47                 67.00
+Laboratório Científico                  51.82                 52.59
+Produção de Oxigênio                    45.63                 43.99
+Habitação Alfa                          44.92                 46.24
+Suporte Médico                          41.00                 42.28
+Controle de Missão                      38.55                 34.50
+Armazenamento de Dados                  37.97                 36.55
+Comunicação Central                     30.46                 30.65
+
+================================================================================
+
+>>> ETAPA 2/3 — MODELAGEM E MÉTRICAS (Analista 2)
+
+================================================================================
+               MODELAGEM, ERROS E MÉTRICAS (SCIC / AURORA SIGER)                
+================================================================================
+
+[1] DADOS
+--------------------------------------------------------------------------------
+Registros: 120 | Treino: 96 | Teste: 24
+Variáveis de entrada: 14
+
+[2] PONTO FLUTUANTE
+--------------------------------------------------------------------------------
+0.1 + 0.2 == 0.3                 False
+valor de 0.1 + 0.2               0.30000000000000004
+0.1 + 0.2 ~= 0.3 (np.isclose)    True
+dez somas de 0.1 == 1.0          False
+erro acumulado                   1.1102230246251565e-16
+Diferenças de ~1e-16 são ruído da representação binária, não erro do modelo.
+
+[3] MODELO: REGRESSÃO LINEAR
+--------------------------------------------------------------------------------
+RMSE médio na validação cruzada (treino): 5.75 ms
+Coeficientes (efeito de cada variável na latência):
+tensao_v                           -0.223
+corrente_a                         -0.934
+potencia_w                          0.007
+temperatura_c                      -0.036
+pressao_kpa                        -4.637
+radiacao_msv                        4.905
+prioridade                         -1.718
+tipo_modulo_armazenamento_dados   -26.709
+tipo_modulo_comunicacao           -31.306
+tipo_modulo_controle              -24.302
+tipo_modulo_habitacao             -15.465
+tipo_modulo_laboratorio           -10.602
+tipo_modulo_producao_oxigenio     -18.078
+tipo_modulo_suporte_medico        -20.182
+
+[4] MÉTRICAS
+--------------------------------------------------------------------------------
+                Treino   Teste
+MAE              3.019   3.601
+MSE             21.939  34.418
+RMSE             4.684   5.867
+R2               0.885   0.776
+RMSE_sobre_MAE   1.552   1.629
+- RMSE bem maior que o MAE: há alguns registros com erro muito grande.
+- R² = 0.78: o modelo explica essa parte da variação da latência, mas R² alto não significa que o modelo é perfeito.
+- R² de treino bem maior que o de teste: sinal de overfitting.
+
+[5] ERROS ABSOLUTO E RELATIVO (conjunto de teste)
+--------------------------------------------------------------------------------
+Erro absoluto: médio 3.60 ms | mediano 2.85 ms | máximo 24.49 ms
+Erro relativo: médio 7.92% | máximo 35.14%
+Aceitável (<5%): 37.5% | Atenção (5% a 15%): 58.3% | Preocupante (>15%): 4.2%
+
+[6] ARQUIVOS GERADOS
+--------------------------------------------------------------------------------
+Gráfico de avaliação : docs\fase6\graficos_ou_imagens\avaliacao_modelo_scic.png
+Gráfico por módulo   : docs\fase6\graficos_ou_imagens\erro_relativo_por_modulo.png
+CSV com previsões    : data\processed\dados_aurora_siger_com_previsao.csv
+
+================================================================================
+
+>>> ETAPA 3/3 — HEAP DE ALERTAS E TRIE (Analista 3)
+
+================================================================================
+               ESTRUTURAS DE DADOS: HEAP DE ALERTAS + TRIE (SCIC)               
+================================================================================
+
 [1] HEAP DE ALERTAS CRÍTICOS (max-heap)
+--------------------------------------------------------------------------------
 Registros na base: 120 | alertas na fila: 28
+Invariante do heap válida: True
+Top 5 alertas (ordem de atendimento):
 #1 [ 146.0] ciclo 15 | MOD-03 Controle de Missão       | 0x3A | Latência acima do previsto
       latência obs/prev: 58.84/34.22 ms | erro 41.84% (PREOCUPANTE) | P = 3500/6600 W
       motivos: status=alerta, Latência acima do previsto, erro do modelo PREOCUPANTE, módulo essencial, latência 71.9% acima da prevista
+#2 [ 137.1] ciclo  6 | MOD-08 Produção de Oxigênio     | 0x8B | Latência acima do previsto
+      latência obs/prev: 69.70/45.21 ms | erro 35.14% (PREOCUPANTE) | P = 4422/6900 W
+      motivos: status=alerta, Latência acima do previsto, erro do modelo PREOCUPANTE, módulo essencial, latência 54.2% acima da prevista
+#3 [ 135.9] ciclo 13 | MOD-05 Suporte Médico           | 0x5B | Latência acima do previsto
+      latência obs/prev: 64.65/42.60 ms | erro 34.11% (PREOCUPANTE) | P = 4907/7000 W
+      motivos: status=alerta, Latência acima do previsto, erro do modelo PREOCUPANTE, módulo essencial, latência 51.8% acima da prevista
+#4 [ 115.4] ciclo 12 | MOD-03 Controle de Missão       | 0x3B | Radiação elevada no módulo
+      latência obs/prev: 34.76/30.28 ms | erro 12.89% (ATENÇÃO) | P = 1626/6600 W
+      motivos: status=alerta, Radiação elevada no módulo, erro do modelo ATENÇÃO, módulo essencial
+#5 [ 103.0] ciclo  5 | MOD-03 Controle de Missão       | 0x3B | Radiação elevada no módulo
+      latência obs/prev: 41.07/43.59 ms | erro 6.14% (ATENÇÃO) | P = 4445/6600 W
+      motivos: status=alerta, Radiação elevada no módulo, erro do modelo ATENÇÃO, módulo essencial
+
+[2] HEAP x LISTA COMUM (inserir n + extrair todos em ordem)
+--------------------------------------------------------------------------------
+       n |   lista (ms) |  heap (ms) | ganho
+     500 |         2.51 |       3.13 | 0.8x
+    2000 |        49.67 |      14.08 | 3.5x
+    5000 |       323.51 |      68.32 | 4.7x
+Lista: extração O(n) -> total O(n²). Heap: O(log n) -> total O(n log n).
 
 [3] TRIE: BUSCA POR PREFIXO
+--------------------------------------------------------------------------------
+Chaves indexadas: 62
+
+Prefixo 'com' -> 1 resultado(s)
+  [módulo ] MOD-02 - Comunicação Central                            tipo comunicacao | sensores 0x2A, 0x2B
+
 Prefixo '0x2' -> 2 resultado(s)
   [sensor ] 0x2A (sensor do MOD-02 - Comunicação Central)           dec 42 | bin 00101010
   [sensor ] 0x2B (sensor do MOD-02 - Comunicação Central)           dec 43 | bin 00101011
+
+Prefixo 'mod-0' -> 8 resultado(s)
+  [módulo ] MOD-01 - Habitação Alfa                                 tipo habitacao | sensores 0x1A, 0x1B
+  [módulo ] MOD-02 - Comunicação Central                            tipo comunicacao | sensores 0x2A, 0x2B
+  [módulo ] MOD-03 - Controle de Missão                             tipo controle | sensores 0x3A, 0x3B
+  [módulo ] MOD-04 - Laboratório Científico                         tipo laboratorio | sensores 0x4A, 0x4B
+  [módulo ] MOD-05 - Suporte Médico                                 tipo suporte_medico | sensores 0x5A, 0x5B
+  [módulo ] MOD-06 - Estufa Agrícola                                tipo agricultura | sensores 0x6A, 0x6B
+  [módulo ] MOD-07 - Armazenamento de Dados                         tipo armazenamento_dados | sensores 0x7A, 0x7B
+  [módulo ] MOD-08 - Produção de Oxigênio                           tipo producao_oxigenio | sensores 0x8A, 0x8B
+
+Prefixo 'su' -> 1 resultado(s)
+  [módulo ] MOD-05 - Suporte Médico                                 tipo suporte_medico | sensores 0x5A, 0x5B
+
+Prefixo 'di' -> 1 resultado(s)
+  [comando] /diagnosticar                                           Diagnóstico elétrico de um circuito (P = V x I)
+
+================================================================================
 ```
 
 ## Dependências da Fase 

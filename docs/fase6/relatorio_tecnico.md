@@ -377,6 +377,7 @@ O hexadecimal é usado porque é compacto (1 dígito = 4 bits) e fácil de ler, 
 - **Potência:** $P = V \times I$ (`calcular_potencia`).
 - **Resistência (Lei de Ohm):** $R = V / I$ (`calcular_resistencia`).
 - **Diagnóstico:** `diagnosticar_circuito` compara $P$ com o limite do barramento e classifica como `NOMINAL` ou `CRÍTICO: Sobrecarga Térmica`.
+
 | Caso | $V$ | $I$ | $P = V \times I$ | $R = V / I$ | Limite | Resultado |
 |---|---|---|---|---|---|---|
 | Nominal (padrão do menu) | 230 V | 28 A | 6 440 W | 8,214 Ω | 6 500 W | NOMINAL |
