@@ -6,7 +6,7 @@
 
 Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional de uma missão em Marte, integrando análise de telemetria, 
 gerenciamento de pouso, inteligência operacional, modelagem de infraestrutura, tomada de decisão cognitiva com inteligência artificial e um sistema computacional integrado de monitoramento da colônia.
-<br>
+
 
 
 ## Visão Geral
@@ -15,7 +15,7 @@ O projeto evolui em seis fases integradas, cobrindo desde a validação inicial 
 Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática, lógica booleana, engenharia de prompts, análise numérica,
 aprendizado de máquina e otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
 
-<br>
+
 
 
 ## Fases do Projeto
@@ -38,13 +38,16 @@ Esta fase concentra a análise inicial da missão, verificando se a nave apresen
 - **Relatórios detalhados no console:** exibição de diagnósticos claros para cada rodada, destacando sucessos, falhas e anomalias detectadas.
 - **Análise com IA (Gemini):** em caso de falha, geração de um relatório técnico estruturado com apoio de IA para interpretação das anomalias.
 
+
 ## Parâmetros monitorados
+
 Durante a simulação, a camada de telemetria monitora:
 - **Temperatura:** condições térmicas internas e externas da nave.
 - **Integridade estrutural:** status da fuselagem e da estrutura principal.
 - **Energia:** carga disponível para sistemas essenciais.
 - **Pressão:** monitoramento dos tanques em faixa operacional segura.
 - **Módulos críticos:** verificação dos sistemas indispensáveis para a missão.
+
 
 ## Regras de negócio de segurança
 
@@ -57,6 +60,7 @@ Para que a decolagem seja autorizada, todos os critérios abaixo devem ser satis
 - **Módulos críticos:** todos com status `OK`.
 
 Se qualquer uma dessas condições falhar em uma rodada, o teste é marcado como falho e a missão é abortada ao final da sequência, com emissão de relatório técnico complementar.
+
 
 
 ##  Arquitetura e Fluxo de Decisão
@@ -240,7 +244,8 @@ Decolar exige mais que combustível; exige o compromisso de proteger quem parte,
 
 </details>
 
-<br>
+
+
 
 ### 🚀 Fase 2: Módulo de Gestão de Pouso e Estabilização da Base (MGPEB)
 Responsável por organizar a aproximação orbital, validar a ordem de prioridade dos módulos e controlar a liberação segura para pouso na colônia marciana.  
@@ -352,22 +357,24 @@ Reavaliar perfis de reentrada dos demais módulos e janelas de pouso conforme da
 ````
 </details>
 
-<br>
+
+
 
 ### 🚀 Fase 3: Sistema de Funcionamento Inteligente da Colônia
 Representa o funcionamento operacional da base após o pouso dos módulos, analisando consumo, desempenho e comportamento dos sistemas internos da colônia.
 
 <details>
-<summary>
-Clique para ver a fase 3 em detalhe:
-</summary>
-<br>
+<summary>Clique para ver a fase 3 em detalhe:</summary>
+
+
 
 ## Visão Geral da Fase
+
 A Fase 3 concentra a lógica de operação da colônia, monitorando o funcionamento dos módulos já ativados e avaliando condições de consumo, desempenho e equilíbrio energético da base.
 
 
 ## Objetivo da Fase
+
 - Monitorar os subsistemas essenciais da colônia.
 - Aplicar regras condicionais para respostas automáticas.
 - Avaliar o equilíbrio entre geração e consumo de energia.
@@ -509,10 +516,12 @@ INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA
 ===========================================================================
 ````
 </details>
-<br>
+
+
 
 ### 🚀 Fase 4: Sistema Inteligente de Gerenciamento da Infraestrutura da Colônia (SIGIC)
 Representa a infraestrutura da Aurora Siger como uma rede inteligente, modelando os módulos da base em um grafo para analisar conexões, rotas e decisões operacionais de forma estruturada.
+
 <details>
 <summary>Clique para ver a fase 4 em detalhe:</summary>
 
@@ -679,7 +688,7 @@ Digite a opção desejada: 4
 
 
 
-<br>
+
 
 ### 🚀 Fase 5: Núcleo Cognitivo da Aurora Siger (NCAS)
 Representa o sistema de suporte cognitivo e tomada de decisão da colônia, aplicando lógica booleana simplificada (Teoremas e Leis de De Morgan), 
@@ -688,8 +697,7 @@ engenharia de prompts estruturada (Zero-shot, Few-shot e Structured Outputs) e i
 <summary>Clique para ver a fase 5 em detalhe:</summary>
 
 ## Visão Geral da Fase
-A Fase 5 introduz o Núcleo Cognitivo da Aurora Siger (`codigo_fonte.py`), unificando a persistência de dados estruturados (`dados_colonia.json`) e 
-logs operacionais (`registros_colonia.txt`) com regras formais de lógica booleana e interações avançadas com modelos de linguagem (LLMs).
+A Fase 5 introduz o Núcleo Cognitivo da Aurora Siger (`src/fases_anteriores/fase5.py`), unificando a persistência de dados estruturados (`dados_colonia.json`) e logs operacionais (`registros_colonia.txt`) com regras formais de lógica booleana e interações avançadas com modelos de linguagem (LLMs).
 
 ## Objetivo da Fase
 - Aplicar o Teorema da Simplificação para otimizar a validação de alertas críticos e as Leis de De Morgan no controle de acesso e consulta a módulos restritos.
@@ -789,7 +797,7 @@ def montar_prompt_saida_estruturada(alerta: dict) -> str:
 ```
 
 #### **Mecanismo de Resiliência e Fallback (Mock Local)**
-Para assegurar que o sistema funcione de maneira ininterrupta (mesmo diante de falhas de conexão ou esgotamento de cota da API (como o erro `429 RESOURCE_EXHAUSTED`), o NCAS conta com um sub sistema inteligente de resiliência implementado em `simular_resposta_assistente()`:
+Para assegurar que o sistema funcione de maneira ininterrupta mesmo diante de falhas de conexão ou esgotamento de cota da API (como o erro `429 RESOURCE_EXHAUSTED`), o NCAS conta com um sub sistema inteligente de resiliência implementado em `simular_resposta_assistente()`:
 Caso a chave de API não esteja configurada ou ocorra uma exceção de rede/quota, o software aciona automaticamente um fallback local `resposta_mock`, retornando uma resposta estruturada de segurança.Essa estratégia cumpre integralmente os requisitos de robustez do projeto, garantindo que o programa nunca sofra crash na frente dos avaliadores.
 ```text
 def _resposta_mock(contexto: str = "geral") -> str:
@@ -973,7 +981,8 @@ Módulo está ativo? (s/n): n
 
 
 </details>
-<br>
+
+
 
 ### 🚀 Fase 6: Sistema Computacional Integrado da Colônia (SCIC)
 Une telemetria elétrica e de comunicação, análise numérica e modelo de regressão para a latência e estruturas de dados avançadas (Heap e Trie) num pipeline único, operado por menu de terminal.
@@ -983,7 +992,7 @@ Une telemetria elétrica e de comunicação, análise numérica e modelo de regr
 ## Visão Geral da Fase
 O SCIC coleta e valida a telemetria dos 8 módulos da colônia (`dados_aurora_siger.csv`), calcula potência elétrica ($P = V \times I$) e converte códigos de sensor (hex ↔ dec ↔ bin). Também estima a latência de comunicação com scikit-learn e mede os erros dessa estimativa. Por fim, transforma os resultados em ação: uma **fila de prioridade (Heap)** para alertas críticos e uma **Trie** para localizar módulos, sensores e comandos por prefixo.
 
-Relatório completo: [`docs/fase6/relatorio_tecnico.md`](docs/fase6/relatorio_tecnico.md) · Roteiro do vídeo: [`docs/fase6/roteiro_video.md`](docs/fase6/roteiro_video.md)
+Relatório completo: [`docs/fase6/relatorio_tecnico.md`](docs/fase6/relatorio_tecnico.md) · Link do vídeo: [`docs/fase6/link_video.txt`](docs/fase6/link_video.txt)
 
 ```mermaid
 flowchart LR
@@ -1026,11 +1035,29 @@ Prefixo '0x2' -> 2 resultado(s)
   [sensor ] 0x2B (sensor do MOD-02 - Comunicação Central)           dec 43 | bin 00101011
 ```
 
+## Dependências da Fase 
+O núcleo computacional da Fase 6 opera **exclusivamente com a biblioteca padrão do Python (3.12)** e com o conjunto de bibliotecas de ciência de dados:
+
+| Biblioteca | Finalidade no SCIC (Fase 6) | 
+| :--- | :--- | :--- | :--- |
+| **`python`** | Linguagem base do protótipo, estruturas de dados e terminal CLI. |
+| **`numpy`** | Geração pseudoaleatória reprodutível (`default_rng(42)`), manipulação matricial e conferência de ponto flutuante (`np.isclose`). |
+| **`pandas`** | Ingestão, higienização, validação tabular e persistência dos dados de telemetria (`.csv`). |
+| **`scikit-learn`** | Treino da Regressão Linear, divisão treino/teste (80/20), validação cruzada e cálculo de métricas de erro (MAE, MSE, $R^2$). |
+| **`matplotlib`** | Renderização visual dos gráficos de resíduos, valores reais vs. previstos e distribuição de erros. |
+| **`seaborn`** | Ajuste estético e gráficos comparativos de erro relativo por módulo da colônia. |
+
+Para garantir a confiabilidade matemática das estruturas manuais de ordenação e busca, foi utilizada uma única dependência adicional no escopo da Fase 6:
+
+* **Biblioteca:** `pytest` (versão `^=7.4.0`)
+* **Por que foi necessária:** O edital exige validação do comportamento assintótico e correto funcionamento do *sift-up*, *sift-down*, desempate por ordem de chegada no Heap e busca de prefixos na Trie. O `pytest` automatizou a suíte de testes unitários contida em `tests/test_estruturas.py`, atestando que todas as invariantes são preservadas antes da execução em produção.
+
+
 ## Reflexão
-O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontuação e o atendimento fica com o operador humano. Os pesos da criticidade são escolhas de valor e devem ser discutidos com toda a colônia. A manutenção preditiva (desvio entre latência observada e prevista) e a detecção de sobrecarga evitam desperdício de peças e de energia, que são recursos escassos em Marte.
+O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontuação e o atendimento fica com o operador humano. Os pesos da criticidade são escolhas de valor e devem ser discutidos com toda a colônia. Desvios de latência e sobrecargas podem orientar investigações e planejamento de recursos; antecipação de falhas e economia de energia ainda não foram validadas.
 
 </details>
-<br>
+
 
 
 ## Tecnologias Utilizadas
@@ -1052,7 +1079,7 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 - pandas, NumPy, scikit-learn e Matplotlib (ingestão, regressão, métricas e gráficos)
 - Heap binário (fila de prioridade) e Trie (árvore de prefixos)
 
-<br>
+
 
 ## Configuração e Instalação
 
@@ -1084,7 +1111,7 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 3. **Instalar dependências:**
    ```bash
    # Usando uv:
-   uv sync
+   uv sync --no-install-project
 
    # Ou usando pip:
    pip install -r requirements.txt
@@ -1105,7 +1132,16 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 
 ## Execução
 
-O sistema é centralizado através do orquestrador principal de estados da missão:
+Para avaliar a Fase 6, sem executar as  fases anteriores ou configurar uma API:
+
+```bash
+python codigo_fonte.py
+python codigo_fonte.py --auto
+```
+
+O modo `--auto` salva dados, previsões e gráficos. A opção 3 do menu lista as interfaces ou consulta um módulo, como `MOD-02`.
+
+Para a missão completa, use o orquestrador principal:
 
 ```bash
 python main.py
@@ -1138,6 +1174,7 @@ PBL-Aurora/
 ├── .gitignore                                 # Regras de exclusão do Git
 ├── .python-version                            # Versão do Python do projeto
 ├── README.md                                  # Documentação central do projeto
+├── codigo_fonte.py                            # Entrada principal da entrega da Fase 6
 ├── pyproject.toml                             # Configuração de empacotamento
 ├── requirements.txt                           # Dependências do projeto
 ├── uv.lock                                    # Lockfile de resolução exata de dependências
@@ -1176,7 +1213,7 @@ PBL-Aurora/
 │    │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
 │    │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
 │    └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
-│        ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
+|        ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
 │        ├── hardware.py                        # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
 │        ├── modelagem.py                       # Regressão, erros e métricas (Analista 2)
 │        ├── estruturas.py                      # HeapAlertas e TrieModulos (Analista 3)
@@ -1186,7 +1223,8 @@ PBL-Aurora/
     └── test_estruturas.py                     # Testes unitários do Heap e da Trie
 ```
 
-<br>
+
+
 
 ## 👥 Equipe 
 | Nome | RM |

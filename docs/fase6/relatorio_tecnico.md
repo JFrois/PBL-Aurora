@@ -393,13 +393,11 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 
 - **Telemetria/IoT:** cada módulo funciona como um nó IoT. Ele publica a cada ciclo leituras de tensão, corrente, temperatura, pressão, radiação e latência, identificadas pelo código hex do sensor. Na Terra o equivalente seria MQTT/LoRa. Na colônia, os pacotes passam pela rede de infraestrutura da Fase 4, alimentando a base do SCIC com 120 leituras (15 ciclos × 8 módulos)
 - **Monitoramento contínuo e detecção de anomalias.** Comparar a latência **observada** com a **esperada** pelo modelo, a cada ciclo, é uma detecção de anomalias. Dos 120 registros, **28 (23,3%)** entraram na fila de alertas por status de alerta, sobrecarga ou erro PREOCUPANTE. Os **picos** de latência (6% das leituras, com até 24,49 ms de erro no teste) são justamente os eventos que um monitoramento contínuo precisa capturar.
-- **Automação e decisão rápida.** O heap transforma dezenas de alertas em uma **ordem de atendimento** em O(log n) por alerta, sem que o operador precise ler todos. A tela de atendimento encaminha o alerta mais crítico à equipe e deixa explícito que a **decisão final é do operador humano**: o sistema prioriza, não decide sozinho.
-- **Armazenamento de dados e enlaces redundantes.** O módulo de Armazenamento de Dados (MOD-07) guarda a telemetria para análise posterior. Os módulos críticos já aparecem no mapeamento com **enlaces redundantes** (CAN Bus redundante em Controle de Missão e Oxigênio, SpaceWire redundante em Suporte Médico) e o barramento de Comunicação Central tem *backup*. Quando o heap indica degradação de latência em um módulo essencial, a redundância permite desviar o tráfego para o enlace reserva enquanto a equipe investiga
-- **Redes inteligentes (*smart grid*):** com $P = V \times I$ calculado em tempo real e comparado ao limite, o SCIC enxerga sobrecargas antes de um desligamento. Em uma extensão, a informação de "módulo essencial" e de prioridade poderia orientar **quais cargas reduzir primeiro** (por exemplo, laboratório e estufa antes de suporte médico e oxigênio), aproveitando as rotas mínimas da Fase 4 para redistribuir a comunicação.
+- **Automação de triagem:** o Heap organiza os alertas em uma **ordem de atendimento** em O(log n) por alerta, sem que o operador precise ler todos. A tela de atendimento encaminha o alerta mais crítico à equipe e deixa explícito que a **decisão final é do operador humano**: o sistema prioriza, não decide sozinho.
+- **Armazenamento e redundância:** O módulo de Armazenamento de Dados (MOD-07) guarda a telemetria para análise posterior. Os módulos críticos já aparecem no mapeamento com **enlaces redundantes** (CAN Bus redundante em Controle de Missão e Oxigênio, SpaceWire redundante em Suporte Médico) e o barramento de Comunicação Central tem *backup*. Quando o heap indica degradação de latência em um módulo essencial, a redundância permite desviar o tráfego para o enlace reserva enquanto a equipe investiga.
+- **Redes inteligentes:** com $P = V \times I$ calculado em tempo real e comparado ao limite, o SCIC enxerga sobrecargas antes de um desligamento. Em uma extensão, a informação de "módulo essencial" e de prioridade poderia orientar **quais cargas reduzir primeiro** (por exemplo, laboratório e estufa antes de suporte médico e oxigênio), aproveitando as rotas mínimas da Fase 4 para redistribuir a comunicação.
 - **Manutenção preditiva:** o modelo de regressão dá a latência **esperada**. Quando a observada se afasta muito dela (faixa PREOCUPANTE), o equipamento está se comportando fora do padrão, o que pode indicar degradação de antena, cabo ou fonte. Esse desvio entra no Heap e gera uma ordem de manutenção **antes** da falha. Assim a colônia sai da manutenção corretiva e passa para a preditiva, economizando peças, energia e horas de trabalho, que são os recursos mais escassos em Marte.
 - **Escalabilidade:** com mais módulos e sensores, o Heap (O(log n)) e a Trie (O(m + k)) mantêm o tempo de resposta adequado para operação em tempo real.
-
-
 
 
 ## 9. Reflexão social, cultural e sustentável (Requisito 5.8)
@@ -410,7 +408,7 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 - **Diversidade e acessibilidade:** a busca da Trie ignora acentos e maiúsculas, o que facilita o uso por tripulantes de línguas e teclados diferentes e por quem está sob estresse. Os códigos hex e os comandos dão uma linguagem comum, independente do idioma.
 - **Cultura e trabalho:** automatizar a triagem reduz a carga cognitiva das equipes em turnos longos. Em contrapartida, exige treino para que as pessoas entendam o sistema e não percam a habilidade de operar sem ele, caso o computador falhe.
 - **Sustentabilidade:** detectar sobrecargas e prever falhas evita queimar componentes que não podem ser repostos e reduz o desperdício de energia. Estruturas eficientes (O(log n) em vez de O(n)) também consomem menos processamento, e portanto menos energia, num ambiente em que cada watt conta.
-- **Inspiração em conhecimentos tradicionais:** Muitas culturas indígenas orientam o uso de recursos pelo cuidado coletivo e pelo impacto de longo prazo. Essa ideia inspira o SCIC em dois pontos, priorizar a prevenção (manutenção preditiva, em vez de consertar depois que quebra) e tratar a energia e as peças como bens compartilhados e finitos da comunidade, e não como algo a ser consumido até acabar, assim evitando o colapso do ecossistema técnico da base antes que ocorra escassez de recursos vitais.
+- **Inspiração em conhecimentos tradicionais:** culturas indígenas orientam o uso de recursos pelo cuidado coletivo e pelo impacto de longo prazo. Essa ideia inspira o SCIC em dois pontos, priorizar a prevenção (manutenção preditiva, em vez de consertar depois que quebra) e tratar a energia e as peças como bens compartilhados e finitos da comunidade, e não como algo a ser consumido até acabar, assim evitando o colapso do ecossistema técnico da base antes que ocorra escassez de recursos vitais.
 
 
 
@@ -429,10 +427,10 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 
 ```bash
 # Orquestrador independente da Fase 6 (menu interativo)
-python -m src.fase6_scic.fase6_scic
+python codigo_fonte.py
 
 # Pipeline completo sem menu
-python -m src.fase6_scic.fase6_scic --auto
+python codigo_fonte.py --auto
 
 # Pelo orquestrador geral (Fase 6 → opções 4 a 7)
 python main.py
@@ -440,6 +438,8 @@ python main.py
 # Testes das estruturas
 pytest tests/test_estruturas.py
 ```
+
+A execução independente não exige fases anteriores nem chave de API. Interfaces e redundância são descrições conceituais. O pipeline grava CSVs e gráficos.
 
 **Menu do SCIC** (`fase6_scic.py`):
  

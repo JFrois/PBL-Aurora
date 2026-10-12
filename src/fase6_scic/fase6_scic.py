@@ -22,7 +22,7 @@ from .dados import (
     imprimir_resumo_terminal,
     salvar_telemetria_csv,
 )
-from .hardware import decodificar_registrador_telemetria, diagnosticar_circuito
+from .hardware import decodificar_registrador_telemetria, diagnosticar_circuito, mapear_interfaces_io
 from .modelagem import executar_fase6_analista2
 from .estruturas import (
     Alerta,
