@@ -990,7 +990,9 @@ Une telemetria elétrica e de comunicação, análise numérica e modelo de regr
 <summary>Clique para ver a fase 6 em detalhe:</summary>
 
 ## Visão Geral da Fase
-O SCIC coleta e valida a telemetria dos 8 módulos da colônia (`dados_aurora_siger.csv`), calcula potência elétrica ($P = V \times I$) e converte códigos de sensor (hex ↔ dec ↔ bin). Também estima a latência de comunicação com scikit-learn e mede os erros dessa estimativa. Por fim, transforma os resultados em ação: uma **fila de prioridade (Heap)** para alertas críticos e uma **Trie** para localizar módulos, sensores e comandos por prefixo.
+O SCIC coleta e valida a telemetria dos 8 módulos da colônia (`dados_aurora_siger.csv`), calcula potência elétrica ($P = V \times I$) e converte códigos de sensor (hex ↔ dec ↔ bin). 
+Também estima a latência de comunicação com scikit-learn e mede os erros dessa estimativa. 
+Por fim, transforma os resultados em ação: uma **fila de prioridade (Heap)** para alertas críticos e uma **Trie** para localizar módulos, sensores e comandos por prefixo.
 
 Relatório completo: [`docs/fase6/relatorio_tecnico.md`](docs/fase6/relatorio_tecnico.md) · Link do vídeo: [`docs/fase6/link_video.txt`](docs/fase6/link_video.txt)
 
@@ -1002,6 +1004,13 @@ flowchart LR
     C --> E["fase6_scic.py<br/>Menu CLI"]
     D --> E
 ```
+
+## Objetivos da Fase
+- Telemetria e Dados: Estruturar e validar dados operacionais dos 8 módulos (.csv, .json, .txt) com Pandas e NumPy.
+- Modelagem e Análise Numérica: Prever latência via Regressão Linear (scikit-learn), avaliando métricas (MAE, RMSE, $R^2$), erros numéricos e limitações de ponto flutuante (IEEE 754).
+- Estruturas Avançadas: Priorizar alertas críticos com Max-Heap ($O(\log n)$) e realizar busca por prefixo com Trie ($O(m + k)$).
+- Hardware e Eletricidade (COA): Decodificar registradores (hex ↔ dec ↔ bin) e diagnosticar sobrecargas via Lei de Ohm e potência ($P = V \times I$).
+
 
 ## Divisão por analista
 | Analista | Arquivo | Entregas |
@@ -1039,7 +1048,7 @@ Prefixo '0x2' -> 2 resultado(s)
 O núcleo computacional da Fase 6 opera **exclusivamente com a biblioteca padrão do Python (3.12)** e com o conjunto de bibliotecas de ciência de dados:
 
 | Biblioteca | Finalidade no SCIC (Fase 6) | 
-| :--- | :--- | :--- | :--- |
+| :--- | :--- | 
 | **`python`** | Linguagem base do protótipo, estruturas de dados e terminal CLI. |
 | **`numpy`** | Geração pseudoaleatória reprodutível (`default_rng(42)`), manipulação matricial e conferência de ponto flutuante (`np.isclose`). |
 | **`pandas`** | Ingestão, higienização, validação tabular e persistência dos dados de telemetria (`.csv`). |
