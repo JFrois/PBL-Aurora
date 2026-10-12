@@ -576,3 +576,7 @@ def executar_fase4(resultado_fase2: dict, resultado_fase3: dict) -> dict:
             "parcialmente_operacional" if inativos else "totalmente_operacional"
         ),
     }
+
+
+if __name__ == "__main__":
+    executar_fase4(None, None)
