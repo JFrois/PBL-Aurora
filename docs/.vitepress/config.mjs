@@ -6,17 +6,27 @@ export default withMermaid(
     title: 'Missão Aurora Siger',
     description: 'Documentação Técnica & Centro de Comando da Missão em Marte',
     base: process.env.GITHUB_ACTIONS ? '/PBL-Aurora/' : '/',
+    appearance: 'force-dark',
     head: [
       [
         'link',
         {
           rel: 'icon',
-          href: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>',
+          href: '/mars_patch.jpg',
         },
       ],
       ['meta', { name: 'theme-color', content: '#0B0E14' }],
       ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
       ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
+      ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+      ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+      [
+        'link',
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;600;700&display=swap',
+        },
+      ],
     ],
     markdown: {
       lineNumbers: true,
@@ -26,7 +36,7 @@ export default withMermaid(
       darkTheme: true,
     },
     themeConfig: {
-      logo: '🚀',
+      logo: '/mars_patch.jpg',
       siteTitle: 'AURORA SIGER // MARS CONTROL',
       nav: [
         { text: 'Visão Geral', link: '/' },

@@ -5,6 +5,9 @@ hero:
   name: "MISSÃO AURORA SIGER"
   text: "Centro de Comando & Engenharia de Sistemas em Marte"
   tagline: "Plataforma integrada de simulação aeroespacial, análise de telemetria, núcleo cognitivo e monitoramento da colônia marciana."
+  image:
+    src: /mars_patch.jpg
+    alt: Insígnia da Missão Aurora Siger
   actions:
     - theme: brand
       text: "🚀 Iniciar Missão (Guia Rápido)"
@@ -40,7 +43,35 @@ features:
     link: "/fases/fase-6-scic"
 ---
 
-<div class="mars-grid-overlay" style="padding: 24px 0;">
+<div class="hud-telemetry-banner">
+  <div class="hud-item">
+    <span class="hud-dot live"></span>
+    <span class="hud-label">STATUS DA BASE</span>
+    <span class="hud-val green">NOMINAL (GO)</span>
+  </div>
+  <div class="hud-item">
+    <span class="hud-label">LOCALIZAÇÃO</span>
+    <span class="hud-val cyan">CRATERA JEZERO · MARTE</span>
+  </div>
+  <div class="hud-item">
+    <span class="hud-label">SOL MARCIANO</span>
+    <span class="hud-val amber">SOL 142.6</span>
+  </div>
+  <div class="hud-item">
+    <span class="hud-label">PRESSÃO ATM</span>
+    <span class="hud-val">0.63 kPa</span>
+  </div>
+  <div class="hud-item">
+    <span class="hud-label">TEMP AMBIENTE</span>
+    <span class="hud-val">-63.4 °C</span>
+  </div>
+  <div class="hud-item">
+    <span class="hud-label">ENLACE TERRA</span>
+    <span class="hud-val cyan">14m 22s ATRASO</span>
+  </div>
+</div>
+
+<div class="mars-grid-overlay">
 
 ## 🛰️ Mission Briefing (Visão Geral da Missão)
 

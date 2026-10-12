@@ -1,135 +1,310 @@
 /* ==============================================================================
-   OVERRIDE VITEPRESS COM DESIGN SYSTEM MARCIANO
+   OVERRIDE VITEPRESS COM DESIGN SYSTEM MARCIANO (HUD MISSION CONTROL)
    ============================================================================== */
 
 @import '../../assets/mars-theme.css';
 
-:root {
+:root,
+html,
+body,
+.dark {
   /* Cores de Marca VitePress */
   --vp-c-brand-1: #E05A47;
   --vp-c-brand-2: #C1440E;
   --vp-c-brand-3: #F39C12;
-  --vp-c-brand-soft: rgba(224, 90, 71, 0.16);
+  --vp-c-brand-soft: rgba(224, 90, 71, 0.18);
 
-  /* Fundo e Superfícies (Modo Escuro Forçado / Padrão Espacial) */
-  --vp-c-bg: #0B0E14;
-  --vp-c-bg-alt: #121721;
-  --vp-c-bg-soft: #161D2A;
-  --vp-c-bg-elv: #1A2232;
+  /* Fundo Espacial Obsidian Profundo */
+  --vp-c-bg: #0B0E14 !important;
+  --vp-c-bg-alt: #121721 !important;
+  --vp-c-bg-soft: #161D2A !important;
+  --vp-c-bg-elv: #1A2232 !important;
 
   /* Bordas e Divisórias */
-  --vp-c-border: #222F3E;
-  --vp-c-divider: #1A2433;
-  --vp-c-gutter: #0B0E14;
+  --vp-c-border: #222F3E !important;
+  --vp-c-divider: #1A2433 !important;
+  --vp-c-gutter: #0B0E14 !important;
 
   /* Textos */
-  --vp-c-text-1: #F0F4F8;
-  --vp-c-text-2: #94A3B8;
-  --vp-c-text-3: #64748B;
+  --vp-c-text-1: #F0F4F8 !important;
+  --vp-c-text-2: #94A3B8 !important;
+  --vp-c-text-3: #64748B !important;
 
   /* Custom Blocks (Admonitions) */
   --vp-custom-block-tip-border: var(--mars-cyan-telemetry);
-  --vp-custom-block-tip-text: var(--mars-cyan-telemetry);
+  --vp-custom-block-tip-text: #E0F7FA;
   --vp-custom-block-tip-bg: rgba(0, 229, 255, 0.08);
 
   --vp-custom-block-warning-border: var(--mars-amber-dust);
-  --vp-custom-block-warning-text: var(--mars-amber-dust);
+  --vp-custom-block-warning-text: #FFF8E1;
   --vp-custom-block-warning-bg: rgba(243, 156, 18, 0.08);
 
   --vp-custom-block-danger-border: var(--mars-rust-primary);
-  --vp-custom-block-danger-text: var(--mars-rust-primary);
-  --vp-custom-block-danger-bg: rgba(224, 90, 71, 0.08);
+  --vp-custom-block-danger-text: #FFEBEE;
+  --vp-custom-block-danger-bg: rgba(224, 90, 71, 0.09);
 
   --vp-custom-block-info-border: #38BDF8;
-  --vp-custom-block-info-text: #38BDF8;
+  --vp-custom-block-info-text: #E0F2FE;
   --vp-custom-block-info-bg: rgba(56, 189, 248, 0.08);
 
   /* Blocos de Código */
-  --vp-code-block-bg: #0F141D;
-  --vp-code-line-number-color: #475569;
+  --vp-code-block-bg: #0C1017 !important;
+  --vp-code-line-number-color: #475569 !important;
 }
 
-/* Forçar visual espacial no dark mode */
-.dark {
-  --vp-c-bg: #0B0E14;
-  --vp-c-bg-alt: #121721;
-  --vp-c-bg-soft: #161D2A;
-  --vp-c-bg-elv: #1A2232;
+/* Fundo Geral com Grid Espacial e Nebulosa Suave */
+body {
+  background-color: #0B0E14 !important;
+  background-image: 
+    radial-gradient(circle at 10% 15%, rgba(224, 90, 71, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 90% 85%, rgba(0, 229, 255, 0.06) 0%, transparent 45%),
+    linear-gradient(rgba(0, 229, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.015) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px !important;
+  font-family: var(--mars-font-sans) !important;
 }
 
-/* Barra de Navegação */
+/* ==============================================================================
+   BARRA DE NAVEGAÇÃO & HEADER
+   ============================================================================== */
 .VPNav {
-  background-color: rgba(11, 14, 20, 0.85) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  border-bottom: 1px solid rgba(0, 229, 255, 0.12) !important;
+  background-color: rgba(11, 14, 20, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7) !important;
+}
+
+.VPNavBarTitle .title {
+  font-family: var(--mars-font-display) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  color: var(--mars-cyan-telemetry) !important;
+  text-shadow: 0 0 12px var(--mars-cyan-glow) !important;
+  font-size: 0.95rem !important;
+}
+
+.VPNavBarTitle .logo {
+  border-radius: 50% !important;
+  border: 1.5px solid var(--mars-cyan-telemetry) !important;
+  box-shadow: 0 0 12px var(--mars-cyan-glow) !important;
+  height: 32px !important;
+  width: 32px !important;
 }
 
 /* Sidebar */
 .VPSidebar {
-  background-color: rgba(11, 14, 20, 0.95) !important;
-  border-right: 1px solid rgba(34, 47, 62, 0.7) !important;
+  background-color: rgba(11, 14, 20, 0.96) !important;
+  border-right: 1px solid rgba(34, 47, 62, 0.8) !important;
+  backdrop-filter: blur(14px) !important;
 }
 
-/* Botões de Ação na Home */
+.VPSidebarItem .text {
+  font-family: var(--mars-font-sans) !important;
+}
+
+/* ==============================================================================
+   HERO DA MISSÃO & ANIMAÇÃO DO PATCH
+   ============================================================================== */
+.VPHero .name {
+  background: linear-gradient(120deg, #FFFFFF 0%, #E05A47 45%, #00E5FF 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-family: var(--mars-font-display) !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  filter: drop-shadow(0 2px 20px rgba(224, 90, 71, 0.4));
+}
+
+.VPHero .text {
+  font-family: var(--mars-font-sans) !important;
+  color: var(--mars-cyan-telemetry) !important;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.4) !important;
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.VPHero .tagline {
+  color: var(--mars-text-secondary) !important;
+  font-size: 1.15rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Imagem do Patch da Missão no Hero */
+.VPHero .image-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.VPHero .image-src {
+  max-width: 330px !important;
+  max-height: 330px !important;
+  border-radius: 50% !important;
+  border: 2px solid var(--mars-cyan-telemetry) !important;
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.4), 0 0 80px rgba(224, 90, 71, 0.3) !important;
+  animation: float-patch 6s ease-in-out infinite alternate !important;
+}
+
+@keyframes float-patch {
+  0% {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 0 35px rgba(0, 229, 255, 0.35), 0 0 70px rgba(224, 90, 71, 0.25);
+  }
+  100% {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 0 55px rgba(0, 229, 255, 0.55), 0 0 100px rgba(224, 90, 71, 0.4);
+  }
+}
+
+/* Botões de Ação no Hero */
 .VPButton.brand {
   border-color: var(--mars-rust-primary) !important;
   background-color: var(--mars-rust-primary) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 0 16px var(--mars-rust-glow) !important;
-  font-weight: 600 !important;
+  box-shadow: 0 0 20px var(--mars-rust-glow) !important;
+  font-weight: 700 !important;
+  font-family: var(--mars-font-sans) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  border-radius: 8px !important;
 }
 
 .VPButton.brand:hover {
   background-color: #EF6C57 !important;
-  box-shadow: 0 0 24px var(--mars-rust-glow) !important;
+  box-shadow: 0 0 30px var(--mars-rust-glow) !important;
+  transform: translateY(-2px);
 }
 
 .VPButton.alt {
   border-color: var(--mars-cyan-telemetry) !important;
   color: var(--mars-cyan-telemetry) !important;
   background-color: rgba(0, 229, 255, 0.08) !important;
+  border-radius: 8px !important;
+  font-family: var(--mars-font-sans) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
 }
 
 .VPButton.alt:hover {
-  background-color: rgba(0, 229, 255, 0.18) !important;
-  box-shadow: 0 0 16px var(--mars-cyan-glow) !important;
+  background-color: rgba(0, 229, 255, 0.2) !important;
+  box-shadow: 0 0 24px var(--mars-cyan-glow) !important;
+  transform: translateY(-2px);
 }
 
-/* Títulos com Estética de Missão */
+/* ==============================================================================
+   FEATURE CARDS (MÓDULOS DA MISSÃO)
+   ============================================================================== */
+.VPFeature {
+  background: rgba(18, 23, 33, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(0, 229, 255, 0.16) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.VPFeature:hover {
+  transform: translateY(-5px) !important;
+  border-color: var(--mars-cyan-telemetry) !important;
+  box-shadow: 0 10px 32px rgba(0, 229, 255, 0.25), 0 0 18px var(--mars-rust-glow) !important;
+}
+
+.VPFeature::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mars-rust-primary), var(--mars-cyan-telemetry), transparent);
+  opacity: 0.75;
+}
+
+.VPFeature .title {
+  color: var(--mars-text-primary) !important;
+  font-family: var(--mars-font-sans) !important;
+  font-weight: 700 !important;
+  font-size: 1.12rem !important;
+}
+
+.VPFeature .details {
+  color: var(--mars-text-secondary) !important;
+  line-height: 1.6 !important;
+}
+
+.VPFeature .icon {
+  background: rgba(0, 229, 255, 0.1) !important;
+  border: 1px solid rgba(0, 229, 255, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 12px var(--mars-cyan-glow) !important;
+}
+
+/* ==============================================================================
+   TÍTULOS, TABELAS & CÓDIGO
+   ============================================================================== */
 h1, h2, h3 {
   letter-spacing: -0.01em;
   font-family: var(--mars-font-sans);
 }
 
 h2 {
-  border-bottom: 1px solid rgba(0, 229, 255, 0.15) !important;
-  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2) !important;
+  padding-bottom: 10px;
+  margin-top: 36px !important;
 }
 
-/* Tabelas Técnicas */
 table {
   border-collapse: collapse;
-  margin: 20px 0;
+  margin: 24px 0;
   width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th {
   background-color: #161D2A !important;
   color: var(--mars-cyan-telemetry) !important;
   font-family: var(--mars-font-mono);
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   border: 1px solid var(--mars-border-subtle) !important;
+  padding: 12px 14px !important;
 }
 
 td {
   border: 1px solid var(--mars-border-subtle) !important;
-  background-color: rgba(18, 23, 33, 0.5) !important;
+  background-color: rgba(18, 23, 33, 0.6) !important;
+  padding: 10px 14px !important;
 }
 
 /* Caixas de Código */
 div[class*='language-'] {
-  border: 1px solid var(--mars-border-subtle) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid var(--mars-border-hud) !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 8px !important;
+}
+
+/* Scrollbar Futurista */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0E14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1A2433;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mars-cyan-telemetry);
+  box-shadow: 0 0 10px var(--mars-cyan-glow);
 }
