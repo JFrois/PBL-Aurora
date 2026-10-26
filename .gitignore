@@ -28,3 +28,5 @@ node_modules/
 /.vitepress/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+# Banco SQLite gerado em tempo de execução (Fase 7)
+data/fase7/*.db
