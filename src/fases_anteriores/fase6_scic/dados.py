@@ -31,9 +31,9 @@ except ImportError:
 # =====================================================================
 # CONFIGURAÇÃO DE CAMINHOS COM PATHLIB (MODERNO E SEGURO)
 # =====================================================================
-# Resolve o caminho absoluto do arquivo atual e volta duas pastas
+# Resolve o caminho absoluto do arquivo atual e volta três pastas
 BASE_DIR = Path(__file__).resolve().parent
-RAIZ_PROJETO = BASE_DIR.parent.parent
+RAIZ_PROJETO = BASE_DIR.parent.parent.parent
 
 # Usa a barra (/) para unir caminhos de forma segura em qualquer SO
 CSV_FILE_PATH = RAIZ_PROJETO / "data" / "processed" / "dados_aurora_siger.csv"
@@ -338,7 +338,7 @@ def carregar_telemetria_csv(caminho=None):
     problemas = verificar_problemas(df)
     if problemas:
         raise ValueError(
-            "Arquivo fora do padrão. Rode 'python -m src.fase6_scic.dados' "
+            "Arquivo fora do padrão. Rode 'python -m src.fases_anteriores.fase6_scic.dados' "
             "para gerar a base de novo.\n - " + "\n - ".join(problemas)
         )
     return df

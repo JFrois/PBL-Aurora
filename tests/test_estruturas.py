@@ -4,7 +4,7 @@ import random
 
 import pandas as pd
 
-from src.fase6_scic.estruturas import (
+from src.fases_anteriores.fase6_scic.estruturas import (
     Alerta,
     HeapAlertas,
     TrieModulos,

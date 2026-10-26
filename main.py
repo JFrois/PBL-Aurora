@@ -12,20 +12,20 @@ from src.core.utils import exibir_cabecalho, limpar_tela, pausar
 
 # Importação dos módulos das fases
 import src.fases_anteriores.fase5 as fase5
-from src.fase6_scic.dados import gerar_dataset_telemetria, salvar_telemetria_csv
-from src.fase6_scic.hardware import (
+from src.fases_anteriores.fase6_scic.dados import gerar_dataset_telemetria, salvar_telemetria_csv
+from src.fases_anteriores.fase6_scic.hardware import (
     decodificar_registrador_telemetria,
     diagnosticar_circuito,
     mapear_interfaces_io,
 )
-from src.fase6_scic.modelagem import executar_fase6_analista2
+from src.fases_anteriores.fase6_scic.modelagem import executar_fase6_analista2
 from src.fases_anteriores.fase1 import executar_fase1
 from src.fases_anteriores.fase2 import executar_fase2
 from src.fases_anteriores.fase3 import executar_fase3
 from src.fases_anteriores.fase4 import executar_fase4
 
 # Importação da Fase 6 (Analista 3 — Heap, Trie e orquestrador do SCIC)
-import src.fase6_scic.fase6_scic as scic
+import src.fases_anteriores.fase6_scic.fase6_scic as scic
 
 # ==============================================================================
 # CONFIGURAÇÃO DE IA

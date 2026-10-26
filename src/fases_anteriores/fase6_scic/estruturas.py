@@ -37,7 +37,7 @@ from pathlib import Path
 import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parent
-RAIZ_PROJETO = BASE_DIR.parent.parent
+RAIZ_PROJETO = BASE_DIR.parent.parent.parent
 CSV_PREVISOES = RAIZ_PROJETO / "data" / "processed" / "dados_aurora_siger_com_previsao.csv"
 
 # =====================================================================

@@ -201,7 +201,7 @@ Saídas gráficas: `graficos_ou_imagens/avaliacao_modelo_scic.png` (real × prev
 
 ## 5. Priorização de alertas com Heap (Requisito 5.4)
 
-Código: `src/fase6_scic/estruturas.py` · Testes: `tests/test_estruturas.py` (6 testes, todos passando).
+Código: `src/fases_anteriores/fase6_scic/estruturas.py` · Testes: `tests/test_estruturas.py` (6 testes, todos passando).
 
 
 ### 5.1 `HeapAlertas` — fila de prioridade para alertas críticos
@@ -428,10 +428,10 @@ No segundo caso, o excesso de 6,2% soma 6,2 pontos à criticidade, além dos 30 
 
 ```bash
 # Orquestrador independente da Fase 6 (menu interativo)
-python codigo_fonte.py
+python -m src.fases_anteriores.fase6_scic.fase6_scic
 
 # Pipeline completo sem menu
-python codigo_fonte.py --auto
+python -m src.fases_anteriores.fase6_scic.fase6_scic --auto
 
 # Pelo orquestrador geral (Fase 6 → opções 4 a 7)
 python main.py
