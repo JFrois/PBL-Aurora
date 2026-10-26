@@ -22,3 +22,9 @@ __pycache__/
 
 # Saídas temporárias ou logs grandes
 *.log
+
+# Node & VitePress Build Cache
+node_modules/
+/.vitepress/
+docs/.vitepress/dist/
+docs/.vitepress/cache/

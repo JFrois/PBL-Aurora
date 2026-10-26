@@ -11,7 +11,7 @@ gerenciamento de pouso, inteligência operacional, modelagem de infraestrutura, 
 
 ## Visão Geral
 
-O projeto evolui em seis fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente  da base, passando pelo núcleo cognitivo e pelo sistema computacional integrado (SCIC). 
+O projeto evolui em seis fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente da base, passando pelo núcleo cognitivo e pelo sistema computacional integrado (SCIC). 
 Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática, lógica booleana, engenharia de prompts, análise numérica,
 aprendizado de máquina e otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
 
@@ -353,8 +353,8 @@ MOD-LAB-01 com Alerta de Combustível crítico, comprometendo manobras e perman�
 Ação imediata: Priorizar diagnóstico detalhado de MOD-ENE-01 (órbita/superfície) e MOD-LAB-01 (propelente).
 Reavaliar perfis de reentrada dos demais módulos e janelas de pouso conforme dados atualizados.
 =====================================================================================
+```
 
-````
 </details>
 
 
@@ -397,7 +397,7 @@ A Fase 3 concentra a lógica de operação da colônia, monitorando o funcioname
 * **Saída:** `"SUGESTÃO: Geração total (70W) maior que o Consumo (35W). Armazenar energia excedente."`
 
 
-## Exemplo saída terminal
+## Exemplo de saída no terminal
 
 ```text
 =====================================================================================
@@ -514,7 +514,8 @@ INICIANDO FASE 3: SISTEMA INTELIGENTE DA COLÓNIA
 -> A gestão de energia otimizada é um marco crítico para a sobrevivência a longo prazo da missão.
 -> Recomenda-se monitorização contínua para otimização e validação dos modelos de desempenho.
 ===========================================================================
-````
+```
+
 </details>
 
 
@@ -527,6 +528,8 @@ Representa a infraestrutura da Aurora Siger como uma rede inteligente, modelando
 
 ## Visão Geral da Fase
 Nesta fase, o SIGIC organiza a infraestrutura da colônia por meio de grafos e matriz de adjacência, permitindo visualizar a rede, explorar conexões entre módulos e identificar caminhos mais eficientes para o funcionamento da base.
+
+Relatório técnico: [`docs/fase4/relatorio_pbl_fase4.pdf`](docs/fase4/relatorio_pbl_fase4.pdf) · Diagrama da rede: [`docs/fase4/rede_colonia.pdf`](docs/fase4/rede_colonia.pdf)
 
 
 ## Objetivo da Fase
@@ -699,6 +702,8 @@ engenharia de prompts estruturada (Zero-shot, Few-shot e Structured Outputs) e i
 ## Visão Geral da Fase
 A Fase 5 introduz o Núcleo Cognitivo da Aurora Siger (`src/fases_anteriores/fase5.py`), unificando a persistência de dados estruturados (`dados_colonia.json`) e logs operacionais (`registros_colonia.txt`) com regras formais de lógica booleana e interações avançadas com modelos de linguagem (LLMs).
 
+Documentação técnica: pasta [`docs/fase5/`](docs/fase5/) · Link do vídeo: [`docs/fase5/link_video.txt`](docs/fase5/link_video.txt)
+
 ## Objetivo da Fase
 - Aplicar o Teorema da Simplificação para otimizar a validação de alertas críticos e as Leis de De Morgan no controle de acesso e consulta a módulos restritos.
 - Desenvolver e disparar prompts especializados (`Zero-Shot` para resumos executivos, `Few-Shot` para triagem de solicitações e `Structured Outputs` para retorno em JSON).
@@ -798,7 +803,7 @@ def montar_prompt_saida_estruturada(alerta: dict) -> str:
 
 #### **Mecanismo de Resiliência e Fallback (Mock Local)**
 Para assegurar que o sistema funcione de maneira ininterrupta mesmo diante de falhas de conexão ou esgotamento de cota da API (como o erro `429 RESOURCE_EXHAUSTED`), o NCAS conta com um sub sistema inteligente de resiliência implementado em `simular_resposta_assistente()`:
-Caso a chave de API não esteja configurada ou ocorra uma exceção de rede/quota, o software aciona automaticamente um fallback local `resposta_mock`, retornando uma resposta estruturada de segurança.Essa estratégia cumpre integralmente os requisitos de robustez do projeto, garantindo que o programa nunca sofra crash na frente dos avaliadores.
+Caso a chave de API não esteja configurada ou ocorra uma exceção de rede/quota, o software aciona automaticamente um fallback local `resposta_mock`, retornando uma resposta estruturada de segurança. Essa estratégia cumpre integralmente os requisitos de robustez do projeto, garantindo que o programa nunca sofra crash na frente dos avaliadores.
 ```text
 def _resposta_mock(contexto: str = "geral") -> str:
     """
@@ -938,7 +943,7 @@ Digite o número da opção desejada: 2
 
 [3] PROMPT DE SAÍDA ESTRUTURADA (JSON):
  
- Resposta: ```json
+ Resposta (JSON):
 {
   "modulo": "MOD-LAB-01",
   "critico": true,
@@ -947,9 +952,6 @@ Digite o número da opção desejada: 2
 
 ----------------------------------------------------------------------
 
- >> Registro salvo com sucesso.
-```
-```text
  >> Registro salvo com sucesso.
 
 ======================================================================
@@ -1027,7 +1029,7 @@ flowchart LR
 RMSE/MAE ≈ 1,6: os picos de latência (outliers) pesam mais no RMSE.
 
 ## Estruturas de Dados
-- **`HeapAlertas` (max-heap feito à mão):** recebe os registros em `alerta`, com sobrecarga ou com erro PREOCUPANTE (28 na base) e os ordena por uma criticidade explicável (status, tipo de alerta, faixa de erro, módulo essencial, prioridade, excesso de potência e desvio de latência). Inserir e extrair custam **O(log n)** e consultar o topo, O(1). Uma lista comum custa O(n) em uma das duas operações. No benchmark com 5 000 alertas, o heap foi ~9× mais rápido.
+- **`HeapAlertas` (max-heap feito à mão):** recebe os registros em `alerta`, com sobrecarga ou com erro PREOCUPANTE (28 na base) e os ordena por uma criticidade explicável (status, tipo de alerta, faixa de erro, módulo essencial, prioridade, excesso de potência e desvio de latência). Inserir e extrair custam **O(log n)** e consultar o topo, O(1). Uma lista comum custa O(n) em uma das duas operações. No benchmark com 5 000 alertas, o heap foi ~9× mais rápido (ganho e tempos variam de acordo com o hardware de execução).
 - **`TrieModulos`:** busca por prefixo em **O(m + k)**, ignorando acentos e maiúsculas. Ex.: `com` → Comunicação Central, `0x2` → sensores 0x2A/0x2B, `di` → comando `/diagnosticar`.
 
 ## Exemplo de saída no terminal
@@ -1044,7 +1046,7 @@ RMSE/MAE ≈ 1,6: os picos de latência (outliers) pesam mais no RMSE.
 
 [1] ARQUIVO GERADO
 --------------------------------------------------------------------------------
-Arquivo : data\processed\dados_aurora_siger.csv
+Arquivo : data/processed/dados_aurora_siger.csv
 Registros: 120  (15 ciclos x 8 módulos)
 Colunas  : 20
 
@@ -1156,9 +1158,9 @@ Aceitável (<5%): 37.5% | Atenção (5% a 15%): 58.3% | Preocupante (>15%): 4.2%
 
 [6] ARQUIVOS GERADOS
 --------------------------------------------------------------------------------
-Gráfico de avaliação : docs\fase6\graficos_ou_imagens\avaliacao_modelo_scic.png
-Gráfico por módulo   : docs\fase6\graficos_ou_imagens\erro_relativo_por_modulo.png
-CSV com previsões    : data\processed\dados_aurora_siger_com_previsao.csv
+Gráfico de avaliação : docs/fase6/graficos_ou_imagens/avaliacao_modelo_scic.png
+Gráfico por módulo   : docs/fase6/graficos_ou_imagens/erro_relativo_por_modulo.png
+CSV com previsões    : data/processed/dados_aurora_siger_com_previsao.csv
 
 ================================================================================
 
@@ -1189,7 +1191,7 @@ Top 5 alertas (ordem de atendimento):
       latência obs/prev: 41.07/43.59 ms | erro 6.14% (ATENÇÃO) | P = 4445/6600 W
       motivos: status=alerta, Radiação elevada no módulo, erro do modelo ATENÇÃO, módulo essencial
 
-[2] HEAP x LISTA COMUM (inserir n + extrair todos em ordem)
+[2] HEAP x LISTA COMUM (inserir n + extrair todos em ordem; tempos variam conforme a CPU)
 --------------------------------------------------------------------------------
        n |   lista (ms) |  heap (ms) | ganho
      500 |         2.51 |       3.13 | 0.8x
@@ -1236,8 +1238,7 @@ O núcleo computacional da Fase 6 opera **exclusivamente com a biblioteca padrã
 | **`numpy`** | Geração pseudoaleatória reprodutível (`default_rng(42)`), manipulação matricial e conferência de ponto flutuante (`np.isclose`). |
 | **`pandas`** | Ingestão, higienização, validação tabular e persistência dos dados de telemetria (`.csv`). |
 | **`scikit-learn`** | Treino da Regressão Linear, divisão treino/teste (80/20), validação cruzada e cálculo de métricas de erro (MAE, MSE, $R^2$). |
-| **`matplotlib`** | Renderização visual dos gráficos de resíduos, valores reais vs. previstos e distribuição de erros. |
-| **`seaborn`** | Ajuste estético e gráficos comparativos de erro relativo por módulo da colônia. |
+| **`matplotlib`** | Renderização visual dos gráficos de resíduos, valores reais vs. previstos e distribuição de erros por módulo. |
 
 Para garantir a confiabilidade matemática das estruturas manuais de ordenação e busca, foi utilizada uma única dependência adicional no escopo da Fase 6:
 
@@ -1397,19 +1398,20 @@ PBL-Aurora/
 │       └── graficos_ou_imagens/               # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
 │
 ├── src/
-│    ├── core/                                  # Utilitários partilhados
-│    ├── fases_anteriores/                      # Módulos operacionais das Fases 1 a 5
-│    │   ├── fase1.py                           # Validação de telemetria e pré-lançamento
-│    │   ├── fase2.py                           # Pouso orbital e gestão de contingência
-│    │   ├── fase3.py                           # Balanço de energia e regressão linear
-│    │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
-│    │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
-│    └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
-|        ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
-│        ├── hardware.py                        # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
-│        ├── modelagem.py                       # Regressão, erros e métricas (Analista 2)
-│        ├── estruturas.py                      # HeapAlertas e TrieModulos (Analista 3)
-│        └── fase6_scic.py                      # Orquestrador/menu CLI do SCIC (Analista 3)
+│   ├── core/                                  # Utilitários compartilhados
+│   │   └── utils.py                           # Funções auxiliares de terminal e cabeçalho
+│   ├── fases_anteriores/                      # Módulos operacionais das Fases 1 a 5
+│   │   ├── fase1.py                           # Validação de telemetria e pré-lançamento
+│   │   ├── fase2.py                           # Pouso orbital e gestão de contingência
+│   │   ├── fase3.py                           # Balanço de energia e regressão linear
+│   │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
+│   │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
+│   └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
+│       ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
+│       ├── hardware.py                        # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
+│       ├── modelagem.py                       # Regressão, erros e métricas (Analista 2)
+│       ├── estruturas.py                      # HeapAlertas e TrieModulos (Analista 3)
+│       └── fase6_scic.py                      # Orquestrador/menu CLI do SCIC (Analista 3)
 │
 └── tests/
     └── test_estruturas.py                     # Testes unitários do Heap e da Trie

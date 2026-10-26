@@ -1,0 +1,17 @@
+{
+  "name": "pbl-aurora-docs",
+  "version": "1.0.0",
+  "description": "Documentação Técnica & Centro de Comando da Missão Aurora Siger (Marte)",
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "debug": "^4.4.3",
+    "mermaid": "^11.4.1",
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  }
+}

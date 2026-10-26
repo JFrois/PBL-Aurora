@@ -1,0 +1,286 @@
+/* ==============================================================================
+   MARS EXPLORATION UI - DESIGN TOKENS & TELEMETRY HUD STYLES
+   Missão Aurora Siger · Base Marciana de Pesquisa
+   ============================================================================== */
+
+:root {
+  /* 🌌 Paleta de Cores Marcianas (Deep Space / Ares Rover / Telemetria) */
+  --mars-bg-void: #0B0E14;             /* Espaço profundo / Obsidian */
+  --mars-bg-surface: #121721;          /* Superfície de módulos */
+  --mars-bg-card: rgba(18, 23, 33, 0.85); /* Glassmorphism aeroespacial */
+  --mars-bg-elevated: #1A2232;         /* Painéis de comando */
+  
+  /* 🔴 Acentos Marcianos (Ferrugem / Terracota / Ares Red) */
+  --mars-rust-primary: #E05A47;        /* Realce principal de propulsão */
+  --mars-rust-dark: #C1440E;           /* Terracota marciana */
+  --mars-rust-glow: rgba(224, 90, 71, 0.35);
+
+  /* ⚡ Telemetria, Feixes Quânticos & Sinais */
+  --mars-cyan-telemetry: #00E5FF;      /* Dados, sinais e HUD */
+  --mars-cyan-glow: rgba(0, 229, 255, 0.35);
+  --mars-amber-dust: #F39C12;          /* Alertas de tempestade / poeira */
+  --mars-green-nominal: #00E676;       /* Status GO / Operação nominal */
+  --mars-red-critical: #FF3D71;        /* Aborto / Falha crítica */
+  
+  /* 📐 Bordas e Divisórias */
+  --mars-border-subtle: #222F3E;
+  --mars-border-hud: rgba(0, 229, 255, 0.3);
+  --mars-border-alert: rgba(224, 90, 71, 0.4);
+
+  /* 📝 Tipografia */
+  --mars-text-primary: #F0F4F8;
+  --mars-text-secondary: #94A3B8;
+  --mars-text-muted: #64748B;
+  --mars-font-display: 'Orbitron', -apple-system, sans-serif;
+  --mars-font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mars-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ==============================================================================
+   HUD LIVE TELEMETRY TOP BAR
+   ============================================================================== */
+.hud-telemetry-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(18, 23, 33, 0.9);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 8px;
+  margin: 10px 0 30px 0;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 229, 255, 0.05);
+}
+
+.hud-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mars-font-mono);
+  font-size: 0.8rem;
+}
+
+.hud-dot.live {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--mars-green-nominal);
+  box-shadow: 0 0 10px var(--mars-green-nominal);
+  animation: pulse-green 1.8s infinite;
+}
+
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(0, 230, 118, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+}
+
+.hud-label {
+  color: var(--mars-text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hud-val {
+  font-weight: 700;
+  color: var(--mars-text-primary);
+}
+
+.hud-val.green { color: var(--mars-green-nominal); }
+.hud-val.cyan { color: var(--mars-cyan-telemetry); }
+.hud-val.amber { color: var(--mars-amber-dust); }
+
+/* ==============================================================================
+   COMPONENTES HUD & TELEMETRIA CUSTOMIZADOS
+   ============================================================================== */
+
+/* Grid de Fundo Espacial Sutil */
+.mars-grid-overlay {
+  background-image: 
+    linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  border-radius: 12px;
+  padding: 24px 20px;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+}
+
+/* 🏷️ Mission Patches (Badges de Missão) */
+.mission-patch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-family: var(--mars-font-mono);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--mars-rust-primary);
+  background: linear-gradient(135deg, rgba(224, 90, 71, 0.2), rgba(11, 14, 20, 0.9));
+  color: #FFA590;
+  box-shadow: 0 0 14px var(--mars-rust-glow);
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: all 0.25s ease;
+}
+
+.mission-patch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--mars-rust-glow);
+}
+
+.mission-patch.cyan {
+  border-color: var(--mars-cyan-telemetry);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(11, 14, 20, 0.9));
+  color: var(--mars-cyan-telemetry);
+  box-shadow: 0 0 14px var(--mars-cyan-glow);
+}
+
+.mission-patch.cyan:hover {
+  box-shadow: 0 0 22px var(--mars-cyan-glow);
+}
+
+.mission-patch.green {
+  border-color: var(--mars-green-nominal);
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.2), rgba(11, 14, 20, 0.9));
+  color: var(--mars-green-nominal);
+  box-shadow: 0 0 14px rgba(0, 230, 118, 0.3);
+}
+
+.mission-patch.amber {
+  border-color: var(--mars-amber-dust);
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.2), rgba(11, 14, 20, 0.9));
+  color: var(--mars-amber-dust);
+  box-shadow: 0 0 14px rgba(243, 156, 18, 0.3);
+}
+
+/* 📟 Terminal de Telemetria */
+.telemetry-card {
+  background: var(--mars-bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--mars-border-hud);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 22px 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.telemetry-card::before {
+  content: "TELEMETRY_LINK_ESTABLISHED // SYS_OK";
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  font-family: var(--mars-font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--mars-cyan-telemetry);
+  opacity: 0.75;
+}
+
+/* 📊 Painel de Indicadores (Métricas em Tempo Real) */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.metric-box {
+  background: var(--mars-bg-elevated);
+  border: 1px solid var(--mars-border-subtle);
+  border-left: 3px solid var(--mars-cyan-telemetry);
+  border-radius: 8px;
+  padding: 16px 20px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-box:hover {
+  transform: translateY(-3px);
+  border-color: var(--mars-cyan-telemetry);
+  box-shadow: 0 6px 24px var(--mars-cyan-glow);
+}
+
+.metric-label {
+  font-family: var(--mars-font-sans);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  color: var(--mars-text-secondary);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.metric-value {
+  font-family: var(--mars-font-mono);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--mars-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.metric-unit {
+  font-size: 0.82rem;
+  color: var(--mars-cyan-telemetry);
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+/* 🛡️ Admonitions & Callouts Customizados */
+.custom-callout {
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin: 22px 0;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  position: relative;
+}
+
+.callout-mission-status {
+  background: rgba(0, 229, 255, 0.07);
+  border: 1px solid var(--mars-cyan-telemetry);
+  box-shadow: 0 0 20px var(--mars-cyan-glow);
+}
+
+.callout-telemetry {
+  background: rgba(18, 23, 33, 0.95);
+  border: 1px solid var(--mars-border-hud);
+  font-family: var(--mars-font-mono);
+}
+
+.callout-security-protocol {
+  background: rgba(224, 90, 71, 0.09);
+  border: 1px solid var(--mars-rust-primary);
+  box-shadow: 0 0 20px var(--mars-rust-glow);
+}
+
+.callout-captains-log {
+  background: rgba(243, 156, 18, 0.07);
+  border: 1px solid var(--mars-amber-dust);
+  box-shadow: 0 0 20px rgba(243, 156, 18, 0.25);
+}
+
+.callout-header {
+  font-family: var(--mars-font-mono);
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.callout-mission-status .callout-header { color: var(--mars-cyan-telemetry); }
+.callout-telemetry .callout-header { color: var(--mars-cyan-telemetry); }
+.callout-security-protocol .callout-header { color: var(--mars-rust-primary); }
+.callout-captains-log .callout-header { color: var(--mars-amber-dust); }
