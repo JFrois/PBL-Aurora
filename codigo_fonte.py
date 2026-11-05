@@ -225,7 +225,9 @@ def opcao_sustentabilidade() -> None:
 
 
 def opcao_analisar_colonia() -> None:
-    """Fluxo integrado (exemplo do enunciado): consulta os registros no banco, classifica o
+    """Integra os módulos do SIFSM em uma análise de sustentabilidade.
+    
+    Fluxo integrado (exemplo do enunciado): consulta os registros no banco, classifica o
     risco com a regra booleana, organiza os alertas em estrutura de dados, roda a simulação,
     estima com a regressão e exibe a recomendação técnica + análise final.
 
@@ -237,7 +239,255 @@ def opcao_analisar_colonia() -> None:
         5. modelo_linear.executar_modelo_linear() -> previsão
         6. apresentacao.exibir_analise_final(resultados)
     """
-    raise NotImplementedError("Integrantes 1 e 2: implementar opcao_analisar_colonia()")
+    from collections import deque
+
+    from src.fase7_sifsm import (
+        banco,
+        logica,
+        simulacao,
+        modelo_linear,
+        agentes,
+    )
+
+    print("\n1. CONSULTA DOS DADOS")
+
+    leituras = banco.listar_leituras(
+        limite=None,
+        ordem="asc",
+    )
+
+    if not leituras:
+        print("Não há leituras disponíveis para análise.")
+        return
+
+    print(f"Leituras encontradas: {len(leituras)}")
+
+    # Dicionário: mantém a leitura mais recente de cada módulo.
+    # A consulta está em ordem cronológica.
+    ultimas_leituras = {}
+
+    for leitura in leituras:
+        modulo = leitura["modulo_id"]
+        ultimas_leituras[modulo] = leitura
+
+    print(f"Módulos encontrados: {len(ultimas_leituras)}")
+
+    print("\n2. CLASSIFICAÇÃO DE RISCO")
+
+    prioridades = {
+        "bloqueado": 0,
+        "alto": 1,
+        "medio": 2,
+        "baixo": 3,
+    }
+
+    avaliacoes = []
+
+    for modulo, leitura in ultimas_leituras.items():
+        risco = logica.classificar_risco(
+            leitura,
+            leitura["limite_consumo_w"],
+            bool(leitura["essencial"]),
+        )
+
+        avaliacoes.append({
+            "modulo_id": modulo,
+            "risco": risco,
+            "data_registro": leitura["data_registro"],
+        })
+
+    # Ordenamos por prioridade antes de colocar na fila.
+    # A fila percorre os módulos na ordem de revisão definida.
+    avaliacoes.sort(
+        key=lambda avaliacao: prioridades[avaliacao["risco"]]
+    )
+
+    fila_revisao = deque(avaliacoes)
+
+    print(
+        "Ordem de revisão: leitura bloqueada, risco alto, "
+        "médio e baixo."
+    )
+
+    while fila_revisao:
+        avaliacao = fila_revisao.popleft()
+
+        print(
+            f" {avaliacao['modulo_id']} | "
+            f"risco: {avaliacao['risco']} | "
+            f"leitura: {avaliacao['data_registro']}"
+        )
+
+    print(
+        "A classificação considera a última leitura de cada módulo, "
+        "não o pior risco de todo o histórico."
+    )
+    print(
+        "Leitura bloqueada indica necessidade de verificar o sensor; "
+        "não significa necessariamente consumo elevado."
+    )
+
+    print("\n3. SIMULAÇÃO ENERGÉTICA")
+
+    resultado_simulacao = None
+
+    try:
+        resultado_simulacao = simulacao.executar_simulacao()
+    except ValueError as erro:
+        print(f"Simulação indisponível: {erro}")
+
+    print("\n4. MODELO LINEAR")
+
+    resultado_modelo = None
+
+    try:
+        resultado_modelo = modelo_linear.executar_modelo_linear()
+    except ValueError as erro:
+        print(f"Modelo linear indisponível: {erro}")
+
+    print("\n5. CONSULTA AOS AGENTES")
+
+    sessao = agentes.Sessao()
+
+    # Primeiro consulta a quantidade de registros da colônia.
+    pedido = "dados de todos os módulos"
+    print(f"\nConsulta: {pedido}")
+    print(agentes.executar_assistente(pedido, sessao))
+
+    # Usa o primeiro módulo da ordem de revisão.
+    modulo_referencia = avaliacoes[0]["modulo_id"]
+
+    pedido = f"risco {modulo_referencia}"
+    print(f"\nConsulta: {pedido}")
+    print(agentes.executar_assistente(pedido, sessao))
+
+    if resultado_modelo is not None:
+        pedido = f"consumo {modulo_referencia}"
+        print(f"\nConsulta: {pedido}")
+        print(agentes.executar_assistente(pedido, sessao))
+    else:
+        print(
+            "\nA consulta de estimativa de consumo foi omitida "
+            "porque o modelo linear está indisponível."
+        )
+
+    print("\nEtapas registradas pelos agentes:")
+
+    for evento in sessao.trilha:
+        print(f" - {evento}")
+
+    print("\n6. ANÁLISE FINAL")
+
+    contagens = {
+        "bloqueado": 0,
+        "alto": 0,
+        "medio": 0,
+        "baixo": 0,
+    }
+
+    for avaliacao in avaliacoes:
+        contagens[avaliacao["risco"]] += 1
+
+    print(
+        f"Módulos por classificação: "
+        f"{contagens['bloqueado']} bloqueados, "
+        f"{contagens['alto']} com risco alto, "
+        f"{contagens['medio']} com risco médio e "
+        f"{contagens['baixo']} com risco baixo."
+    )
+
+    if contagens["bloqueado"] > 0:
+        print(
+            "Prioridade: verificar sensores com leituras bloqueadas "
+            "antes de utilizar seus valores em decisões."
+        )
+
+    if contagens["alto"] > 0:
+        print(
+            "Solicitar revisão técnica do consumo elevado "
+            "nos módulos essenciais."
+        )
+
+    if contagens["medio"] > 0:
+        print(
+            "Avaliar o consumo elevado dos módulos não essenciais, "
+            "considerando suas dependências operacionais."
+        )
+
+    if resultado_simulacao is not None:
+        atual = resultado_simulacao["atual"]
+
+        print(
+            f"Energia do cenário original em "
+            f"{atual['duracao_h']:.1f} h: "
+            f"{atual['energia_wh']:.1f} Wh."
+        )
+
+        print(
+            f"Economia hipotética com redução de 15% "
+            f"nos módulos não essenciais: "
+            f"{resultado_simulacao['economia_wh']:.1f} Wh."
+        )
+
+        deficit = resultado_simulacao["bateria"]["deficit_wh"][-1]
+
+        print(
+            f"Energia não atendida no cenário de bateria "
+            f"de 48 h: {deficit:.1f} Wh."
+        )
+
+        if deficit > 0:
+            print(
+                "O cenário indica necessidade de revisar geração, "
+                "armazenamento ou demanda. "
+                "Os parâmetros da bateria são ilustrativos."
+            )
+
+    if resultado_modelo is not None:
+        print(
+            f"MAE da regressão: {resultado_modelo['mae']:.2f} W."
+        )
+        print(
+            f"MAE da referência pela média: "
+            f"{resultado_modelo['mae_baseline']:.2f} W."
+        )
+
+        if (
+            resultado_modelo["mae"]
+            >= resultado_modelo["mae_baseline"]
+        ):
+            print(
+                "A regressão não superou a média em MAE. "
+                "Não deve orientar controle operacional."
+            )
+        else:
+            print(
+                "A regressão superou a média neste teste, "
+                "mas ainda precisa de validação externa."
+            )
+
+    print("\nLIMITAÇÕES E RESPONSABILIDADE")
+
+    print(
+        "Os dados são sintéticos. A simulação usa aproximação linear "
+        "entre leituras e uma bateria ideal."
+    )
+    print(
+        "As leituras em falha permanecem na simulação energética "
+        "como valores hipotéticos; não são medições confiáveis."
+    )
+    print(
+        "Os agentes são simulados e usam ferramentas determinísticas. "
+        "Nenhum equipamento ou registro foi alterado."
+    )
+    print(
+        "As regras determinísticas classificam o risco; "
+        "a regressão apenas estima consumo e os agentes explicam."
+    )
+    print(
+        "Toda recomendação exige validação humana antes "
+        "de qualquer intervenção."
+    )
 
 
 OPCOES = {
