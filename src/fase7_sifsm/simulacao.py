@@ -1,5 +1,4 @@
-"""Simulação computacional e integração matemática  |  INTEGRANTE 2  |  Caps. 5, 6 e 10
-"""
+"""5.4 Simulação computacional e integração matemática  |  INTEGRANTE 2  |"""
 
 
 from datetime import datetime
