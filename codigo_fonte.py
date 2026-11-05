@@ -75,16 +75,21 @@ def opcao_cadastrar() -> None:
     dados = {
         "modulo_id": _pedir("Módulo (ex.: MOD-01)"),
         "codigo_sensor": _pedir("Código do sensor (opcional, ex.: 0x1A)"),
-        "consumo_w": _pedir("Consumo em W"),
-        "temperatura_c": _pedir("Temperatura em °C (opcional)"),
-        "umidade_pct": _pedir("Umidade em % (opcional)"),
-        "carga_bateria_pct": _pedir("Carga da bateria em % (opcional)"),
+        "consumo_w": float(_pedir("Consumo em W")),
+        "temperatura_c": float(_pedir("Temperatura em °C (opcional)")) if _pedir("Temperatura em °C (opcional)") else None,
+        "umidade_pct": float(_pedir("Umidade em % (opcional)")) if _pedir("Umidade em % (opcional)") else None,
+        "carga_bateria_pct": float(_pedir("Carga da bateria em % (opcional)")) if _pedir("Carga da bateria em % (opcional)") else None,
         "status_operacional": _pedir("Status (ativo/alerta/falha/manutencao)", "ativo"),
         "data_registro": _pedir("Data AAAA-MM-DD HH:MM (Enter = agora)"),
     }
     novo_id = banco.cadastrar_leitura(dados)
     historico.empilhar({"acao": "cadastrar", "id": novo_id})
     leitura = banco.buscar_leitura(novo_id)
+    if leitura is None:
+        raise ErroBanco(
+            f"A leitura #{novo_id} foi cadastrada, "
+            "mas não foi encontrada para análise."
+        )
     risco = logica.classificar_risco(leitura, leitura["limite_consumo_w"], bool(leitura["essencial"]))
     print(f"\n  [OK] Leitura #{novo_id} cadastrada. Risco avaliado pela regra booleana: {risco.upper()}")
     if risco in ("alto", "bloqueado"):
@@ -101,7 +106,7 @@ def opcao_listar() -> None:
 
     modulo = _pedir("Filtrar por módulo (Enter = todos)")
     status = _pedir("Filtrar por status (Enter = todos)")
-    limite = _pedir("Quantidade máxima de registros", "15")
+    limite = int(_pedir("Quantidade máxima de registros", "15"))
     print()
     _mostrar_leituras(banco.listar_leituras(modulo or None, status or None, limite))
 
@@ -110,7 +115,7 @@ def opcao_alterar() -> None:
     """UPDATE: altera campos de uma leitura (Enter mantém o valor atual)."""
     from src.fase7_sifsm import banco
 
-    id_leitura = _pedir("ID da leitura a alterar")
+    id_leitura = int(_pedir("ID da leitura a alterar"))
     atual = banco.buscar_leitura(id_leitura)
     if atual is None:
         print(f"\n  [!] Leitura #{id_leitura} não encontrada.")
@@ -137,7 +142,7 @@ def opcao_excluir() -> None:
     """DELETE: pede confirmação e exclui."""
     from src.fase7_sifsm import banco
 
-    id_leitura = _pedir("ID da leitura a excluir")
+    id_leitura = int(_pedir("ID da leitura a excluir"))
     registro = banco.buscar_leitura(id_leitura)
     if registro is None:
         print(f"\n  [!] Leitura #{id_leitura} não encontrada.")
