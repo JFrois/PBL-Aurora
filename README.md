@@ -2,7 +2,7 @@
 
 ![Python Version](https://img.shields.io/badge/python-3.12%2B-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Em_Andamento-orange.svg)
-![Status](https://img.shields.io/badge/Progresso-Fase_6%2F7-blue.svg)
+![Status](https://img.shields.io/badge/Progresso-Fase_7%2F7-blue.svg)
 
 Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional de uma missão em Marte, integrando análise de telemetria, 
 gerenciamento de pouso, inteligência operacional, modelagem de infraestrutura, tomada de decisão cognitiva com inteligência artificial e um sistema computacional integrado de monitoramento da colônia.
@@ -1251,13 +1251,287 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 
 </details>
 
+  
 
+### 🚀 Fase 7: Sistema Integrado de Futuro Sustentável em Marte — SIFSM
+
+Integra dados operacionais, banco de dados, lógica booleana, estruturas de dados, simulação energética, modelagem linear e agentes simulados para apoiar o planejamento sustentável da colônia Aurora Siger.
+
+<details>
+<summary>Clique para ver a Fase 7 em detalhe</summary>
+
+## Visão Geral da Fase
+
+O SIFSM conecta os registros da colônia a ferramentas de análise e interpretação. O sistema permite gerenciar leituras, classificar situações de risco, comparar cenários de consumo, avaliar o armazenamento de energia e discutir estimativas produzidas por regressão linear.
+
+A solução utiliza dados sintéticos e mantém supervisão humana nas decisões críticas. Os agentes funcionam por regras determinísticas, sem necessidade de chave de API ou chamadas a um LLM remoto.
+
+**Entrada principal:** `codigo_fonte.py`.
+
+**Documentação técnica:** [Relatório da Fase 7](docs/fase7/relatorio_tecnico.md).
+
+## Objetivos da Fase
+
+- Organizar os dados da colônia em banco SQLite.
+- Implementar operações CRUD com validação e tratamento de erros.
+- Aplicar uma regra booleana à classificação de risco.
+- Representar a decisão por circuito lógico.
+- Utilizar fila, pilha, tabela hash e heap.
+- Simular consumo energético e estado de carga de uma bateria.
+- Calcular energia acumulada por integração numérica.
+- Construir e avaliar um modelo de regressão linear.
+- Integrar agentes, ferramentas, handoffs, guardrails e memória de sessão.
+- Relacionar o protótipo à arquitetura computacional e à sustentabilidade.
+
+## Dados e Persistência
+
+A base original contém **120 leituras**, distribuídas entre oito módulos da colônia em 15 ciclos de seis horas.
+
+Os registros incluem potência elétrica, temperatura, umidade, carga da bateria, identificação do módulo, sensor, data e status operacional.
+
+O banco SQLite organiza cinco tabelas:
+
+| Tabela | Finalidade |
+|---|---|
+| `modulos` | Identificação, criticidade e limites dos módulos |
+| `sensores` | Códigos e associação aos módulos |
+| `leituras` | Registros operacionais utilizados nas análises |
+| `alertas` | Registro de eventos de atenção |
+| `chamados` | Solicitações da tripulação |
+
+Na primeira execução, o sistema cria o banco e importa o CSV quando a tabela de leituras está vazia.
+
+As alterações realizadas pelo CRUD persistem no banco e podem modificar os resultados das análises.
+
+## Funcionalidades do Menu
+
+| Opção | Funcionalidade |
+|---|---|
+| 1 | Cadastrar leitura |
+| 2 | Listar registros com filtros |
+| 3 | Alterar leitura |
+| 4 | Excluir leitura com confirmação |
+| 5 | Exibir regra booleana e tabela-verdade |
+| 6 | Explicar o circuito lógico |
+| 7 | Demonstrar estruturas de dados |
+| 8 | Executar simulação energética |
+| 9 | Treinar e avaliar o modelo linear |
+| 10 | Acessar o assistente da colônia |
+| 11 | Apresentar arquitetura computacional |
+| 12 | Apresentar sustentabilidade e cidadania digital |
+| U | Desfazer a última ação CRUD da sessão |
+| A | Executar a análise integrada de sustentabilidade |
+| 0 | Encerrar o sistema |
+
+O histórico da opção **U** fica em memória e é reiniciado ao encerrar o programa. Consultas e simulações não entram nessa pilha.
+
+## Regra Booleana e Circuito
+
+A classificação utiliza três condições:
+
+- **A:** consumo acima de 90% do limite do módulo.
+- **B:** módulo essencial.
+- **C:** sensor válido segundo as verificações implementadas.
+
+```text
+ALERTA = A AND B AND C
+BLOQUEIO = NOT C
+```
+
+A regra gera as classificações `baixo`, `medio`, `alto` e `bloqueado`.
+
+O circuito representa o alerta com portas AND e o bloqueio com uma porta NOT. O projeto inclui diagrama, código Arduino e instruções de montagem.
+
+- [Diagrama do circuito](docs/fase7/graficos_ou_imagens/circuito_logico.png)
+- [Guia de montagem](docs/fase7/tinkercad/README.md)
+- [Código Arduino](docs/fase7/tinkercad/sifsm_alerta.ino)
+
+## Estruturas de Dados
+
+| Estrutura | Aplicação |
+|---|---|
+| Fila FIFO | Organização de chamados |
+| Pilha LIFO | Histórico de ações para desfazer |
+| Tabela hash | Busca de sensores por código |
+| Heap | Priorização de alertas, reutilizando a implementação da Fase 6 |
+
+Na análise integrada, uma lista ordenada por risco alimenta uma fila de revisão dos módulos. A classificação considera a última leitura de cada módulo, sem representar o pior evento de todo o histórico.
+
+## Simulação Energética
+
+A simulação soma as potências dos módulos e calcula a energia acumulada pela regra dos trapézios.
+
+```text
+Energia ≈ Σ [(Pᵢ + Pᵢ₊₁) / 2] × Δt
+```
+
+Com potência em watts e tempo em horas, o resultado é expresso em watt-hora.
+
+São comparados dois cenários:
+
+- **Original:** utiliza os valores registrados.
+- **Eficiente:** aplica redução hipotética de 15% nos módulos não essenciais.
+
+Os módulos essenciais mantêm seus valores. A comparação utiliza cópias das leituras, preservando o banco.
+
+A simulação de bateria utiliza capacidade de 100 kWh, carga inicial de 80%, horizonte de 48 horas e geração constante equivalente a 80% da demanda média.
+
+### Resultados de Referência
+
+Resultados reproduzidos com banco novo inicializado a partir do CSV original de 120 leituras:
+
+| Indicador | Resultado |
+|---|---:|
+| Período da comparação de consumo | 24 h |
+| Energia do cenário original | 584,74 kWh |
+| Economia hipotética | 28,76 kWh |
+| Redução no consumo total | 4,92% |
+| Carga final da bateria em 48 h | 0% |
+| Energia não atendida em 48 h | 153,90 kWh |
+
+Esses valores representam hipóteses do modelo e não comprovam economia real ou autonomia operacional. Alterações no banco podem produzir outros resultados.
+
+## Modelagem Linear
+
+O modelo utiliza temperatura e umidade para estimar potência elétrica.
+
+A preparação remove registros incompletos, valores não finitos, faixas inválidas e leituras com status de falha. Os picos de consumo são mantidos.
+
+A avaliação utiliza separação temporal entre treinamento e teste.
+
+### Resultados de Referência
+
+Na base original, foram utilizadas 119 leituras válidas: 95 para treinamento e 24 para teste.
+
+```text
+Potência estimada (W) = -1491,83
+                       + 228,35 × temperatura_c
+                       - 16,41 × umidade_pct
+```
+
+| Métrica | Resultado |
+|---|---:|
+| MAE | 589,07 W |
+| MSE | 784.937,04 W² |
+| RMSE | 885,97 W |
+| R² | 0,355 |
+| MAE da referência pela média do treino | 555,51 W |
+
+**A regressão não superou a referência pela média em MAE.** O resultado é apresentado como limitação, sem alegação de vantagem preditiva nessa métrica.
+
+Os coeficientes indicam associações no ajuste, não causalidade. R² não representa porcentagem de acertos.
+
+Entradas fora das faixas de treinamento são rejeitadas para evitar extrapolação.
+
+## Assistente da Colônia
+
+O assistente implementa uma arquitetura multiagente simulada:
+
+| Agente | Responsabilidade |
+|---|---|
+| Triador | Identificar o assunto e encaminhar a solicitação |
+| Energia | Consultar a ferramenta de estimativa de consumo |
+| Manutenção | Consultar a classificação de risco |
+| Dados | Apresentar resumos dos registros |
+
+Fluxo do atendimento:
+
+```text
+Entrada
+→ Guardrail de entrada
+→ Triador
+→ Handoff para especialista
+→ Ferramenta determinística
+→ Guardrail de saída
+→ Resposta, histórico e tracing
+```
+
+Exemplos de consultas:
+
+```text
+consumo MOD-01
+risco MOD-05
+dados MOD-03
+dados de todos os módulos
+```
+
+A sessão mantém o módulo selecionado para consultas seguintes. O histórico é limitado a 20 interações e a trilha a 100 eventos, ambos em memória.
+
+As ferramentas consultam e calculam; não alteram registros nem controlam equipamentos. Os guardrails são heurísticos e não garantem segurança completa.
+
+## Arquitetura Computacional
+
+A análise relaciona o protótipo a:
+
+- Execução local em CPU.
+- Diferenças entre CPU, GPU, NPU e TPU.
+- Paralelismo em cenários independentes.
+- Computação heterogênea.
+- Hierarquia de memória, largura de banda e movimentação de dados.
+- Chiplets e arquiteturas modernas.
+- Reutilização de modelos e redução de processamento desnecessário.
+
+O projeto não implementa aceleração especializada nem apresenta medições que comprovem ganhos com esse hardware.
+
+## Sustentabilidade e Cidadania Digital
+
+A discussão aborda:
+
+- Uso responsável dos recursos e prevenção de desperdícios.
+- Integração das camadas física simulada, de controle e analítica.
+- Armazenamento, contingência e resiliência.
+- Privacidade e transparência no uso dos dados.
+- Riscos de vigilância e discriminação.
+- Impactos ambientais da computação e da IA.
+- Inclusão, acessibilidade e supervisão humana.
+- Princípios ambientais, sociais e de governança.
+
+A economia simulada da colônia não mede a energia consumida pelo computador. O protótipo não comprova redução de emissões ou certificação ESG.
+
+## Execução e Documentação
+
+As instruções de instalação, execução e testes estão nas seções gerais abaixo. Para iniciar a Fase 7, utilize `codigo_fonte.py`; para a simulação independente, utilize `simulacao_computacional.py`.
+
+Os gráficos e as evidências estão em `docs/fase7/graficos_ou_imagens/`. A Fase 7 reutiliza componentes de `src/fases_anteriores/fase6_scic/`, que devem ser preservados na entrega.
+
+
+## Testes
+
+Execute a suíte a partir da raiz:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest -q
+```
+
+Na revisão de 6 de novembro de 2026, a suíte existente apresentou **43 testes aprovados**.
+
+Os testes verificam operações de banco, validações, lógica booleana, estruturas, integração numérica, bateria, regressão e parte do fluxo dos agentes. Após alterações, execute novamente a suíte.
+
+## Arquivos e Evidências
+
+| Caminho | Conteúdo |
+|---|---|
+| `codigo_fonte.py` | Menu principal da Fase 7 |
+| `simulacao_computacional.py` | Execução independente da simulação |
+| `src/fase7_sifsm/` | Módulos do SIFSM |
+| `data/fase7/script_banco.sql` | Esquema do banco |
+| `data/fase7/dados_aurora_siger.csv` | Base simulada original |
+| `docs/fase7/relatorio_tecnico.md` | Relatório técnico |
+| `docs/fase7/graficos_ou_imagens/` | Gráficos e evidências |
+| `docs/fase7/tinkercad/` | Guia e código do circuito |
+| `tests/test_fase7_*.py` | Testes da Fase 7 |
+
+O sistema reutiliza componentes de `src/fases_anteriores/fase6_scic/`. Essa dependência deve ser preservada.
+
+
+</details>
+  
 
 ## Tecnologias Utilizadas
 
-- Python 3.12+
+ Python 3.12+
 - Estruturas condicionais e de repetição
-- Listas, filas e pilhas
+- Listas, filas, pilhas e tabelas hash
 - Algoritmos de busca e ordenação
 - Regressão linear
 - Organização modular em arquivos Python
@@ -1266,9 +1540,10 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 - Lógica Booleana, Teorema da Simplificação e Leis de De Morgan
 - Engenharia de Prompts (Zero-Shot, Few-Shot, Structured Outputs)
 - Integração com IA Generativa (Google Gemini API via google-genai) e tratamento de Fallback (Mock)
-- Manipulação de arquivos de Texto (.txt) e Estruturados (.json)
+- Persistência SQLite com `sqlite3`, operações CRUD e consultas parametrizadas
+- Manipulação de arquivos de texto, CSV e JSON
 - Simulação e interação via menu em terminal
-- Integração entre microsserviços em pipeline unificado (main.py)
+- Orquestração modular das fases anteriores em `main.py` e menu próprio da Fase 7 em `codigo_fonte.py`
 - pandas, NumPy, scikit-learn e Matplotlib (ingestão, regressão, métricas e gráficos)
 - Heap binário (fila de prioridade) e Trie (árvore de prefixos)
 
@@ -1278,7 +1553,8 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 
 ### Pré-requisitos
 - [Python 3.12+](https://www.python.org/downloads/) (ou gestor de ambientes [uv](https://docs.astral.sh/uv/))
-- Chave de API do [Google AI Studio (Gemini)](https://aistudio.google.com/app/apikey) *(opcional; o sistema possui fallback local)*
+- Acesso à internet para instalar dependências.
+- Chave Gemini opcional para integrações das fases anteriores. A Fase 7 funciona sem chave ou arquivo `.env`.
 
 ### Passo a Passo
 
@@ -1311,6 +1587,13 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
    ```
 
 4. **Configuração de Variáveis de Ambiente:**
+   
+  A Fase 7 não exige este passo. 
+  
+  Para utilizar uma integração opcional com Gemini, copie `.env.example` para `.env` e configure suas credenciais localmente. 
+    Não inclua o arquivo `.env` na entrega.
+
+  Fases anteriores:  
    Copie o ficheiro de exemplo e insira a sua credencial:
    ```bash
    cp .env.example .env
@@ -1325,14 +1608,39 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 
 ## Execução
 
-Para avaliar a Fase 6, sem executar as  fases anteriores ou configurar uma API:
+### Fase 7 — SIFSM
 
-```bash
-python -m src.fases_anteriores.fase6_scic.fase6_scic
-python -m src.fases_anteriores.fase6_scic.fase6_scic --auto
+```powershell
+.\venv\Scripts\python.exe codigo_fonte.py
 ```
 
-O modo `--auto` salva dados, previsões e gráficos. A opção 3 do menu lista as interfaces ou consulta um módulo, como `MOD-02`.
+Para executar apenas a simulação energética:
+
+```powershell
+.\venv\Scripts\python.exe simulacao_computacional.py
+```
+
+Na primeira execução, o sistema cria `data/fase7/aurora_siger.db` e importa o CSV se a tabela de leituras estiver vazia. O fluxo funciona localmente, sem chamadas obrigatórias a serviços externos.
+
+As alterações CRUD persistem no banco e podem mudar os resultados. Para reproduzir a base original, utilize uma cópia separada com banco novo; preserve bancos com alterações importantes.
+
+
+### Fases anteriores
+
+Para o orquestrador das fases anteriores:
+
+```powershell
+.\venv\Scripts\python.exe main.py
+```
+
+Para executar diretamente a Fase 6:
+
+```powershell
+.\venv\Scripts\python.exe -m src.fases_anteriores.fase6_scic.fase6_scic
+.\venv\Scripts\python.exe -m src.fases_anteriores.fase6_scic.fase6_scic --auto
+```
+
+O modo `--auto` da Fase 6 executa seu pipeline e salva dados, previsões e gráficos.
 
 Para a missão completa, use o orquestrador principal:
 
@@ -1368,10 +1676,11 @@ PBL-Aurora/
 ├── .python-version                            # Versão do Python do projeto
 ├── README.md                                  # Documentação central do projeto
 ├── codigo_fonte.py                            # Entrada principal da entrega (menu da Fase 7 - SIFSM)
+├── simulacao_computacional.py                 # Simulação independente da Fase 7
 ├── pyproject.toml                             # Configuração de empacotamento
 ├── requirements.txt                           # Dependências do projeto
 ├── uv.lock                                    # Lockfile de resolução exata de dependências
-├── main.py                                    # Orquestrador central e máquina de estados                             
+├── main.py                                    # Orquestrador das fases anteriores                             
 │
 ├── data/
 │   └── processed/                               # Dados processados e persistidos
@@ -1379,8 +1688,12 @@ PBL-Aurora/
 │       ├── dados_aurora_siger_com_previsao.csv  # Base com previsões do modelo (Fase 6)
 │       ├── dados_colonia.json                   # Dados estruturados do NCAS (Fase 5)
 │       └── registros_colonia.txt                # Logs operacionais do NCAS (Fase 5)
-│
-├── docs/                                      # Relatórios técnicos e diagramas formais
+│       └── fase7/│
+│           ├── script_banco.sql
+│           ├── dados_aurora_siger.csv           # Base original de 120 leituras
+│           └── aurora_siger.db                  # Gerado em execução; ignorado pelo Git
+│    
+├── docs/                                         # Relatórios técnicos e diagramas formais
 │   ├── fase4/
 │   │   ├── rede_colonia.pdf
 │   │   └── relatorio_pbl_fase4.pdf
@@ -1392,10 +1705,24 @@ PBL-Aurora/
 │   │   ├── regras_logicas.pdf
 │   │   ├── FASE5.zip
 │   │   └── link_video.txt
-│   └── fase6/
+│   ├── fase6/
+│   │   ├── relatorio_tecnico.md
+│   │   ├── link_video.txt
+│   │   └── graficos_ou_imagens/               # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
+│   └── fase7/
 │       ├── relatorio_tecnico.md
-│       ├── link_video.txt
-│       └── graficos_ou_imagens/               # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
+│       ├── graficos_ou_imagens/
+│       │   ├── circuito_logico.png
+│       │   ├── consumo_cenarios.png
+│       │   ├── bateria.png
+│       │   ├── analise_exploratoria.png
+│       │   ├── regressao.png
+│       │   ├── residuos.png
+│       │   ├── evidencias/                 # Capturas das funcionalidades
+│       │   └── testes/                     # Evidências dos testes
+│       └── tinkercad/
+│           ├── README.md                   # Guia específico do circuito
+│           └── sifsm_alerta.ino
 │
 ├── src/
 │   ├── core/                                  # Utilitários compartilhados
@@ -1412,10 +1739,26 @@ PBL-Aurora/
 │   │       ├── modelagem.py                   # Regressão, erros e métricas (Analista 2)
 │   │       ├── estruturas.py                  # HeapAlertas e TrieModulos (Analista 3)
 │   │       └── fase6_scic.py                  # Orquestrador/menu CLI do SCIC (Analista 3)
+│   └── fase7_sifsm/
+│       ├── __init__.py
+│       ├── banco.py                # SQLite, validação e CRUD
+│       ├── logica.py               # Regra e classificação de risco
+│       ├── estruturas.py           # Fila, pilha, hash e integração do heap
+│       ├── dados_simulados.py      # Gerador determinístico da base
+│       ├── circuito_png.py         # Geração do diagrama
+│       ├── simulacao.py            # Consumo, integração e bateria
+│       ├── modelo_linear.py        # Preparação, regressão e avaliação
+│       ├── agentes.py              # Assistente determinístico
+│       └── apresentacao.py         # Circuito, arquitetura e sustentabilidade│
 │
 └── tests/
-    └── test_estruturas.py                     # Testes unitários do Heap e da Trie
+    ├── test_estruturas.py
+    ├── test_fase7_banco.py
+    ├── test_fase7_logica.py
+    ├── test_fase7_estruturas.py
+    └── test_fase7_analise.py
 ```
+
 
 
 

@@ -1,7 +1,7 @@
 # Circuito lógico no Tinkercad - SIFSM
 
 Regra: **ALERTA = A AND B AND C** e **BLOQUEIO = NOT C**, com
-A = CONSUMO_ELEVADO, B = MODULO_CRITICO, C = SENSOR_VALIDO (veja `docs/fase7/circuito_logico.png`).
+A = CONSUMO_ELEVADO, B = MODULO_CRITICO, C = SENSOR_VALIDO (veja `docs/fase7/graficos_ou_imagens/circuito_logico.png`).
 
 Há duas formas de montar; escolha uma (ou mostre as duas no vídeo).
 

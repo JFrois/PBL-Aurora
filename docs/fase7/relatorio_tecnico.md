@@ -53,11 +53,16 @@ Foram injetados 7 picos de consumo, 1 falha de sensor e 1 manutenção, para exe
 
 | Operação | Função | Cuidados |
 |---|---|---|
-| Cadastrar | `cadastrar_leitura` | valida tipos, faixas, formato de data e do código do sensor; avalia o risco e registra alerta |
-| Listar | `listar_leituras` | filtros por módulo e status, limite e ordem validados |
-| Alterar | `alterar_leitura` | só campos permitidos (lista fixa); revalida o registro mesclado |
-| Excluir | `excluir_leitura` | pede confirmação no menu |
-| Desfazer | `restaurar_leitura` | desfaz a última ação usando a pilha de histórico |
+| Cadastrar | `cadastrar_leitura` | valida e grava a leitura; no menu, `opcao_cadastrar` também classifica o risco e registra alerta quando aplicável |
+| Desfazer | `opcao_desfazer` | utiliza a pilha da sessão para reverter cadastro, alteração ou exclusão; `restaurar_leitura` é utilizada para reinserir uma leitura excluída |
+
+O histórico de desfazer permanece apenas em memória e é reiniciado ao encerrar o programa. Consultas, 
+simulações e conversas com os agentes não são incluídas nessa pilha. Quando ela está vazia, a opção U 
+informa que não há ações para desfazer.
+
+Os alertas persistidos não são automaticamente sincronizados após todas as alterações de leituras. 
+A listagem e a análise integrada recalculam o risco das leituras consultadas, mas isso não equivale a 
+atualizar o histórico de alertas armazenado.
 
 **Tratamento de erros.** Entradas inválidas levantam `ErroBanco` com mensagem clara (ex.: "O campo
 'consumo_w' deve ser numérico (recebido: 'abc')"). As operações usam `try/except/else/finally`: `except` converte
@@ -93,7 +98,7 @@ A função `classificar_risco` traduz a regra em quatro níveis: `bloqueado` (se
 (alerta), `medio` (consumo elevado em módulo não crítico) e `baixo`. Está em `src/fase7_sifsm/logica.py`
 e é usada pelo cadastro, pela listagem, pelo heap de alertas e pelos módulos do Integrante 2.
 
-**Circuito.** `docs/fase7/circuito_logico.png`: duas portas AND em cascata (A, B -> AND; saída e C -> AND) ligadas
+**Circuito.** `docs/fase7/graficos_ou_imagens/circuito_logico.png`: duas portas AND em cascata (A, B -> AND; saída e C -> AND) ligadas
 ao LED vermelho de ALERTA, e um inversor ligado ao LED amarelo de BLOQUEIO. A montagem no Tinkercad (portas
 74HC08/74HC04 ou Arduino Uno, com o código `docs/fase7/tinkercad/sifsm_alerta.ino`) está descrita em
 `docs/fase7/tinkercad/README.md`. A tabela de teste do circuito é a mesma do sistema (opção 5 do menu).
@@ -105,7 +110,7 @@ ao LED vermelho de ALERTA, e um inversor ligado ao LED amarelo de BLOQUEIO. A mo
 | Estrutura | Uso na colônia | Por que | Custo |
 |---|---|---|---|
 | Fila (FIFO) | chamados da tripulação | justiça: o primeiro chamado é o primeiro atendido | enfileirar e atender O(1) |
-| Pilha (LIFO) | histórico de ações do CRUD, para desfazer | a última ação é a primeira a ser revertida | empilhar e desempilhar O(1) |
+| Pilha (LIFO) | histórico de ações do CRUD, para desfazer | a última ação é a primeira a ser revertida | inserção usual e remoção do topo O(1); descarte do elemento mais antigo O(n) |
 | Tabela hash (encadeamento) | busca de sensor por código hexadecimal | acesso direto ao sensor/módulo; colisões tratadas com listas | O(1) médio |
 | Heap máximo (Fase 6) | alertas, do mais crítico ao menos crítico | sempre atende primeiro o mais grave | inserir e extrair O(log n) |
 
@@ -114,12 +119,16 @@ A tabela hash é implementada manualmente (função de hash polinomial, redimens
 `montar_heap_de_alertas`, que converte as leituras da Fase 7 para o formato da Fase 6. A opção 7 do menu
 demonstra as quatro estruturas com dados reais do banco.
 
-
+Na opção A, as últimas leituras são classificadas e ordenadas por prioridade. Uma fila `deque` percorre os 
+módulos nessa ordem de revisão. Essa fila é distinta do heap demonstrado na opção 7. O risco exibido na análise 
+integrada corresponde à última leitura de cada módulo, não ao pior evento de todo o histórico.
 
 ## 5. Simulação computacional e integração matemática (Integrante 2) | **Requisito 5.4**
 
-O arquivo `src/fase7_sifsm/simulacao.py` organiza as leituras e representa consumo energético e armazenamento.
-`simulacao_computacional.py` é o ponto de execução isolada, quando incluído na raiz do projeto.
+O módulo `src/fase7_sifsm/simulacao.py` implementa a organização das leituras, a integração numérica e a simulação de armazenamento. 
+O arquivo `simulacao_computacional.py`, na raiz do projeto, oferece a execução independente dessas funcionalidades. 
+A opção 8 do menu principal utiliza o mesmo módulo de simulação.
+
 
 ### 5.1 Variáveis e unidades
 
@@ -339,8 +348,13 @@ sem gravação em disco. Pedidos rejeitados não são armazenados no histórico.
 pode conter informações digitadas em pedidos aceitos; por isso a equipe deve usar apenas dados fictícios
 na demonstração e limpar a sessão quando necessário.
 
-O menu pode oferecer atalhos numerados, consulta textual e os comandos `historico`, `trilha`, `limpar`
-e `sair`. Os atalhos devem encaminhar ao mesmo fluxo, sem contornar guardrails e ferramentas.
+O menu oferece atalhos numerados, consultas textuais e comandos para `histórico`, `trilha`, limpeza da sessão e saída. 
+As consultas utilizam o mesmo fluxo de guardrails, roteamento e ferramentas.
+
+Quando uma entrada está fora da faixa de treinamento, a estimativa é recusada. A resposta identifica o módulo, 
+a data da leitura, a variável e os limites utilizados, orientando a conferência do registro. 
+Uma medição válida não deve ser modificada apenas para se enquadrar no modelo. 
+A consulta de risco utiliza a regra booleana e é distinta da estimativa de consumo.
 
 ### 7.3 Guardrails, segurança e responsabilidade humana
 
@@ -475,7 +489,6 @@ Uma fila FIFO organiza ordem de chegada; urgências exigem critérios próprios 
 que ordem de chegada seja suficiente para todas as situações.
 
 
-
 ## 10. Limitações e melhorias 
 
 | Limitação atual | Consequência | Possível melhoria |
@@ -492,25 +505,126 @@ que ordem de chegada seja suficiente para todas as situações.
 
 
 
-## 11. Como executar 
-Pré-requisito: Python 3.12 ou superior. Na raiz do projeto, em PowerShell:
+## 11. Como executar
+
+### 11.1 Pré-requisitos
+
+Para executar o SIFSM, é necessário ter:
+
+- Python 3.12 ou superior;
+- Terminal PowerShell aberto na pasta principal do projeto;
+- Acesso à internet para instalar as dependências, caso ainda não estejam disponíveis.
+
+A Fase 7 utiliza banco SQLite local e agentes simulados por regras. Não é necessário configurar servidor 
+de banco, arquivo `.env` ou chave de API Gemini.
+
+### 11.2 Preparação do ambiente
+
+Na raiz do projeto, crie um ambiente virtual:
 
 ```powershell
-# Apenas se o ambiente ainda não existir:
 py -3.12 -m venv venv
+```
+Se a pasta `venv` já existir e contiver um ambiente compatível, reutilize-a.
 
-.\venv\Scripts\python.exe -m pip install numpy pandas matplotlib scikit-learn pytest python-dotenv
+Instale as dependências do projeto:
+
+```powershell
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Os comandos utilizam diretamente o Python do ambiente virtual, dispensando sua ativação no PowerShell.
+
+### 11.3 Inicialização do sistema
+
+Execute o arquivo principal da Fase 7:
+
+```powershell
 .\venv\Scripts\python.exe codigo_fonte.py
 ```
 
-SQLite, `datetime`, `math`, `pathlib`, `dataclasses`, `re`, `sqlite3` e `unicodedata` pertencem à biblioteca
-padrão. Pandas e NumPy apoiam a modelagem, scikit-learn ajusta a regressão, Matplotlib gera gráficos e
-pytest executa os testes. O fluxo dos agentes não exige arquivo `.env`, chave Gemini ou acesso à internet.
-As fases anteriores podem ter dependências adicionais, distintas do fluxo da Fase 7.
+O terminal apresentará o menu do SIFSM, com opções para gerenciar leituras, consultar regras e estruturas, 
+executar simulações, avaliar o modelo linear e interagir com os agentes.
 
-Na primeira execução, o menu cria o banco em `data/fase7/aurora_siger.db` e importa o CSV se a tabela de
-leituras estiver vazia. Alterações de CRUD persistem no banco e podem mudar os resultados. Não se deve
-apagar um banco com alterações importantes apenas para reproduzir métricas.
+O arquivo `main.py` corresponde ao orquestrador das fases anteriores. Para acessar diretamente a Fase 7, utilize `codigo_fonte.py`.
+
+### 11.4 Inicialização e persistência dos dados
+
+Na primeira execução, o sistema cria o banco:
+
+```text
+data/fase7/aurora_siger.db
+```
+
+As tabelas são definidas pelo arquivo `data/fase7/script_banco.sql`. Quando a tabela de leituras está vazia, 
+o sistema importa a base simulada de `data/fase7/dados_aurora_siger.csv`.
+
+Os cadastros, alterações e exclusões persistem no banco após o encerramento do programa. Essas operações podem 
+modificar os resultados das análises e as métricas da regressão.
+
+A opção **U — Desfazer** utiliza o histórico de ações da sessão atual. Esse histórico permanece em memória e é perdido 
+ao encerrar o programa.
+
+Para reproduzir os resultados da base original, utilize uma cópia separada do projeto com banco novo. 
+Não apague um banco que contenha alterações importantes.
+
+### 11.5 Execução das análises
+
+As funcionalidades analíticas estão disponíveis nas seguintes opções:
+
+| Opção | Funcionalidade |
+|---|---|
+| 8 | Simulação de consumo, comparação de cenários e bateria |
+| 9 | Análise exploratória, treinamento e avaliação da regressão |
+| 10 | Assistente da colônia com agentes simulados |
+| 11 | Arquitetura computacional e eficiência |
+| 12 | Sustentabilidade, cidadania digital e impacto socioambiental |
+| A | Análise integrada de sustentabilidade |
+
+Os gráficos gerados pela simulação e pelo modelo são salvos em:
+
+```text
+docs/fase7/graficos_ou_imagens/
+```
+
+A simulação também pode ser executada independentemente:
+
+```powershell
+.\venv\Scripts\python.exe simulacao_computacional.py
+```
+
+### 11.6 Execução dos testes
+
+Para executar a suíte automatizada, utilize:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest -q
+```
+
+Os testes verificam operações do banco, validações, lógica booleana, estruturas de dados, cálculos da simulação, 
+regressão e parte do fluxo dos agentes.
+
+A aprovação dos testes não substitui a conferência manual das funcionalidades nem comprova validade operacional do protótipo.
+
+### 11.7 Bibliotecas e funcionamento local
+
+SQLite é o mecanismo de banco utilizado pelo projeto, acessado pelo módulo `sqlite3` da biblioteca padrão do Python. 
+Outros módulos utilizados, como `datetime`, `math`, `pathlib`, `dataclasses`, `re` e `unicodedata`, também pertencem à biblioteca padrão.
+
+As principais bibliotecas externas da Fase 7 são:
+
+| Biblioteca | Aplicação |
+|---|---|
+| NumPy | Processamento numérico |
+| Pandas | Preparação e análise dos dados |
+| Matplotlib | Geração dos gráficos |
+| scikit-learn | Regressão linear e métricas de avaliação |
+| pytest | Execução dos testes automatizados |
+
+O arquivo `requirements.txt` também inclui dependências compartilhadas com as fases anteriores.
+
+Após a instalação das dependências, o fluxo da Fase 7 pode funcionar localmente, sem acesso obrigatório à internet. 
+Os agentes utilizam regras e ferramentas determinísticas; a proposta de integração com um LLM real é descrita no relatório como possibilidade de evolução.
 
 
 
@@ -535,161 +649,157 @@ final dos testes, evidências do CRUD e execução da opção A ainda deve ser c
 ![evidencia_menu_sifsm](./graficos_ou_imagens/evidencias/evidencia_menu_sifsm.png)
 
  
-### Evidência Opção 1 — Cadastrar leitura
+### 12.1.1 Evidência Opção 1 — Cadastrar leitura
 
 **Objetivo:** demonstrar o cadastro, a validação dos campos e a
 classificação de risco, com registro de alerta quando aplicável.
 
-**Entradas e saída:**
+**Entradas e saída:**  
 ![evidencia_opcao_1_cadastrar_leitura](./graficos_ou_imagens/evidencias/evidencia_opcao_1_cadastrar_leitura.png)
 
 
-### Evidência Opção 2 — Listar registros
+### 12.1.2 Evidência Opção 2 — Listar registros
 **Objetivo:** demonstrar a consulta dos dados armazenados e a aplicação
 dos filtros disponíveis.
 
-**Saída:**
+**Saída:**  
 ![evidencia_opcao_2_listar_registros](./graficos_ou_imagens/evidencias/evidencia_opcao_2_listar_registros.png)
 
 
-### Evidência Opção 3 — Alterar registro
+### 12.1.3 Evidência Opção 3 — Alterar registro
 
 **Objetivo:** demonstrar a alteração de uma leitura e confirmar a
 persistência dos novos valores por consulta posterior.
 
-**Entradas e saída:**
+**Entradas e saída:**  
 ![evidencia_opcao_3_alterar_registro](./graficos_ou_imagens/evidencias/evidencia_opcao_3_alterar_registro.png)
 
 
-### Evidência Opção 4 — Excluir registro
+### 12.1.4 Evidência Opção 4 — Excluir registro
 
 **Objetivo:** demonstrar a confirmação da exclusão e verificar que o
 registro deixou de aparecer nas consultas.
 
-**Saída:**
+**Saída:**  
 ![evidencia_opcao_4_excluir_registro](./graficos_ou_imagens/evidencias/evidencia_opcao_4_excluir_registro.png)
 
 
-### Evidência Opção U — Desfazer a última ação
+### 12.1.5 Evidência Opção U — Desfazer a última ação
 
 **Objetivo:** demonstrar o uso da pilha para reverter a última operação
 do CRUD realizada na mesma sessão.
 
-**Entradas e saída:**
+**Entradas e saída:**  
 ![evidencia_opcao_u_desfazer](./graficos_ou_imagens/evidencias/evidencia_opcao_u_desfazer.png)
 
 
-### Evidência Opção 5 — Regra booleana e tabela-verdade
+### 12.1.6 Evidência Opção 5 — Regra booleana e tabela-verdade
 
 **Objetivo:** apresentar as combinações das entradas e verificar sua
 correspondência com as regras:
 
-**Saída:**
+**Saída:**  
 ![evidencia_opcao_5_booleana_tabverdade](./graficos_ou_imagens/evidencias/evidencia_opcao_5_booleana_tabverdade.png)
 
 
-### Evidência Opção 6 — Circuito lógico
+### 12.1.7 Evidência Opção 6 — Circuito lógico
 
 **Objetivo:** demonstrar a correspondência entre a regra implementada
 em Python e a representação por portas lógicas.
 
-**Saída:**
+**Saída:**  
 ![evidencia_opcao_6_circuito_logico](./graficos_ou_imagens/evidencias/evidencia_opcao_6_circuito_logico.png)
 
 
-**Representação do circuito:**
+**Representação do circuito:**  
 ![Circuito lógico do SIFSM](graficos_ou_imagens/circuito_logico.png)
 
 
-### Evidência  Opção 7 — Estruturas de dados
+### 12.1.8 Evidência  Opção 7 — Estruturas de dados
 
 **Objetivo:** demonstrar a aplicação de fila, pilha, tabela hash e heap
 na organização de chamados, histórico, sensores e alertas.
 
-**Saída:**
+**Saída:**  
 ![evidencia_opcao_7_estrutura_dados](./graficos_ou_imagens/evidencias/evidencia_opcao_7_estrutura_dados.png)
 
 
-### Evidência Opção 8 — Simulação energética
+### 12.1.9 Evidência Opção 8 — Simulação energética
 
 **Objetivo:** demonstrar integração numérica, potência média, comparação
 de cenários e evolução do estado de carga de uma bateria ideal.
 
 
-**Saída:**
+**Saída:**  
 ![evidencia_opcao_8_simulacao_energetica](./graficos_ou_imagens/evidencias/evidencia_opcao_8_simulacao_energetica.png)
 
 
-*Gráficos:**
-- Comparação dos cenários de consumo
+*Gráficos:**  
+- Comparação dos cenários de consumo  
 ![Comparação dos cenários de consumo](graficos_ou_imagens/consumo_cenarios.png)
 
-- Estado de carga da bateria ideal
+- Estado de carga da bateria ideal  
 ![Estado de carga da bateria ideal](graficos_ou_imagens/bateria.png)
 
 
 
-### Evidência Opção 9 — Modelo linear de apoio à decisão
+### 12.1.10 Evidência Opção 9 — Modelo linear de apoio à decisão
 
 **Objetivo:** apresentar análise exploratória, correlações, equação,
 interpretação dos coeficientes e avaliação do modelo.
 
 
-**Saída completa:**
+**Saída completa:**  
 ![evidencia_opcao_9_modelo_part1](./graficos_ou_imagens/evidencias/evidencia_opcao_9_modelo_part1.png)
 ![evidencia_opcao_9_modelo_part2](./graficos_ou_imagens/evidencias/evidencia_opcao_9_modelo_part2.png)
 ![evidencia_opcao_9_modelo_part3](./graficos_ou_imagens/evidencias/evidencia_opcao_9_modelo_part3.png)
 
-**Gráficos:**
-- Análise exploratória
+**Gráficos:**  
+- Análise exploratória  
 ![Análise exploratória](graficos_ou_imagens/analise_exploratoria.png)
 
-- Consumo observado e previsto
+- Consumo observado e previsto  
 ![Consumo observado e previsto](graficos_ou_imagens/regressao.png)
 
-- Resíduos no conjunto de teste
+- Resíduos no conjunto de teste  
 ![Resíduos no conjunto de teste](graficos_ou_imagens/residuos.png)
 
 
-### Evidência Opção 10 — Assistente multiagente simulado
+### 12.1.11 Evidência Opção 10 — Assistente multiagente simulado
 
 **Objetivo:** demonstrar triagem, especialistas, ferramentas determinísticas,
 handoffs, guardrails, contexto de sessão e tracing.
 
 
-**Saída:**
+**Saída:**  
 ![evidencia_opcao_10_assistente_part1](./graficos_ou_imagens/evidencias/evidencia_opcao_10_assistente_part1.png)
 ![evidencia_opcao_10_assistente_part2](./graficos_ou_imagens/evidencias/evidencia_opcao_10_assistente_part2.png)
 
 
 
-
-### Evidência Opção 11 — Arquitetura computacional
+### 12.1.12 Evidência Opção 11 — Arquitetura computacional
 
 **Objetivo:** apresentar a relação entre o protótipo, processamento local,
 CPU, aceleradores, memória, movimentação de dados e eficiência.
 
-**Saída:**
-
-```text
-[Inserir a saída após implementar e executar a opção 11.]
-```
+**Saída:**    
+![evidencia_opcao_11_arquitetura](./graficos_ou_imagens/evidencias/evidencia_opcao_11_arquitetura.png)
 
 As propostas de uso de GPU, NPU ou TPU são conceituais, salvo quando
 acompanhadas de implementação e medições efetivamente realizadas.
 
-### Evidência Opção 12 — Sustentabilidade e cidadania digital
+
+
+### 12.1.13 Evidência Opção 12 — Sustentabilidade e cidadania digital
 
 **Objetivo:** apresentar uma análise vinculada ao sistema, abordando
 pelo menos quatro temas previstos no item 5.8 do enunciado.
 
-**Saída:**
+**Saída:**    
+![evidencia_opcao_12_sustentabilidade](./graficos_ou_imagens/evidencias/evidencia_opcao_12_sustentabilidade.png)
 
-```text
-[Inserir a saída após implementar e executar a opção 12.]
-```
 
-### 12.17 Opção A — Análise integrada de sustentabilidade
+### 12.1.14 Evidência Opção A — Análise integrada de sustentabilidade
 
 **Objetivo:** demonstrar a integração entre banco, regra de risco,
 estruturas de dados, simulação, regressão e agentes.
@@ -716,48 +826,8 @@ O fluxo terminou sem erro na execução apresentada. Isso demonstra o
 funcionamento do cenário registrado, sem comprovar todos os casos
 possíveis ou adequação operacional.
 
-**Saída completa da opção A:**
-
-```text
-[Inserir a saída completa da execução integrada.]
-```
-
-### 12.18 Conferência final das evidências
-
-Antes da entrega, verificar:
-
-- Resultado da suíte completa na versão final do projeto.
-- Correspondência entre código, banco, saídas e métricas do relatório.
-- Legibilidade dos gráficos e identificação das unidades.
-- Evidências do CRUD, tratamento de erros e bloqueio de pedido perigoso.
-- Conclusão das opções ainda pendentes.
-- Ausência de credenciais e informações pessoais nas capturas.
-- Substituição dos campos de preenchimento pelas evidências obtidas.
-
-
-### Tratamento de entradas inválidas
-
-**Objetivo:** verificar se valores inválidos são rejeitados com mensagens
-compreensíveis, mantendo o menu em funcionamento.
-
-
-- Consumo preenchido com texto.
-![evidencia_preenchido_texto](./graficos_ou_imagens/evidencias/evidencia_preenchido_texto.png)
-
-
-- Limite de consulta não numérico.
-
-
-- ID inválido.
-
-
-- Valor fora da faixa permitida.
-
-
-
-
-
-
+**Saída:**  
+![evidencia_opcao_A_análise](./graficos_ou_imagens/evidencias/evidencia_opcao_A_análise.png)
 
 
 
@@ -769,64 +839,64 @@ Os testes devem ser executados pelo pytest, a partir da raiz do projeto.
 ```
 
 
-### Suíte completa do projeto
-Comando:
+### 12.2.1 Suíte completa do projeto
+Comando:  
 ```powershell
 python -m pytest -q
 ```
 
-**Resultado final:**
-![teste_completo_projeto](image.png)
+**Resultado final:**  
+![teste_completo_projeto](./graficos_ou_imagens/testes/teste_completo_projeto.png)
 
 
 
-### Testes da estrutura de dados
+### 12.2.2 Testes da estrutura de dados
 Os quatro testes automatizados das estruturas de dados passaram, verificando a ordem FIFO da fila, a ordem LIFO e o limite da pilha, as operações e o redimensionamento da tabela hash e a priorização de alertas pelo heap.
 
-Comando:
+Comando:  
 ```powershell
 python -m pytest tests/test_fase7_estruturas.py -v
 ```
 
-**Resultado da execução:**
-![teste_estrutura_dados](./graficos_ou_imagens/teste_estrutura_dados.png)
+**Resultado da execução:**  
+![teste_estrutura_dados](./graficos_ou_imagens/testes/teste_estrutura_dados.png)
 
 
-### Testes do Banco de dados
+### 12.2.3 Testes do Banco de dados
 Os 18 testes automatizados do banco de dados passaram, verificando persistência, operações CRUD, filtros, validação de entradas, importação do CSV, proteção contra SQL injection e registros de alertas e chamados.
 
-Comando:
+Comando:  
 ````powershell
 python -m pytest tests/test_fase7_banco.py -v
 ````
 
-**Resultado da execução:**
-![teste_banco_dados](./graficos_ou_imagens/teste_banco_dados.png)
+**Resultado da execução:**  
+![teste_banco_dados](./graficos_ou_imagens/testes/teste_banco_dados.png)
 
 
 
-### Testes da lógica
+### 12.2.3 Testes da lógica
 Os nove testes automatizados da lógica passaram, verificando a tabela-verdade, a lei de De Morgan, o limiar de consumo elevado, a validade dos sensores e os quatro níveis de classificação de risco.
 
-Comando:
+Comando:  
 ```powershell
 python -m pytest tests/test_fase7_logica.py -v
 ```
 
-**Resultado da execução:** 
-![teste_logica](./graficos_ou_imagens/teste_logica.png)
+**Resultado da execução:**   
+![teste_logica](./graficos_ou_imagens/testes/teste_logica.png)
 
 
-### Testes da simulação energética
+### 12.2.4 Testes da simulação energética
 
-Comando:
+Comando:  
 ```powershell
 python -m pytest tests/test_fase7_analise.py -v -k "integracao or bateria or cenario"
 ```
 A execução ocorreu em Windows, com Python 3.14.1 e pytest 9.1.1.
 
-**Resultado da execução:**
-![Teste_simulacao_energetica](./graficos_ou_imagens/Teste_simulacao_energetica.png)
+**Resultado da execução:**  
+![Teste_simulacao_energetica](./graficos_ou_imagens/testes/teste_simulacao_energetica.png)
 
 
 Os dois testes não selecionados foram excluídos pelo filtro de execução
@@ -834,9 +904,9 @@ e não representam falhas. Os quatro resultados validam os casos testados,
 sem comprovar a precisão física da simulação.
 
 
-### Testes de regressão e agentes
+### 12.2.5 Testes de regressão e agentes
 
-Comando:
+Comando:  
 ```powershell
 python -m pytest tests/test_fase7_analise.py -v
 ```
@@ -845,15 +915,15 @@ Além da simulação, esse arquivo verifica uma relação linear conhecida,
 a rejeição de extrapolação e o fluxo de guardrails, handoff e sessão
 dos agentes.
 
-**Resultado da execução:**
-![Teste_regrecao_e_agentes](./graficos_ou_imagens/Teste_regrecao_e_agentes.png)
+**Resultado da execução:**  
+![Teste_regrecao_e_agentes](./graficos_ou_imagens/testes/teste_regrecao_e_agentes.png)
 
 
 
 
-### Verificação de sintaxe
+### 12.2.6 Verificação de sintaxe
 
-Comando:
+Comando:  
 ```powershell
 python -m py_compile codigo_fonte.py src/fase7_sifsm/simulacao.py src/fase7_sifsm/modelo_linear.py src/fase7_sifsm/agentes.py
 ```
@@ -863,9 +933,8 @@ nos arquivos verificados. Essa verificação não substitui os testes
 automatizados nem a execução das funcionalidades.
 
 
-**Resultado da execução:**
-![Teste_sintaxe](./graficos_ou_imagens/Teste_sintaxe.png)
-
+**Resultado da execução:**  
+![Teste_sintaxe](./graficos_ou_imagens/testes/teste_sintaxe.png)
 
 
 
@@ -873,7 +942,7 @@ automatizados nem a execução das funcionalidades.
 ## 13. vídeo
 
 O vídeo pitch da Fase 7 apresenta o funcionamento do SIFSM, as principais decisões técnicas e os resultados obtidos. 
-Está disponível no YouTube, na modalidade “Não listado”, pelo link [inserir link do vídeo], também registrado no arquivo `link_video.txt`.
+Está disponível no YouTube, na modalidade “Não listado”, pelo link **[inserir link do vídeo]**, também registrado no arquivo `link_video.txt`.
 
 
 
