@@ -93,13 +93,13 @@ uv run python main.py
 ### Modo 2: Execução Direta da Fase 6 (SCIC - Modo Automático)
 Executa o pipeline completo (dados -> regressão -> heap -> trie) sem interrupções de menu:
 ```bash
-python -m src.fase6_scic.fase6_scic --auto
+python -m src.fases_anteriores.fase6_scic.fase6_scic --auto
 ```
 
 ### Modo 3: Menu Interativo da Fase 6 (SCIC)
 Permite navegar isoladamente pelas opções de análise de hardware, métricas de regressão, fila de alertas e busca por prefixo na Trie:
 ```bash
-python -m src.fase6_scic.fase6_scic
+python -m src.fases_anteriores.fase6_scic.fase6_scic
 ```
 
 ---

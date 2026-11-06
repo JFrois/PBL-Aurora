@@ -1,0 +1,121 @@
+modulo_id,nome_modulo,tipo_modulo,essencial,limite_consumo_w,codigo_sensor,tipo_sensor,data_registro,consumo_w,temperatura_c,umidade_pct,carga_bateria_pct,status_operacional
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-01 00:00,2834.84,23.16,37.4,52.64,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-01 00:00,3021.02,21.4,41.27,59.13,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-01 00:00,2672.5,20.74,32.48,59.73,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-01 00:00,2631.88,21.29,40.4,54.55,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-01 00:00,2831.57,20.43,43.43,51.94,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-01 00:00,2770.3,27.54,72.44,58.45,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-01 00:00,2928.35,22.22,27.39,51.53,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-01 00:00,3074.73,24.92,54.91,52.7,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1B,consumo,2026-10-01 06:00,2893.73,22.49,52.57,55.99,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2B,consumo,2026-10-01 06:00,3002.88,21.02,40.79,58.51,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3B,consumo,2026-10-01 06:00,2818.25,22.58,32.73,63.49,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4B,consumo,2026-10-01 06:00,2486.27,21.51,31.62,61.51,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5B,consumo,2026-10-01 06:00,2949.41,23.13,39.84,61.62,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6B,consumo,2026-10-01 06:00,3043.75,29.09,77.37,58.19,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7B,consumo,2026-10-01 06:00,2597.41,17.11,33.67,54.39,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8B,consumo,2026-10-01 06:00,3109.64,25.16,50.91,57.44,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-01 12:00,3132.7,24.48,49.42,65.42,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-01 12:00,2588.61,18.74,30.38,59.14,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-01 12:00,2892.5,23.7,37.03,59.43,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-01 12:00,2449.87,22.98,34.24,66.11,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-01 12:00,2721.1,22.65,38.2,64.58,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-01 12:00,2536.09,24.43,82.96,63.48,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-01 12:00,2469.82,16.59,22.75,60.65,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-01 12:00,2885.38,23.74,43.02,64.76,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1B,consumo,2026-10-01 18:00,6338.83,31.47,45.47,65.65,alerta
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2B,consumo,2026-10-01 18:00,2816.74,21.43,35.59,70.19,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3B,consumo,2026-10-01 18:00,2663.34,22.17,33.78,63.32,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4B,consumo,2026-10-01 18:00,2832.18,25.69,34.21,67.85,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5B,consumo,2026-10-01 18:00,2945.4,20.16,48.6,66.47,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6B,consumo,2026-10-01 18:00,2618.47,26.96,69.45,65.23,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7B,consumo,2026-10-01 18:00,2747.8,19.51,34.46,69.62,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8B,consumo,2026-10-01 18:00,7569.0,27.13,56.87,64.54,alerta
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-02 00:00,2881.51,21.0,37.93,76.29,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-02 00:00,2445.43,20.16,28.11,69.54,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-02 00:00,2707.22,22.98,34.05,74.49,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-02 00:00,2837.18,25.67,36.77,75.02,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-02 00:00,3066.21,22.51,45.68,67.19,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-02 00:00,2876.72,27.22,74.01,71.97,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-02 00:00,2312.52,16.79,25.6,74.84,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-02 00:00,2804.52,22.43,43.14,70.83,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1B,consumo,2026-10-02 06:00,2847.75,20.49,51.49,79.05,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2B,consumo,2026-10-02 06:00,2745.25,21.35,30.43,80.11,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3B,consumo,2026-10-02 06:00,2842.57,24.08,41.14,73.35,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4B,consumo,2026-10-02 06:00,2400.03,21.24,31.55,77.12,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5B,consumo,2026-10-02 06:00,2887.8,21.75,41.47,71.59,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6B,consumo,2026-10-02 06:00,2287.6,23.64,73.44,78.04,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7B,consumo,2026-10-02 06:00,2858.76,21.6,25.98,77.21,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8B,consumo,2026-10-02 06:00,2862.66,22.81,46.0,72.2,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-02 12:00,2889.97,21.88,50.78,75.72,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-02 12:00,3029.53,22.43,42.5,76.45,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-02 12:00,2828.56,23.52,34.66,81.7,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-02 12:00,6926.69,26.38,36.06,83.06,alerta
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-02 12:00,2841.62,24.1,41.28,75.76,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-02 12:00,2928.89,26.61,78.49,84.17,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-02 12:00,2528.23,17.93,37.5,78.23,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-02 12:00,2621.76,21.37,51.35,80.69,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1B,consumo,2026-10-02 18:00,3042.74,24.54,39.52,88.14,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2B,consumo,2026-10-02 18:00,2831.19,20.87,37.8,87.65,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3B,consumo,2026-10-02 18:00,2674.49,18.78,46.24,83.81,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4B,consumo,2026-10-02 18:00,2760.15,22.72,39.34,84.77,manutencao
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5B,consumo,2026-10-02 18:00,3116.9,25.08,37.27,86.04,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6B,consumo,2026-10-02 18:00,2673.02,27.37,71.8,86.84,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7B,consumo,2026-10-02 18:00,2293.89,20.89,23.16,80.04,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8B,consumo,2026-10-02 18:00,2731.41,21.48,45.41,87.35,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-03 00:00,3285.87,25.07,51.09,58.42,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-03 00:00,2902.05,22.42,38.26,53.88,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-03 00:00,3318.07,24.42,42.46,57.01,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-03 00:00,2824.5,24.31,45.02,58.66,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-03 00:00,2570.3,19.75,35.71,53.95,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-03 00:00,2731.33,27.66,70.26,53.66,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-03 00:00,2726.97,17.72,29.82,59.08,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-03 00:00,2696.68,23.75,46.43,59.96,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1B,consumo,2026-10-03 06:00,3042.7,24.01,47.19,58.77,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2B,consumo,2026-10-03 06:00,2798.16,19.78,27.15,63.53,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3B,consumo,2026-10-03 06:00,2876.97,23.74,46.46,58.46,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4B,consumo,2026-10-03 06:00,2282.84,20.96,32.04,61.2,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5B,consumo,2026-10-03 06:00,6789.4,30.84,46.74,61.79,alerta
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6B,consumo,2026-10-03 06:00,7027.11,29.67,79.48,60.22,alerta
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7B,consumo,2026-10-03 06:00,2873.19,20.03,24.47,54.52,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8B,consumo,2026-10-03 06:00,3074.01,26.27,56.1,64.04,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-03 12:00,3166.44,23.79,42.31,59.93,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-03 12:00,2779.75,22.27,31.27,60.7,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-03 12:00,2713.48,18.7,45.95,60.41,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-03 12:00,2493.41,22.99,34.88,60.62,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-03 12:00,2741.56,20.48,34.38,59.93,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-03 12:00,3017.67,29.28,71.47,62.16,falha
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-03 12:00,2443.11,18.6,37.7,67.42,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-03 12:00,3043.32,27.31,44.86,58.95,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1B,consumo,2026-10-03 18:00,2482.63,20.73,38.73,69.72,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2B,consumo,2026-10-03 18:00,2889.87,20.94,35.18,69.01,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3B,consumo,2026-10-03 18:00,2779.08,21.75,36.08,63.6,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4B,consumo,2026-10-03 18:00,2688.89,23.5,41.51,65.44,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5B,consumo,2026-10-03 18:00,3185.65,23.36,39.83,69.56,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6B,consumo,2026-10-03 18:00,2759.84,25.04,80.57,65.66,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7B,consumo,2026-10-03 18:00,2411.9,17.95,26.95,69.9,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8B,consumo,2026-10-03 18:00,2762.05,21.83,48.73,63.45,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-04 00:00,2989.21,23.4,51.44,71.66,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-04 00:00,2359.86,17.0,31.59,72.84,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-04 00:00,6405.98,27.77,42.48,72.41,alerta
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-04 00:00,2941.75,25.86,42.74,75.45,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-04 00:00,2662.5,19.55,42.25,68.96,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-04 00:00,2806.04,27.88,77.76,74.9,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-04 00:00,2398.52,17.29,22.39,68.65,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-04 00:00,2799.95,21.47,48.63,70.85,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1B,consumo,2026-10-04 06:00,2662.37,20.26,48.14,74.87,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2B,consumo,2026-10-04 06:00,2537.85,17.04,39.02,73.73,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3B,consumo,2026-10-04 06:00,2694.51,18.69,38.8,76.25,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4B,consumo,2026-10-04 06:00,2590.86,20.33,33.99,72.95,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5B,consumo,2026-10-04 06:00,2828.43,21.97,46.82,75.47,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6B,consumo,2026-10-04 06:00,2736.15,29.18,81.26,75.3,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7B,consumo,2026-10-04 06:00,6932.96,26.68,30.08,73.99,alerta
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8B,consumo,2026-10-04 06:00,2719.51,24.09,46.15,78.96,ativo
+MOD-01,Habitação Alfa,habitacao,1,6800.0,0x1A,temperatura,2026-10-04 12:00,2845.44,23.14,49.25,82.97,ativo
+MOD-02,Comunicação Central,comunicacao,1,6500.0,0x2A,temperatura,2026-10-04 12:00,2447.0,17.5,31.57,83.0,ativo
+MOD-03,Controle de Missão,controle,1,6600.0,0x3A,temperatura,2026-10-04 12:00,2758.92,20.08,40.64,78.77,ativo
+MOD-04,Laboratório Científico,laboratorio,0,6200.0,0x4A,temperatura,2026-10-04 12:00,2708.06,24.59,31.03,81.64,ativo
+MOD-05,Suporte Médico,suporte_medico,1,7000.0,0x5A,temperatura,2026-10-04 12:00,2999.71,22.53,40.65,76.67,ativo
+MOD-06,Estufa Agrícola,agricultura,0,6400.0,0x6A,temperatura,2026-10-04 12:00,2920.52,26.8,78.13,77.15,ativo
+MOD-07,Armazenamento de Dados,armazenamento_dados,0,6300.0,0x7A,temperatura,2026-10-04 12:00,2899.22,20.98,28.09,78.18,ativo
+MOD-08,Produção de Oxigênio,producao_oxigenio,1,6900.0,0x8A,temperatura,2026-10-04 12:00,3220.39,26.55,57.25,81.52,ativo

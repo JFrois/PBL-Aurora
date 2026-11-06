@@ -1017,9 +1017,9 @@ flowchart LR
 ## Divisão por analista
 | Analista | Arquivo | Entregas |
 |---|---|---|
-| 1 — Dados, Eletricidade & Hardware | `src/fase6_scic/dados.py`, `hardware.py` | Base de 120 registros, limpeza/validação, $P = V \times I$, Lei de Ohm, conversões hex/dec/bin |
-| 2 — Modelagem & Métricas | `src/fase6_scic/modelagem.py` | Erro absoluto/relativo, ponto flutuante (IEEE 754), regressão linear 80/20 + validação cruzada, MAE/MSE/RMSE/R², gráficos |
-| 3 — Estruturas & Documentação | `src/fase6_scic/estruturas.py`, `fase6_scic.py` | `HeapAlertas`, `TrieModulos`, benchmark, orquestrador CLI, relatório e roteiro |
+| 1 — Dados, Eletricidade & Hardware | `src/fases_anteriores/fase6_scic/dados.py`, `hardware.py` | Base de 120 registros, limpeza/validação, $P = V \times I$, Lei de Ohm, conversões hex/dec/bin |
+| 2 — Modelagem & Métricas | `src/fases_anteriores/fase6_scic/modelagem.py` | Erro absoluto/relativo, ponto flutuante (IEEE 754), regressão linear 80/20 + validação cruzada, MAE/MSE/RMSE/R², gráficos |
+| 3 — Estruturas & Documentação | `src/fases_anteriores/fase6_scic/estruturas.py`, `fase6_scic.py` | `HeapAlertas`, `TrieModulos`, benchmark, orquestrador CLI, relatório e roteiro |
 
 ## Resultados do modelo (conjunto de teste)
 | MAE | MSE | RMSE | R² | Erro relativo médio |
@@ -1328,8 +1328,8 @@ O sistema **prioriza, mas não decide**: cada alerta mostra os motivos da pontua
 Para avaliar a Fase 6, sem executar as  fases anteriores ou configurar uma API:
 
 ```bash
-python codigo_fonte.py
-python codigo_fonte.py --auto
+python -m src.fases_anteriores.fase6_scic.fase6_scic
+python -m src.fases_anteriores.fase6_scic.fase6_scic --auto
 ```
 
 O modo `--auto` salva dados, previsões e gráficos. A opção 3 do menu lista as interfaces ou consulta um módulo, como `MOD-02`.
@@ -1352,8 +1352,8 @@ python -m src.fases_anteriores.fase5
 python -m src.fases_anteriores.fase4
 
 # SCIC - Fase 6 (menu próprio, não exige as fases anteriores):
-python -m src.fase6_scic.fase6_scic
-python -m src.fase6_scic.fase6_scic --auto    # pipeline completo sem menu
+python -m src.fases_anteriores.fase6_scic.fase6_scic
+python -m src.fases_anteriores.fase6_scic.fase6_scic --auto    # pipeline completo sem menu
 pytest tests/test_estruturas.py               # testes do Heap e da Trie
 ```
 
@@ -1367,7 +1367,7 @@ PBL-Aurora/
 ├── .gitignore                                 # Regras de exclusão do Git
 ├── .python-version                            # Versão do Python do projeto
 ├── README.md                                  # Documentação central do projeto
-├── codigo_fonte.py                            # Entrada principal da entrega da Fase 6
+├── codigo_fonte.py                            # Entrada principal da entrega (menu da Fase 7 - SIFSM)
 ├── pyproject.toml                             # Configuração de empacotamento
 ├── requirements.txt                           # Dependências do projeto
 ├── uv.lock                                    # Lockfile de resolução exata de dependências
@@ -1405,13 +1405,13 @@ PBL-Aurora/
 │   │   ├── fase2.py                           # Pouso orbital e gestão de contingência
 │   │   ├── fase3.py                           # Balanço de energia e regressão linear
 │   │   ├── fase4.py                           # SIGIC: Topologia de rede em grafos
-│   │   └── fase5.py                           # NCAS: Lógica booleana e integração com IA
-│   └── fase6_scic/                            # Fase 6: Sistema Computacional e Otimização
-│       ├── dados.py                           # Base de telemetria, limpeza e validação (Analista 1)
-│       ├── hardware.py                        # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
-│       ├── modelagem.py                       # Regressão, erros e métricas (Analista 2)
-│       ├── estruturas.py                      # HeapAlertas e TrieModulos (Analista 3)
-│       └── fase6_scic.py                      # Orquestrador/menu CLI do SCIC (Analista 3)
+│   │   ├── fase5.py                           # NCAS: Lógica booleana e integração com IA
+│   │   └── fase6_scic/                        # Fase 6: Sistema Computacional e Otimização
+│   │       ├── dados.py                       # Base de telemetria, limpeza e validação (Analista 1)
+│   │       ├── hardware.py                    # P = V x I, Lei de Ohm, hex/dec/bin (Analista 1)
+│   │       ├── modelagem.py                   # Regressão, erros e métricas (Analista 2)
+│   │       ├── estruturas.py                  # HeapAlertas e TrieModulos (Analista 3)
+│   │       └── fase6_scic.py                  # Orquestrador/menu CLI do SCIC (Analista 3)
 │
 └── tests/
     └── test_estruturas.py                     # Testes unitários do Heap e da Trie

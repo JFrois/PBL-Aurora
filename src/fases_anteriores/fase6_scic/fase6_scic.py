@@ -7,8 +7,8 @@ Fluxo completo em um menu interativo de terminal:
     -> fila de alertas críticos com Heap -> consultas por prefixo com Trie (Analista 3)
 
 Execução (na raiz do projeto):
-    python -m src.fase6_scic.fase6_scic            # menu interativo
-    python -m src.fase6_scic.fase6_scic --auto     # roda o pipeline completo sem menu
+    python -m src.fases_anteriores.fase6_scic.fase6_scic            # menu interativo
+    python -m src.fases_anteriores.fase6_scic.fase6_scic --auto     # roda o pipeline completo sem menu
 
 O menu da Fase 6 do main.py também reaproveita as telas deste arquivo.
 """

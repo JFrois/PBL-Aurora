@@ -23,7 +23,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import cross_val_score, train_test_split
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RAIZ_PROJETO = os.path.normpath(os.path.join(BASE_DIR, "..", ".."))
+RAIZ_PROJETO = os.path.normpath(os.path.join(BASE_DIR, "..", "..", ".."))
 DADOS_DIR = os.path.join(RAIZ_PROJETO, "data", "processed")
 GRAFICOS_DIR = os.path.join(RAIZ_PROJETO,"docs", "fase6", "graficos_ou_imagens")
 
@@ -433,7 +433,7 @@ if __name__ == "__main__":
     if RAIZ_PROJETO not in sys.path:
         sys.path.append(RAIZ_PROJETO)
 
-    from src.fase6_scic.dados import (
+    from src.fases_anteriores.fase6_scic.dados import (
         carregar_telemetria_csv,
         gerar_dataset_telemetria,
         salvar_telemetria_csv,
