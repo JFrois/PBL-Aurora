@@ -16,7 +16,7 @@ def exibir_circuito_logico() -> None:
     from src.fase7_sifsm import logica
 
     raiz = Path(__file__).resolve().parents[2]
-    png = raiz / "docs" / "fase7" / "circuito_logico.png"
+    png = raiz / "docs" / "fase7" / "graficos_ou_imagens" / "circuito_logico.png"
     link = raiz / "docs" / "fase7" / "link_tinkercad.txt"
 
     print(f"\n  {logica.NOME_REGRA}")
