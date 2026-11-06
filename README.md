@@ -1,7 +1,7 @@
 # 🚀 Missão Aurora Siger 
 
 ![Python Version](https://img.shields.io/badge/python-3.12%2B-blue.svg)
-![Status](https://img.shields.io/badge/Status-Em_Andamento-orange.svg)
+![Status](https://img.shields.io/badge/Status-Concluído-green.svg)
 ![Status](https://img.shields.io/badge/Progresso-Fase_7%2F7-blue.svg)
 
 Projeto desenvolvido para o **Project Based Learning (PBL)** da FIAP, com foco em simulação computacional de uma missão em Marte, integrando análise de telemetria, 
