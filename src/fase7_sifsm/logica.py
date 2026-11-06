@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from itertools import product
 from typing import Callable, Optional
+from math import isfinite
 
 FATOR_CONSUMO_ELEVADO = 0.90  # consumo > 90% do limite do módulo
 NOME_REGRA = "ALERTA = CONSUMO_ELEVADO AND MODULO_CRITICO AND SENSOR_VALIDO"
@@ -29,29 +30,68 @@ VARIAVEIS = ("CONSUMO_ELEVADO", "MODULO_CRITICO", "SENSOR_VALIDO")
 
 
 def consumo_alto(consumo_w: float, limite_w: float) -> bool:
-    """True se o consumo ultrapassa FATOR_CONSUMO_ELEVADO do limite do módulo."""
+    """Verifica se a potência ultrapassa 90% de um limite válido."""
     try:
-        consumo, limite = float(consumo_w), float(limite_w)
-    except (TypeError, ValueError):
-        raise ValueError("consumo_w e limite_w devem ser numéricos.") from None
+        consumo = float(consumo_w)
+        limite = float(limite_w)
+    except (TypeError, ValueError, OverflowError):
+        raise ValueError(
+            "consumo_w e limite_w devem ser numéricos."
+        ) from None
+
+    if not isfinite(consumo) or not isfinite(limite):
+        raise ValueError(
+            "Consumo e limite devem ser números finitos."
+        )
+
+    if consumo < 0:
+        raise ValueError("O consumo não pode ser negativo.")
+
     if limite <= 0:
-        raise ValueError("O limite de consumo deve ser maior que zero.")
+        raise ValueError(
+            "O limite de consumo deve ser maior que zero."
+        )
+
     return consumo > FATOR_CONSUMO_ELEVADO * limite
 
 
-def sensor_valido(leitura: dict) -> bool:
-    """True se a leitura é confiável: status diferente de 'falha', consumo numérico >= 0
-    e temperatura (se houver) dentro de uma faixa plausível (-100 a 100 °C)."""
-    if str(leitura.get("status_operacional", "")).strip().lower() == "falha":
+def sensor_valido(leitura: dict[str, object]) -> bool:
+    """Verifica status, potência e temperatura da leitura."""
+    status = str(
+        leitura.get("status_operacional", "")
+    ).strip().lower()
+
+    if status == "falha":
         return False
+
     try:
-        if float(leitura.get("consumo_w")) < 0:
+        valor_consumo = leitura.get("consumo_w")
+
+        if not isinstance(valor_consumo, (int, float, str)):
             return False
+
+        consumo = float(valor_consumo)
+
+        if not isfinite(consumo) or consumo < 0:
+            return False
+
         temperatura = leitura.get("temperatura_c")
-        if temperatura is not None and not -100 <= float(temperatura) <= 100:
-            return False
-    except (TypeError, ValueError):
+
+        if temperatura is not None:
+            if not isinstance(temperatura, (int, float, str)):
+                return False
+
+            temperatura = float(temperatura)
+
+            if (
+                not isfinite(temperatura)
+                or not -100 <= temperatura <= 100
+            ):
+                return False
+
+    except (TypeError, ValueError, OverflowError):
         return False
+
     return True
 
 

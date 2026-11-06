@@ -157,7 +157,17 @@ def ferramenta_prever_consumo(modulo_id: str) -> float:
     modelo = treinar_regressao(df)
     # Estimativa para condições observadas, não previsão de um instante futuro.
     entrada = locais.iloc[-1].to_dict()
-    return prever(modelo, entrada)
+    try:
+        return prever(modelo, entrada)
+    except ValueError as erro:
+        raise ValueError(
+            f"Não foi possível estimar o consumo de {modulo_id}. "
+            f"Leitura utilizada: {entrada['data_registro']}. {erro} "
+            "Use a opção 3 do assistente para conferir o último registro. "
+            "Se houver erro de cadastro, corrija-o no menu principal. "
+            "Se a medição estiver correta, o modelo precisa de dados "
+            "representativos dessa condição e nova validação."
+        ) from erro
 
 
 def identificar_modulo(texto: str, sessao: Sessao) -> str | None:
@@ -244,6 +254,17 @@ def agente_dados(texto: str, sessao: Sessao) -> str:
     resposta = f"Escopo: {escopo}. Registros disponíveis: {len(leituras)}."
     if leituras:
         resposta += f" Último registro: {leituras[0]['data_registro']}."
+        if sessao.modulo_id is not None:
+            ultima = leituras[0]
+            resposta += (
+                f" Potência registrada: {ultima['consumo_w']} W."
+                f" Temperatura: {ultima['temperatura_c']} °C."
+                f" Umidade: {ultima['umidade_pct']}%."
+                f" Status: {ultima['status_operacional']}."
+                " Estes são valores registrados, não estimativas do modelo."
+            )
+    else:
+        resposta += " Não há leituras para apresentar nesse escopo."
     return resposta
 
 
@@ -267,11 +288,14 @@ def executar_assistente(texto: str, sessao: Sessao | None = None) -> str:
             resposta = agente_manutencao(texto, sessao)
         else:
             resposta = agente_dados(texto, sessao)
-    except (ValueError, ErroBanco, sqlite3.Error):
+    except ValueError as erro:
+        registrar_evento(sessao, "consulta: indisponível ou entrada inválida")
+        resposta = str(erro)
+    except (ErroBanco, sqlite3.Error):
         registrar_evento(sessao, "consulta: indisponível ou entrada inválida")
         resposta = (
-            "Não foi possível concluir. Confira o código do módulo, as leituras "
-            "e a faixa de treinamento. Use um único módulo, como MOD-01."
+            "Não foi possível acessar os dados necessários. "
+            "Verifique o banco pelo menu principal e tente novamente."
         )
 
     resposta = f"{resposta} {AVISO_HUMANO}"
@@ -359,10 +383,10 @@ def menu_assistente() -> None:
         )
 
         print("\n  CONSULTAS")
-        print("  [1] Estimar consumo de um módulo")
-        print("  [2] Consultar risco de um módulo")
-        print("  [3] Consultar registros de um módulo")
-        print("  [4] Consultar registros de todos os módulos")
+        print("  [1] Estimar consumo nas condições da última leitura válida")
+        print("  [2] Avaliar risco da última leitura de um módulo")
+        print("  [3] Ver resumo e última leitura de um módulo")
+        print("  [4] Ver resumo dos registros de toda a colônia")
 
         print("\n  CONVERSA")
         print("  [5] Ver histórico")
@@ -374,6 +398,10 @@ def menu_assistente() -> None:
         mostrar_texto(
             "Digite uma opção de 0 a 7 ou uma consulta, "
             "como: consumo MOD-01 ou risco MOD-05."
+        )
+        mostrar_texto(
+            "A estimativa pode ser bloqueada fora da faixa de treinamento. "
+            "Use a opção 3 para conferir os valores registrados."
         )
 
         entrada = input("\nSua escolha ou consulta: ").strip()
@@ -433,6 +461,7 @@ def menu_assistente() -> None:
                 mostrar_texto("Não há módulos cadastrados.")
                 continue
 
+            os.system("cls" if os.name == "nt" else "clear")
             titulo("SELEÇÃO DO MÓDULO")
 
             for modulo in modulos:
@@ -500,6 +529,7 @@ def menu_assistente() -> None:
             # Quando a trilha atinge o limite, mostra os eventos mais recentes.
             eventos_consulta = sessao.trilha[-4:]
 
+        os.system("cls" if os.name == "nt" else "clear")
         titulo("RESULTADO DA CONSULTA")
         mostrar_texto(f"Consulta: {pedido}")
         print(

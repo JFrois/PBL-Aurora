@@ -287,7 +287,17 @@ def prever(resultado: dict, entrada: dict) -> float:
         valor = float(entrada[atributo])
         minimo, maximo = resultado["faixas"][atributo]
         if not np.isfinite(valor) or not minimo <= valor <= maximo:
-            raise ValueError(f"{atributo} está fora da faixa válida do treino.")
+            nomes = {
+                "temperatura_c": ("Temperatura", "°C"),
+                "umidade_pct": ("Umidade", "%"),
+            }
+            nome, unidade = nomes.get(atributo, (atributo, ""))
+            raise ValueError(
+                f"{nome} informada: {formatar_numero(valor)} {unidade}. "
+                f"Faixa de treinamento: {formatar_numero(minimo)} a "
+                f"{formatar_numero(maximo)} {unidade}. "
+                "A estimativa foi bloqueada para evitar extrapolação."
+            )
         valores[atributo] = valor
 
     tabela = pd.DataFrame([valores], columns=resultado["atributos"])

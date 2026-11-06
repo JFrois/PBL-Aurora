@@ -75,10 +75,10 @@ def opcao_cadastrar() -> None:
     dados = {
         "modulo_id": _pedir("Módulo (ex.: MOD-01)"),
         "codigo_sensor": _pedir("Código do sensor (opcional, ex.: 0x1A)"),
-        "consumo_w": float(_pedir("Consumo em W")),
-        "temperatura_c": float(_pedir("Temperatura em °C (opcional)")) if _pedir("Temperatura em °C (opcional)") else None,
-        "umidade_pct": float(_pedir("Umidade em % (opcional)")) if _pedir("Umidade em % (opcional)") else None,
-        "carga_bateria_pct": float(_pedir("Carga da bateria em % (opcional)")) if _pedir("Carga da bateria em % (opcional)") else None,
+        "consumo_w": _pedir("Consumo em W"),
+        "temperatura_c": _pedir("Temperatura em °C (opcional)"),
+        "umidade_pct": _pedir("Umidade em % (opcional)"),
+        "carga_bateria_pct": _pedir("Carga da bateria em % (opcional)"),
         "status_operacional": _pedir("Status (ativo/alerta/falha/manutencao)", "ativo"),
         "data_registro": _pedir("Data AAAA-MM-DD HH:MM (Enter = agora)"),
     }
@@ -230,19 +230,13 @@ def opcao_sustentabilidade() -> None:
 
 
 def opcao_analisar_colonia() -> None:
-    """Integra os módulos do SIFSM em uma análise de sustentabilidade.
-    
-    Fluxo integrado (exemplo do enunciado): consulta os registros no banco, classifica o
-    risco com a regra booleana, organiza os alertas em estrutura de dados, roda a simulação,
-    estima com a regressão e exibe a recomendação técnica + análise final.
+    """Executa a análise integrada de sustentabilidade.
 
-    TODO (Integrante 2 monta, depois que o Integrante 1 entregar banco/lógica/estruturas):
-        1. leituras = banco.listar_leituras()
-        2. risco por módulo   = logica.classificar_risco(...)
-        3. alertas na estrutura (HeapAlertas/Fila) -> mostrar do mais crítico ao menos
-        4. simulacao.executar_simulacao()
-        5. modelo_linear.executar_modelo_linear() -> previsão
-        6. apresentacao.exibir_analise_final(resultados)
+    Consulta as leituras, classifica o risco da última leitura de cada
+    módulo e organiza a ordem de revisão em uma fila.
+
+    Executa a simulação energética, avalia a regressão, consulta os
+    agentes e apresenta resultados, limitações e recomendações.
     """
     from collections import deque
 
@@ -377,122 +371,17 @@ def opcao_analisar_colonia() -> None:
         )
 
     print("\nEtapas registradas pelos agentes:")
-
+    
     for evento in sessao.trilha:
         print(f" - {evento}")
 
-    print("\n6. ANÁLISE FINAL")
+    from src.fase7_sifsm import apresentacao
 
-    contagens = {
-        "bloqueado": 0,
-        "alto": 0,
-        "medio": 0,
-        "baixo": 0,
-    }
-
-    for avaliacao in avaliacoes:
-        contagens[avaliacao["risco"]] += 1
-
-    print(
-        f"Módulos por classificação: "
-        f"{contagens['bloqueado']} bloqueados, "
-        f"{contagens['alto']} com risco alto, "
-        f"{contagens['medio']} com risco médio e "
-        f"{contagens['baixo']} com risco baixo."
-    )
-
-    if contagens["bloqueado"] > 0:
-        print(
-            "Prioridade: verificar sensores com leituras bloqueadas "
-            "antes de utilizar seus valores em decisões."
-        )
-
-    if contagens["alto"] > 0:
-        print(
-            "Solicitar revisão técnica do consumo elevado "
-            "nos módulos essenciais."
-        )
-
-    if contagens["medio"] > 0:
-        print(
-            "Avaliar o consumo elevado dos módulos não essenciais, "
-            "considerando suas dependências operacionais."
-        )
-
-    if resultado_simulacao is not None:
-        atual = resultado_simulacao["atual"]
-
-        print(
-            f"Energia do cenário original em "
-            f"{atual['duracao_h']:.1f} h: "
-            f"{atual['energia_wh']:.1f} Wh."
-        )
-
-        print(
-            f"Economia hipotética com redução de 15% "
-            f"nos módulos não essenciais: "
-            f"{resultado_simulacao['economia_wh']:.1f} Wh."
-        )
-
-        deficit = resultado_simulacao["bateria"]["deficit_wh"][-1]
-
-        print(
-            f"Energia não atendida no cenário de bateria "
-            f"de 48 h: {deficit:.1f} Wh."
-        )
-
-        if deficit > 0:
-            print(
-                "O cenário indica necessidade de revisar geração, "
-                "armazenamento ou demanda. "
-                "Os parâmetros da bateria são ilustrativos."
-            )
-
-    if resultado_modelo is not None:
-        print(
-            f"MAE da regressão: {resultado_modelo['mae']:.2f} W."
-        )
-        print(
-            f"MAE da referência pela média: "
-            f"{resultado_modelo['mae_baseline']:.2f} W."
-        )
-
-        if (
-            resultado_modelo["mae"]
-            >= resultado_modelo["mae_baseline"]
-        ):
-            print(
-                "A regressão não superou a média em MAE. "
-                "Não deve orientar controle operacional."
-            )
-        else:
-            print(
-                "A regressão superou a média neste teste, "
-                "mas ainda precisa de validação externa."
-            )
-
-    print("\nLIMITAÇÕES E RESPONSABILIDADE")
-
-    print(
-        "Os dados são sintéticos. A simulação usa aproximação linear "
-        "entre leituras e uma bateria ideal."
-    )
-    print(
-        "As leituras em falha permanecem na simulação energética "
-        "como valores hipotéticos; não são medições confiáveis."
-    )
-    print(
-        "Os agentes são simulados e usam ferramentas determinísticas. "
-        "Nenhum equipamento ou registro foi alterado."
-    )
-    print(
-        "As regras determinísticas classificam o risco; "
-        "a regressão apenas estima consumo e os agentes explicam."
-    )
-    print(
-        "Toda recomendação exige validação humana antes "
-        "de qualquer intervenção."
-    )
+    apresentacao.exibir_analise_final({
+        "avaliacoes": avaliacoes,
+        "simulacao": resultado_simulacao,
+        "modelo": resultado_modelo,
+    })
 
 
 OPCOES = {
