@@ -207,7 +207,12 @@ def opcao_modelo_linear() -> None:
 
 
 def opcao_assistente() -> None:
+    import os
+
     from src.fase7_sifsm import agentes
+
+    # Remove a exibição anterior antes de abrir o assistente.
+    os.system("cls" if os.name == "nt" else "clear")
 
     agentes.menu_assistente()
 
@@ -537,7 +542,10 @@ def menu_principal() -> None:
             print("\n>> Encerrando o SIFSM. Até logo!")
             break
         if escolha in OPCOES:
-            exibir_cabecalho(OPCOES[escolha][0].upper())
+            # O assistente apresenta seu próprio cabeçalho.
+            if escolha != "10":
+                exibir_cabecalho(OPCOES[escolha][0].upper())
+
             executar_opcao(OPCOES[escolha][1])
         else:
             print("\n[!] Opção inválida. Escolha uma das opções listadas.")

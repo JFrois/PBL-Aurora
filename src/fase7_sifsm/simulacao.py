@@ -216,26 +216,97 @@ def executar_simulacao() -> dict:
 
     leituras = banco.listar_leituras(limite=None, ordem="asc")
     resultado = comparar_cenarios(leituras)
-    media_w = resultado["atual"]["potencia_media_w"]
+
+    atual = resultado["atual"]
+    media_w = atual["potencia_media_w"]
 
     resultado["bateria"] = simular_bateria(
         capacidade_wh=100000,
         geracao_w=media_w * 0.8,
         consumo_w=media_w,
     )
+
     resultado["graficos"] = gerar_graficos(resultado)
 
-    print(f"Duração analisada: {resultado['atual']['duracao_h']:.1f} h")
-    print(f"Energia acumulada: {resultado['atual']['energia_wh']:.1f} Wh")
-    print(f"Potência média: {media_w:.1f} W")
-    print(f"Economia hipotética: {resultado['economia_wh']:.1f} Wh")
-    print(f"Instantes incompletos descartados: {resultado['atual']['instantes_descartados']}")
-    print("Bateria ilustrativa: 100 kWh, carga inicial 80%, geração de 80% da demanda média.")
-    print(f"Energia não atendida em 48 h: {resultado['bateria']['deficit_wh'][-1]:.1f} Wh")
-    print("Limitações: dados sintéticos, bateria ideal, sem perdas ou variação na geração.")
-    print("A bateria utiliza demanda média constante; não reproduz a série instantânea.")
-    print("Leituras em falha são valores hipotéticos, sem validade para decisões operacionais.")
+    # Formatação brasileira apenas para exibição.
+    def formatar(valor, casas=2):
+        texto = f"{valor:,.{casas}f}"
+        return texto.replace(",", "X").replace(".", ",").replace("X", ".")
+
+    energia_wh = atual["energia_wh"]
+    economia_wh = resultado["economia_wh"]
+    deficit_wh = resultado["bateria"]["deficit_wh"][-1]
+    carga_final = resultado["bateria"]["soc"][-1] * 100
+
+    economia_pct = 0.0
+    if energia_wh > 0:
+        economia_pct = economia_wh / energia_wh * 100
+
+    print("\nRESUMO DO CONSUMO")
+    print("-" * 70)
+    print(f" Período analisado : {formatar(atual['duracao_h'], 1)} horas")
+    print(
+        f" Energia acumulada : {formatar(energia_wh / 1000)} kWh"
+        f" ({formatar(energia_wh, 1)} Wh)"
+    )
+    print(
+        f" Potência média    : {formatar(media_w / 1000)} kW"
+        f" ({formatar(media_w, 1)} W)"
+    )
+
+    print("\nCENÁRIO DE ECONOMIA")
+    print("-" * 70)
+    print(" Hipótese: reduzir 15% da potência dos módulos não essenciais.")
+    print(
+        f" Economia estimada : {formatar(economia_wh / 1000)} kWh"
+        f" ({formatar(economia_wh, 1)} Wh)"
+    )
+    print(f" Redução no total  : {formatar(economia_pct)}%")
+    print(" Os módulos essenciais mantêm seus valores originais.")
+    print(" Resultado hipotético; nenhuma alteração foi aplicada ao sistema.")
+
+    print("\nCENÁRIO DA BATERIA")
+    print("-" * 70)
+    print(" Capacidade        : 100 kWh")
+    print(" Carga inicial     : 80%")
+    print(" Horizonte         : 48 horas")
+    print(" Geração constante : 80% da demanda média")
+    print(f" Carga final       : {formatar(carga_final, 1)}%")
+    print(
+        f" Energia não atendida: {formatar(deficit_wh / 1000)} kWh"
+        f" ({formatar(deficit_wh, 1)} Wh)"
+    )
+
+    if deficit_wh > 0:
+        print("\n Atenção: neste cenário, a bateria não atende toda a demanda.")
+        print(" Avaliar geração, armazenamento ou consumo antes de decidir.")
+
+    print("\nQUALIDADE DOS DADOS")
+    print("-" * 70)
+    print(f" Leituras consultadas          : {len(leituras)}")
+    print(
+        " Instantes incompletos descartados: "
+        f"{atual['instantes_descartados']}"
+    )
+    print(" Instantes incompletos não são tratados como consumo zero.")
+    print(" A contagem de descartes considera toda a consulta,")
+    print(" inclusive datas que podem estar fora do período analisado.")
+
+    print("\nLIMITAÇÕES")
+    print("-" * 70)
+    print(" - Dados sintéticos e aproximação linear entre leituras.")
+    print(" - Bateria ideal, sem perdas ou envelhecimento.")
+    print(" - Geração e demanda constantes no cenário da bateria.")
+    print(" - Leituras em falha são apenas valores hipotéticos.")
+    print(" - Resultados exigem validação humana antes de qualquer ação.")
+
+    print("\nGRÁFICOS GERADOS")
+    print("-" * 70)
+
     for caminho in resultado["graficos"]:
-        print("Gráfico salvo:", caminho)
+        arquivo = Path(caminho)
+        print(f" - {arquivo.name}")
+
+    print(f"\n Pasta: {Path(resultado['graficos'][0]).parent}")
 
     return resultado

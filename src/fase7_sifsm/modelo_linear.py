@@ -24,6 +24,12 @@ PASTA_GRAFICOS = (
     / "docs/fase7/graficos_ou_imagens"
 )
 
+def formatar_numero(valor, casas=2):
+    """Formata números apenas para apresentação no terminal."""
+    texto = f"{valor:,.{casas}f}"
+    return texto.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
 def preparar_dados(leituras: list[dict]):
     """Converte a consulta do banco em uma tabela adequada ao modelo."""
     df = pd.DataFrame(leituras)
@@ -55,24 +61,68 @@ def preparar_dados(leituras: list[dict]):
 
 
 def analise_exploratoria(df) -> dict:
-    """Resume a distribuição e as associações entre as variáveis."""
+    """Apresenta um resumo dos dados e suas correlações."""
     numericos = df[ATRIBUTOS + ["consumo_w"]]
     estatisticas = numericos.describe()
     correlacao = numericos.corr()
 
-    print("\nANÁLISE EXPLORATÓRIA")
-    print(f"Registros válidos: {len(df)}")
-    print("\nEstatísticas descritivas:")
-    print(estatisticas.round(2))
-    print("\nMatriz de correlação:")
-    print(correlacao.round(3))
+    nomes = {
+        "temperatura_c": "Temperatura (°C)",
+        "umidade_pct": "Umidade (%)",
+        "consumo_w": "Potência (W)",
+    }
+
+    print("\n1. ANÁLISE DOS DADOS")
+    print("-" * 70)
+    print(f" Registros válidos: {len(df)}")
+
+    print(
+        f"\n {'Variável':<20}"
+        f"{'Média':>12}"
+        f"{'Mínimo':>12}"
+        f"{'Mediana':>12}"
+        f"{'Máximo':>12}"
+    )
+    print(" " + "-" * 68)
+
+    for campo in numericos.columns:
+        resumo = estatisticas[campo]
+
+        print(
+            f" {nomes[campo]:<20}"
+            f"{formatar_numero(resumo['mean']):>12}"
+            f"{formatar_numero(resumo['min']):>12}"
+            f"{formatar_numero(resumo['50%']):>12}"
+            f"{formatar_numero(resumo['max']):>12}"
+        )
+
+    print("\n CORRELAÇÕES")
+    print(
+        " Temperatura × potência : "
+        f"{formatar_numero(correlacao.loc['temperatura_c', 'consumo_w'], 3)}"
+    )
+    print(
+        " Umidade × potência     : "
+        f"{formatar_numero(correlacao.loc['umidade_pct', 'consumo_w'], 3)}"
+    )
+    print(
+        " Temperatura × umidade  : "
+        f"{formatar_numero(correlacao.loc['temperatura_c', 'umidade_pct'], 3)}"
+    )
+    print(" Correlação indica associação, não causalidade.")
 
     if "modulo_id" in df.columns:
-        print("\nConsumo médio por módulo (W):")
-        print(df.groupby("modulo_id")["consumo_w"].mean().round(2))
+        medias = df.groupby("modulo_id")["consumo_w"].mean()
 
-    print("\nObserve picos e diferenças entre módulos nos gráficos.")
-    print("Correlação não demonstra que uma variável causa a outra.")
+        print("\n POTÊNCIA MÉDIA POR MÓDULO")
+        print(f" {'Módulo':<15}{'Potência média (W)':>22}")
+        print(" " + "-" * 37)
+
+        for modulo, media in medias.items():
+            print(
+                f" {modulo:<15}"
+                f"{formatar_numero(media):>22}"
+            )
 
     return {
         "registros": len(df),
@@ -153,37 +203,77 @@ def treinar_regressao(df, alvo="consumo_w", atributos=None) -> dict:
     }
 
 def interpretar_coeficientes(resultado: dict) -> str:
-    """Apresenta a equação, as unidades e os limites da interpretação."""
-    equacao = f"Consumo estimado (W) = {resultado['intercepto']:.2f}"
-    linhas = []
+    """Explica a equação e apresenta a avaliação do modelo."""
+    linhas = [
+        "\n3. EQUAÇÃO E INTERPRETAÇÃO",
+        "-" * 70,
+        (
+            " Potência estimada (W) = "
+            f"{formatar_numero(resultado['intercepto'])}"
+        ),
+    ]
+
     unidades = {
-        "temperatura_c": "1 °C",
-        "umidade_pct": "1 ponto percentual de umidade",
+        "temperatura_c": ("temperatura", "1 °C"),
+        "umidade_pct": ("umidade", "1 ponto percentual de umidade"),
     }
 
     for atributo, coeficiente in resultado["coeficientes"].items():
-        equacao += f" {coeficiente:+.2f} × {atributo}"
-        unidade = unidades.get(atributo, f"1 unidade de {atributo}")
-        linhas.append(
-            f"{unidade}: associação de {coeficiente:+.2f} W, "
-            "mantendo as demais entradas constantes."
+        nome, unidade = unidades.get(
+            atributo,
+            (atributo, f"1 unidade de {atributo}"),
         )
 
-    linhas.insert(0, equacao)
-    linhas.append("O intercepto é uma referência matemática; zero pode estar fora dos dados.")
-    linhas.append(f"MAE: {resultado['mae']:.2f} W")
-    linhas.append(f"MSE: {resultado['mse']:.2f} W²")
-    linhas.append(f"RMSE: {resultado['rmse']:.2f} W")
-    linhas.append(f"R² no teste: {resultado['r2']:.3f}; não é porcentagem de acertos.")
-    linhas.append(f"MAE da média do treino: {resultado['mae_baseline']:.2f} W")
+        sinal = "+" if coeficiente >= 0 else "-"
+
+        linhas.append(
+            f"   {sinal} {formatar_numero(abs(coeficiente))} × {nome}"
+        )
+
+    linhas.append("\n Interpretação dos coeficientes:")
+
+    for atributo, coeficiente in resultado["coeficientes"].items():
+        nome, unidade = unidades.get(
+            atributo,
+            (atributo, f"1 unidade de {atributo}"),
+        )
+
+        sentido = "aumento" if coeficiente >= 0 else "redução"
+
+        linhas.append(
+            f" - {unidade}: associação com {sentido} de "
+            f"{formatar_numero(abs(coeficiente))} W,"
+        )
+        linhas.append("   mantendo as demais entradas constantes.")
+
+    linhas.extend([
+        " O intercepto é uma referência matemática.",
+        " Entradas iguais a zero podem estar fora dos dados observados.",
+        " Os coeficientes não demonstram relações de causa e efeito.",
+        "\n4. AVALIAÇÃO NO CONJUNTO DE TESTE",
+        "-" * 70,
+        f" MAE  — erro absoluto médio : {formatar_numero(resultado['mae'])} W",
+        f" MSE  — erro quadrático médio: {formatar_numero(resultado['mse'])} W²",
+        f" RMSE — raiz do MSE         : {formatar_numero(resultado['rmse'])} W",
+        f" R²                        : {formatar_numero(resultado['r2'], 3)}",
+        " R² não é porcentagem de acertos.",
+        "\n COMPARAÇÃO COM UMA REFERÊNCIA SIMPLES",
+        f" MAE da regressão : {formatar_numero(resultado['mae'])} W",
+        f" MAE da média     : {formatar_numero(resultado['mae_baseline'])} W",
+        " Para o MAE, quanto menor, melhor.",
+    ])
 
     if resultado["mae"] >= resultado["mae_baseline"]:
-        linhas.append("O modelo não superou a média em MAE: não usar para controle operacional.")
+        linhas.extend([
+            "\n RESULTADO: a regressão não superou a média em MAE.",
+            " Não utilizar o modelo para controle operacional.",
+        ])
     else:
-        linhas.append("O modelo superou a média neste teste, mas ainda exige validação externa.")
+        linhas.extend([
+            "\n RESULTADO: a regressão superou a média neste teste.",
+            " Ainda é necessária validação com outros dados.",
+        ])
 
-    linhas.append("Dados sintéticos, picos e diferenças entre módulos limitam a generalização.")
-    linhas.append("Coeficientes indicam associação, não causalidade.")
     return "\n".join(linhas)
 
 
@@ -261,33 +351,84 @@ def executar_modelo_linear() -> dict:
 
     leituras = banco.listar_leituras(limite=None, ordem="asc")
     df = preparar_dados(leituras)
-    print(f"Registros recebidos: {len(leituras)}; removidos: {len(leituras) - len(df)}")
+
+    print("\nPREPARAÇÃO DA BASE")
+    print("-" * 70)
+    print(f" Registros recebidos : {len(leituras)}")
+    print(f" Registros removidos : {len(leituras) - len(df)}")
+    print(f" Registros utilizados: {len(df)}")
+
     exploratoria = analise_exploratoria(df)
     resultado = treinar_regressao(df)
     resultado["exploratoria"] = exploratoria
 
-    print(f"\nTreino: {resultado['n_treino']}; teste: {resultado['n_teste']}")
-    print("Primeiro instante de teste:", resultado["data_corte"])
+    print("\n2. SEPARAÇÃO ENTRE TREINO E TESTE")
+    print("-" * 70)
+    print(f" Leituras de treinamento: {resultado['n_treino']}")
+    print(f" Leituras de teste      : {resultado['n_teste']}")
+    print(f" Início do teste       : {resultado['data_corte']}")
+    print(" A separação considera os instantes em ordem cronológica.")
+    print(" O mesmo instante não aparece nos dois conjuntos.")
+
     print(interpretar_coeficientes(resultado))
-    print("\nCorrelação das entradas no treino:")
-    print(pd.DataFrame(resultado["correlacao_treino"]).round(3))
-    print("Correlação alta entre entradas pode dificultar interpretar os coeficientes.")
-    print("Não foi calculado VIF; a correlação é uma verificação inicial.")
 
-    resultado["graficos"] = gerar_graficos(df, resultado)
-    print("Resíduos devem ser inspecionados: padrões e erros grandes sugerem limitações.")
+    print("\n5. CUIDADOS NA INTERPRETAÇÃO")
+    print("-" * 70)
 
-    # Exemplo hipotético com as medianas das entradas do treinamento.
+    correlacao_treino = resultado["correlacao_treino"]
+    correlacao_entradas = correlacao_treino[
+        "temperatura_c"
+    ]["umidade_pct"]
+
+    print(
+        " Correlação temperatura × umidade no treino: "
+        f"{formatar_numero(correlacao_entradas, 3)}"
+    )
+    print(" A correlação entre entradas pode afetar os coeficientes.")
+    print(" Essa verificação inicial não substitui uma análise de VIF.")
+    print(" Inspecione os gráficos para identificar picos e resíduos.")
+    print(" Dados sintéticos e diferenças entre módulos limitam o modelo.")
+
     entrada = resultado["entrada_exemplo"]
     estimativa = prever(resultado, entrada)
     resultado["previsao_exemplo_w"] = estimativa
-    print("\nCondições ilustrativas:", entrada)
-    print(f"Consumo estimado: {estimativa:.1f} W; MAE no teste: {resultado['mae']:.1f} W.")
-    print("O MAE não é um intervalo de confiança nem um limite garantido de erro.")
-    print("Uso proposto: apoiar o planejamento e revisar cargas não essenciais.")
-    print("Não é previsão de um ciclo futuro nem classificação de risco de falha.")
-    print("Qualquer decisão exige validação humana e confirmação com dados reais.")
+
+    print("\n6. EXEMPLO ILUSTRATIVO")
+    print("-" * 70)
+    print(
+        " Temperatura utilizada: "
+        f"{formatar_numero(entrada['temperatura_c'])} °C"
+    )
+    print(
+        " Umidade utilizada    : "
+        f"{formatar_numero(entrada['umidade_pct'])}%"
+    )
+    print(
+        " Potência estimada    : "
+        f"{formatar_numero(estimativa)} W"
+    )
+    print(
+        " MAE no teste         : "
+        f"{formatar_numero(resultado['mae'])} W"
+    )
+    print(" As entradas do exemplo são as medianas do treinamento.")
+    print(" O MAE não é intervalo de confiança nem erro máximo garantido.")
+
+    print("\n7. USO E RESPONSABILIDADE")
+    print("-" * 70)
+    print(" Uso proposto: discutir planejamento energético.")
+    print(" A estimativa não prevê um ciclo futuro nem risco de falha.")
+    print(" Nenhuma alteração operacional é realizada.")
+    print(" Qualquer decisão exige validação humana e dados confiáveis.")
+
+    resultado["graficos"] = gerar_graficos(df, resultado)
+
+    print("\n8. GRÁFICOS GERADOS")
+    print("-" * 70)
+
     for caminho in resultado["graficos"]:
-        print("Gráfico salvo:", caminho)
+        print(f" - {Path(caminho).name}")
+
+    print(f"\n Pasta: {Path(resultado['graficos'][0]).parent}")
 
     return resultado

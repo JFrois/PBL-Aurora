@@ -291,118 +291,180 @@ def executar_assistente(texto: str, sessao: Sessao | None = None) -> str:
 
 
 def menu_assistente() -> None:
+    import os
+    from textwrap import fill
+
+    from . import banco
+
     sessao = Sessao()
+    largura = 70
+
+    def titulo(texto):
+        print("\n" + "=" * largura)
+        print(texto.center(largura))
+        print("=" * largura)
+
+    def mostrar_texto(texto):
+        print(
+            fill(
+                texto,
+                width=largura,
+                initial_indent="  ",
+                subsequent_indent="  ",
+            )
+        )
+
+    def mostrar_etapas(eventos):
+        if not eventos:
+            mostrar_texto(
+                "Ainda não há eventos. Faça uma consulta nas opções 1 a 4."
+            )
+            return
+
+        nomes = {
+            "guardrail_entrada: True": "Entrada aprovada",
+            "guardrail_entrada: False": "Entrada bloqueada",
+            "guardrail_saida: True": "Resposta aprovada",
+            "guardrail_saida: False": "Resposta bloqueada",
+            "tool: consultar_leituras": "Ferramenta: consultar registros",
+            "tool: classificar_risco": "Ferramenta: classificar risco",
+            "tool: prever_consumo": "Ferramenta: estimar consumo",
+            "consulta: indisponível ou entrada inválida":
+                "Consulta indisponível ou entrada inválida",
+        }
+
+        for numero, evento in enumerate(eventos, start=1):
+            descricao = nomes.get(evento, evento)
+
+            if evento.startswith("Triador -> handoff -> "):
+                especialista = evento.split(" -> ")[-1]
+                especialistas = {
+                    "energia": "Energia",
+                    "manutencao": "Manutenção",
+                    "dados": "Dados",
+                }
+                nome = especialistas.get(especialista, especialista)
+                descricao = f"Triador encaminhou ao especialista de {nome}"
+
+            mostrar_texto(f"{numero}. {descricao}")
 
     while True:
-        print("ASSISTENTE MULTIAGENTE SIMULADO — sem LLM ou API")
-      
+        os.system("cls" if os.name == "nt" else "clear")
+        titulo("ASSISTENTE DA COLÔNIA")
 
-        if sessao.modulo_id:
-            print(f"Módulo em contexto: {sessao.modulo_id}")
-        else:
-            print("Nenhum módulo selecionado.")
+        print("  Simulação por regras | Sem LLM ou chave de API")
+        print(
+            f"  Módulo selecionado: "
+            f"{sessao.modulo_id or 'nenhum'}"
+        )
 
-        print("\nO que você deseja consultar?")
-        print(" [1] Estimar consumo de um módulo")
-        print(" [2] Consultar risco de um módulo")
-        print(" [3] Consultar registros de um módulo")
-        print(" [4] Consultar registros de todos os módulos")
-        print(" [5] Ver histórico da conversa")
-        print(" [6] Ver etapas do atendimento (tracing)")
-        print(" [7] Limpar conversa e módulo selecionado")
-        print(" [0] Voltar ao menu principal")
+        print("\n  CONSULTAS")
+        print("  [1] Estimar consumo de um módulo")
+        print("  [2] Consultar risco de um módulo")
+        print("  [3] Consultar registros de um módulo")
+        print("  [4] Consultar registros de todos os módulos")
 
-        print("\nVocê também pode escrever uma consulta, por exemplo:")
-        print(" consumo MOD-01")
-        print(" risco MOD-01")
-        print(" dados de todos os módulos")
-        print("\nO assistente apenas consulta e recomenda; não altera o sistema.")
+        print("\n  CONVERSA")
+        print("  [5] Ver histórico")
+        print("  [6] Ver etapas do atendimento")
+        print("  [7] Limpar conversa e módulo selecionado")
+        print("  [0] Voltar ao menu principal")
 
-        entrada = input(
-            "\nDigite o número da opção ou escreva sua consulta: "
-        ).strip()
+        print("\n" + "-" * largura)
+        mostrar_texto(
+            "Digite uma opção de 0 a 7 ou uma consulta, "
+            "como: consumo MOD-01 ou risco MOD-05."
+        )
 
+        entrada = input("\nSua escolha ou consulta: ").strip()
         comando = normalizar(entrada)
 
         if comando in ("0", "sair"):
+            print("\nRetornando ao menu principal...")
             break
 
+        if not entrada:
+            mostrar_texto("Nenhuma opção informada. Escolha uma opção de 0 a 7.")
+            continue
+
         if comando in ("5", "historico"):
-            print("\nHISTÓRICO")
+            titulo("HISTÓRICO DA CONVERSA")
 
             if not sessao.historico:
-                print("Ainda não há consultas. Escolha uma opção de 1 a 4.")
-
-            for interacao in sessao.historico:
-                print(f"\nVocê: {interacao['pedido']}")
-                print(
-                    f"Agente {interacao['agente']}: "
-                    f"{interacao['resposta']}"
+                mostrar_texto(
+                    "Ainda não há consultas registradas. "
+                    "Comece pelas opções 1 a 4."
                 )
 
-            input("\nPressione Enter para continuar...")
+            for numero, interacao in enumerate(sessao.historico, start=1):
+                print(f"\n  CONSULTA {numero}")
+                mostrar_texto(f"Você: {interacao['pedido']}")
+                mostrar_texto(f"Agente: {interacao['agente']}")
+
+                print("\n  Resposta:")
+                mostrar_texto(interacao["resposta"])
+
             continue
 
         if comando in ("6", "trilha"):
-            print("\nETAPAS DO ATENDIMENTO")
-
-            if not sessao.trilha:
-                print("Ainda não há eventos. Faça uma consulta primeiro.")
-
-            for evento in sessao.trilha:
-                print(f" - {evento}")
-
-            input("\nPressione Enter para continuar...")
+            titulo("ETAPAS DO ATENDIMENTO")
+            mostrar_etapas(sessao.trilha)
             continue
 
         if comando in ("7", "limpar"):
             sessao = Sessao()
-            print("\nConversa e módulo selecionado foram limpos.")
-            input("\nPressione Enter para continuar...")
+            titulo("CONVERSA LIMPA")
+            mostrar_texto(
+                "O histórico, as etapas e o módulo selecionado foram limpos."
+            )
             continue
 
         if comando in ("1", "2", "3"):
-            from . import banco
-
             try:
                 modulos = banco.listar_modulos()
             except (ErroBanco, sqlite3.Error):
-                print("\nNão foi possível consultar os módulos.")
-                input("\nPressione Enter para continuar...")
+                mostrar_texto(
+                    "Não foi possível consultar os módulos. "
+                    "Verifique a disponibilidade do banco."
+                )
                 continue
 
             if not modulos:
-                print("\nNão há módulos cadastrados.")
-                input("\nPressione Enter para continuar...")
+                mostrar_texto("Não há módulos cadastrados.")
                 continue
 
-            print("\nMódulos disponíveis:")
+            titulo("SELEÇÃO DO MÓDULO")
+
             for modulo in modulos:
-                print(f" - {modulo['id']}")
+                nome = modulo.get("nome") or modulo.get("nome_modulo") or ""
+                descricao = f"{modulo['id']} — {nome}" if nome else modulo["id"]
+                mostrar_texto(descricao)
 
             if sessao.modulo_id:
-                print(
-                    f"\nPressione Enter para manter {sessao.modulo_id}, "
+                print()
+                mostrar_texto(
+                    f"Pressione Enter para manter {sessao.modulo_id} "
                     "ou informe outro código."
                 )
 
             modulo_escolhido = input(
-                "Código do módulo (exemplo: MOD-01): "
+                "\nCódigo do módulo (ex.: MOD-05; 0 para cancelar): "
             ).strip().upper()
+
+            if modulo_escolhido == "0":
+                mostrar_texto("Consulta cancelada.")
+                continue
 
             if not modulo_escolhido:
                 modulo_escolhido = sessao.modulo_id
 
-            if not modulo_escolhido:
-                print("\nInforme o código de um módulo.")
-                input("\nPressione Enter para continuar...")
-                continue
-
             codigos_validos = [modulo["id"] for modulo in modulos]
 
             if modulo_escolhido not in codigos_validos:
-                print("\nCódigo inválido. Escolha um dos módulos listados.")
-                input("\nPressione Enter para continuar...")
+                mostrar_texto(
+                    "Código não informado ou inválido. "
+                    "Utilize um dos códigos apresentados."
+                )
                 continue
 
             assuntos = {
@@ -410,30 +472,57 @@ def menu_assistente() -> None:
                 "2": "risco",
                 "3": "dados",
             }
-
             pedido = f"{assuntos[comando]} {modulo_escolhido}"
 
         elif comando == "4":
             pedido = "dados de todos os módulos"
 
-        elif not entrada:
-            print("\nDigite uma opção ou uma consulta antes de continuar.")
-            input("\nPressione Enter para continuar...")
-            continue
-
         elif entrada.isdigit():
-            print("\nOpção inválida. Escolha um número de 0 a 7.")
-            input("\nPressione Enter para continuar...")
+            mostrar_texto("Opção inválida. Escolha um número de 0 a 7.")
             continue
 
         else:
             pedido = entrada
 
-        print(f"\nConsulta: {pedido}")
-        print("\n" + executar_assistente(pedido, sessao))
+        # Guarda os eventos anteriores para mostrar somente os desta consulta.
+        eventos_anteriores = len(sessao.trilha)
+        trilha_anterior = sessao.trilha.copy()
 
-        print("\nEtapas recentes:")
-        for evento in sessao.trilha[-4:]:
-            print(f" - {evento}")
+        resposta = executar_assistente(pedido, sessao)
 
-        input("\nPressione Enter para continuar...")
+        # Considera o limite de 100 eventos mantidos na sessão.
+        if (
+            eventos_anteriores == 0
+            or sessao.trilha[:eventos_anteriores] == trilha_anterior
+        ):
+            eventos_consulta = sessao.trilha[eventos_anteriores:]
+        else:
+            # Quando a trilha atinge o limite, mostra os eventos mais recentes.
+            eventos_consulta = sessao.trilha[-4:]
+
+        titulo("RESULTADO DA CONSULTA")
+        mostrar_texto(f"Consulta: {pedido}")
+        print(
+            f"  Módulo em contexto: "
+            f"{sessao.modulo_id or 'nenhum — consulta global'}"
+        )
+
+        print("\n  RESPOSTA")
+        print("  " + "-" * (largura - 4))
+
+        # Exibe o aviso de responsabilidade em um bloco próprio.
+        texto_resposta = resposta
+        if resposta.endswith(AVISO_HUMANO):
+            texto_resposta = resposta[:-len(AVISO_HUMANO)].strip()
+
+        mostrar_texto(texto_resposta)
+
+        print("\n  RESPONSABILIDADE")
+        mostrar_texto(AVISO_HUMANO)
+
+        print("\n  ETAPAS DESTA CONSULTA")
+        mostrar_etapas(eventos_consulta)
+
+
+        input("\nPressione Enter para voltar ao menu do assistente...")
+        continue

@@ -18,7 +18,7 @@ import numpy as np  # noqa: E402
 from matplotlib.patches import Circle, Polygon  # noqa: E402
 
 RAIZ_PROJETO = Path(__file__).resolve().parents[2]
-CAMINHO_PNG = RAIZ_PROJETO / "docs" / "fase7" / "circuito_logico.png"
+CAMINHO_PNG = RAIZ_PROJETO / "docs" / "fase7" / "graficos_ou_imagens"/ "circuito_logico.png"
 COR = "#1f2a44"
 
 

@@ -516,17 +516,11 @@ apagar um banco com alterações importantes apenas para reproduzir métricas.
 
 
 ## 12. Testes e evidências disponíveis
+Esta seção apresenta os testes automatizados e as evidências das
+funcionalidades desenvolvidas na Fase 7. Os registros permitem verificar
+os cálculos, a integração entre módulos, o tratamento de entradas inválidas
+e a apresentação dos resultados.
 
-```powershell
-.\venv\Scripts\python.exe -m pytest -q
-.\venv\Scripts\python.exe -m py_compile src/fase7_sifsm/simulacao.py src/fase7_sifsm/modelo_linear.py src/fase7_sifsm/agentes.py
-```
-
-A equipe confirmou 37 testes passando na base do Integrante 1. Foi apresentada a saída completa da opção 9,
-com métricas registradas na seção 6, e a abertura do assistente. A revisão do código de simulação verificou
-casos controlados de integral constante, comparação, interpolação e esgotamento; isso não substitui a validação
-final do repositório integrado. Os testes adicionais fornecidos devem ser incorporados e executados antes
-de registrar uma contagem final. Não se declara neste relatório que toda a suíte ampliada passou.
 
 As figuras esperadas em `docs/fase7/graficos_ou_imagens/` são:
 
@@ -535,6 +529,344 @@ As figuras esperadas em `docs/fase7/graficos_ou_imagens/` são:
 
 Na revisão final, conferir legibilidade e correspondência entre gráficos, banco e resultados. O registro
 final dos testes, evidências do CRUD e execução da opção A ainda deve ser consolidado pela equipe.
+
+### 12.1 Evidências 
+
+![evidencia_menu_sifsm](./graficos_ou_imagens/evidencias/evidencia_menu_sifsm.png)
+
+ 
+### Evidência Opção 1 — Cadastrar leitura
+
+**Objetivo:** demonstrar o cadastro, a validação dos campos e a
+classificação de risco, com registro de alerta quando aplicável.
+
+**Entradas e saída:**
+![evidencia_opcao_1_cadastrar_leitura](./graficos_ou_imagens/evidencias/evidencia_opcao_1_cadastrar_leitura.png)
+
+
+### Evidência Opção 2 — Listar registros
+**Objetivo:** demonstrar a consulta dos dados armazenados e a aplicação
+dos filtros disponíveis.
+
+**Saída:**
+![evidencia_opcao_2_listar_registros](./graficos_ou_imagens/evidencias/evidencia_opcao_2_listar_registros.png)
+
+
+### Evidência Opção 3 — Alterar registro
+
+**Objetivo:** demonstrar a alteração de uma leitura e confirmar a
+persistência dos novos valores por consulta posterior.
+
+**Entradas e saída:**
+![evidencia_opcao_3_alterar_registro](./graficos_ou_imagens/evidencias/evidencia_opcao_3_alterar_registro.png)
+
+
+### Evidência Opção 4 — Excluir registro
+
+**Objetivo:** demonstrar a confirmação da exclusão e verificar que o
+registro deixou de aparecer nas consultas.
+
+**Saída:**
+![evidencia_opcao_4_excluir_registro](./graficos_ou_imagens/evidencias/evidencia_opcao_4_excluir_registro.png)
+
+
+### Evidência Opção U — Desfazer a última ação
+
+**Objetivo:** demonstrar o uso da pilha para reverter a última operação
+do CRUD realizada na mesma sessão.
+
+**Entradas e saída:**
+![evidencia_opcao_u_desfazer](./graficos_ou_imagens/evidencias/evidencia_opcao_u_desfazer.png)
+
+
+### Evidência Opção 5 — Regra booleana e tabela-verdade
+
+**Objetivo:** apresentar as combinações das entradas e verificar sua
+correspondência com as regras:
+
+**Saída:**
+![evidencia_opcao_5_booleana_tabverdade](./graficos_ou_imagens/evidencias/evidencia_opcao_5_booleana_tabverdade.png)
+
+
+### Evidência Opção 6 — Circuito lógico
+
+**Objetivo:** demonstrar a correspondência entre a regra implementada
+em Python e a representação por portas lógicas.
+
+**Saída:**
+![evidencia_opcao_6_circuito_logico](./graficos_ou_imagens/evidencias/evidencia_opcao_6_circuito_logico.png)
+
+
+**Representação do circuito:**
+![Circuito lógico do SIFSM](graficos_ou_imagens/circuito_logico.png)
+
+
+### Evidência  Opção 7 — Estruturas de dados
+
+**Objetivo:** demonstrar a aplicação de fila, pilha, tabela hash e heap
+na organização de chamados, histórico, sensores e alertas.
+
+**Saída:**
+![evidencia_opcao_7_estrutura_dados](./graficos_ou_imagens/evidencias/evidencia_opcao_7_estrutura_dados.png)
+
+
+### Evidência Opção 8 — Simulação energética
+
+**Objetivo:** demonstrar integração numérica, potência média, comparação
+de cenários e evolução do estado de carga de uma bateria ideal.
+
+
+**Saída:**
+![evidencia_opcao_8_simulacao_energetica](./graficos_ou_imagens/evidencias/evidencia_opcao_8_simulacao_energetica.png)
+
+
+*Gráficos:**
+- Comparação dos cenários de consumo
+![Comparação dos cenários de consumo](graficos_ou_imagens/consumo_cenarios.png)
+
+- Estado de carga da bateria ideal
+![Estado de carga da bateria ideal](graficos_ou_imagens/bateria.png)
+
+
+
+### Evidência Opção 9 — Modelo linear de apoio à decisão
+
+**Objetivo:** apresentar análise exploratória, correlações, equação,
+interpretação dos coeficientes e avaliação do modelo.
+
+
+**Saída completa:**
+![evidencia_opcao_9_modelo_part1](./graficos_ou_imagens/evidencias/evidencia_opcao_9_modelo_part1.png)
+![evidencia_opcao_9_modelo_part2](./graficos_ou_imagens/evidencias/evidencia_opcao_9_modelo_part2.png)
+![evidencia_opcao_9_modelo_part3](./graficos_ou_imagens/evidencias/evidencia_opcao_9_modelo_part3.png)
+
+**Gráficos:**
+- Análise exploratória
+![Análise exploratória](graficos_ou_imagens/analise_exploratoria.png)
+
+- Consumo observado e previsto
+![Consumo observado e previsto](graficos_ou_imagens/regressao.png)
+
+- Resíduos no conjunto de teste
+![Resíduos no conjunto de teste](graficos_ou_imagens/residuos.png)
+
+
+### Evidência Opção 10 — Assistente multiagente simulado
+
+**Objetivo:** demonstrar triagem, especialistas, ferramentas determinísticas,
+handoffs, guardrails, contexto de sessão e tracing.
+
+
+**Saída:**
+![evidencia_opcao_10_assistente_part1](./graficos_ou_imagens/evidencias/evidencia_opcao_10_assistente_part1.png)
+![evidencia_opcao_10_assistente_part2](./graficos_ou_imagens/evidencias/evidencia_opcao_10_assistente_part2.png)
+
+
+
+
+### Evidência Opção 11 — Arquitetura computacional
+
+**Objetivo:** apresentar a relação entre o protótipo, processamento local,
+CPU, aceleradores, memória, movimentação de dados e eficiência.
+
+**Saída:**
+
+```text
+[Inserir a saída após implementar e executar a opção 11.]
+```
+
+As propostas de uso de GPU, NPU ou TPU são conceituais, salvo quando
+acompanhadas de implementação e medições efetivamente realizadas.
+
+### Evidência Opção 12 — Sustentabilidade e cidadania digital
+
+**Objetivo:** apresentar uma análise vinculada ao sistema, abordando
+pelo menos quatro temas previstos no item 5.8 do enunciado.
+
+**Saída:**
+
+```text
+[Inserir a saída após implementar e executar a opção 12.]
+```
+
+### 12.17 Opção A — Análise integrada de sustentabilidade
+
+**Objetivo:** demonstrar a integração entre banco, regra de risco,
+estruturas de dados, simulação, regressão e agentes.
+
+A execução registrada concluiu as seguintes etapas:
+
+1. Consulta de 120 leituras e identificação de oito módulos.
+2. Classificação da última leitura de cada módulo.
+3. Apresentação da ordem de revisão dos módulos.
+4. Simulação de consumo, comparação de cenários e bateria.
+5. Treinamento e avaliação da regressão.
+6. Consultas aos especialistas de dados, manutenção e energia.
+7. Apresentação da análise final e das limitações.
+
+Os oito módulos apresentaram risco baixo nas últimas leituras. Essa
+classificação não representa o pior risco de todo o histórico e não
+significa ausência garantida de falhas.
+
+O tracing registrou guardrails de entrada e saída, handoffs e chamadas
+às ferramentas. A análise final identificou déficit no cenário de bateria
+e informou que a regressão não superou a média em MAE.
+
+O fluxo terminou sem erro na execução apresentada. Isso demonstra o
+funcionamento do cenário registrado, sem comprovar todos os casos
+possíveis ou adequação operacional.
+
+**Saída completa da opção A:**
+
+```text
+[Inserir a saída completa da execução integrada.]
+```
+
+### 12.18 Conferência final das evidências
+
+Antes da entrega, verificar:
+
+- Resultado da suíte completa na versão final do projeto.
+- Correspondência entre código, banco, saídas e métricas do relatório.
+- Legibilidade dos gráficos e identificação das unidades.
+- Evidências do CRUD, tratamento de erros e bloqueio de pedido perigoso.
+- Conclusão das opções ainda pendentes.
+- Ausência de credenciais e informações pessoais nas capturas.
+- Substituição dos campos de preenchimento pelas evidências obtidas.
+
+
+### Tratamento de entradas inválidas
+
+**Objetivo:** verificar se valores inválidos são rejeitados com mensagens
+compreensíveis, mantendo o menu em funcionamento.
+
+
+- Consumo preenchido com texto.
+![evidencia_preenchido_texto](./graficos_ou_imagens/evidencias/evidencia_preenchido_texto.png)
+
+
+- Limite de consulta não numérico.
+
+
+- ID inválido.
+
+
+- Valor fora da faixa permitida.
+
+
+
+
+
+
+
+
+
+### 12.2 Testes automatizados
+Os testes devem ser executados pelo pytest, a partir da raiz do projeto.
+
+```powershell
+.\venv\Scripts\python.exe -m pytest -q
+```
+
+
+### Suíte completa do projeto
+Comando:
+```powershell
+python -m pytest -q
+```
+
+**Resultado final:**
+![teste_completo_projeto](image.png)
+
+
+
+### Testes da estrutura de dados
+Os quatro testes automatizados das estruturas de dados passaram, verificando a ordem FIFO da fila, a ordem LIFO e o limite da pilha, as operações e o redimensionamento da tabela hash e a priorização de alertas pelo heap.
+
+Comando:
+```powershell
+python -m pytest tests/test_fase7_estruturas.py -v
+```
+
+**Resultado da execução:**
+![teste_estrutura_dados](./graficos_ou_imagens/teste_estrutura_dados.png)
+
+
+### Testes do Banco de dados
+Os 18 testes automatizados do banco de dados passaram, verificando persistência, operações CRUD, filtros, validação de entradas, importação do CSV, proteção contra SQL injection e registros de alertas e chamados.
+
+Comando:
+````powershell
+python -m pytest tests/test_fase7_banco.py -v
+````
+
+**Resultado da execução:**
+![teste_banco_dados](./graficos_ou_imagens/teste_banco_dados.png)
+
+
+
+### Testes da lógica
+Os nove testes automatizados da lógica passaram, verificando a tabela-verdade, a lei de De Morgan, o limiar de consumo elevado, a validade dos sensores e os quatro níveis de classificação de risco.
+
+Comando:
+```powershell
+python -m pytest tests/test_fase7_logica.py -v
+```
+
+**Resultado da execução:** 
+![teste_logica](./graficos_ou_imagens/teste_logica.png)
+
+
+### Testes da simulação energética
+
+Comando:
+```powershell
+python -m pytest tests/test_fase7_analise.py -v -k "integracao or bateria or cenario"
+```
+A execução ocorreu em Windows, com Python 3.14.1 e pytest 9.1.1.
+
+**Resultado da execução:**
+![Teste_simulacao_energetica](./graficos_ou_imagens/Teste_simulacao_energetica.png)
+
+
+Os dois testes não selecionados foram excluídos pelo filtro de execução
+e não representam falhas. Os quatro resultados validam os casos testados,
+sem comprovar a precisão física da simulação.
+
+
+### Testes de regressão e agentes
+
+Comando:
+```powershell
+python -m pytest tests/test_fase7_analise.py -v
+```
+
+Além da simulação, esse arquivo verifica uma relação linear conhecida,
+a rejeição de extrapolação e o fluxo de guardrails, handoff e sessão
+dos agentes.
+
+**Resultado da execução:**
+![Teste_regrecao_e_agentes](./graficos_ou_imagens/Teste_regrecao_e_agentes.png)
+
+
+
+
+### Verificação de sintaxe
+
+Comando:
+```powershell
+python -m py_compile codigo_fonte.py src/fase7_sifsm/simulacao.py src/fase7_sifsm/modelo_linear.py src/fase7_sifsm/agentes.py
+```
+
+A ausência de mensagens indica que não foram encontrados erros de sintaxe
+nos arquivos verificados. Essa verificação não substitui os testes
+automatizados nem a execução das funcionalidades.
+
+
+**Resultado da execução:**
+![Teste_sintaxe](./graficos_ou_imagens/Teste_sintaxe.png)
+
+
 
 
 
