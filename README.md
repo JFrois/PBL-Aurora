@@ -1267,7 +1267,7 @@ A solução utiliza dados sintéticos e mantém supervisão humana nas decisões
 
 **Entrada principal:** `codigo_fonte.py`.
 
-**Documentação técnica:** [Relatório da Fase 7](docs/fase7/relatorio_tecnico.md).
+**Documentação técnica:** [Relatório da Fase 7](docs/fase7/relatorio_tecnico.md) · **Vídeo Pitch:** [https://youtu.be/msr6JTp80uk](https://youtu.be/msr6JTp80uk) ([`docs/fase7/link_video.txt`](docs/fase7/link_video.txt)).
 
 ## Objetivos da Fase
 

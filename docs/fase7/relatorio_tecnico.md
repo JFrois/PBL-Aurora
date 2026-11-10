@@ -964,7 +964,7 @@ automatizados nem a execução das funcionalidades.
 
 ## 13. Vídeo Pitch e Roteiro de Apresentação
 
-O vídeo pitch da Fase 7 apresenta o funcionamento completo do SIFSM, as principais decisões técnicas e os resultados obtidos. Está disponível no YouTube, na modalidade “Não listado”, pelo link registrado em `docs/fase7/link_video.txt` (e o roteiro detalhado para condução da demonstração encontra-se em `docs/fase7/roteiro_apresentacao.md`).
+O vídeo pitch da Fase 7 apresenta o funcionamento completo do SIFSM, as principais decisões técnicas e os resultados obtidos. Está disponível no YouTube, na modalidade “Não listado”, pelo link **[https://youtu.be/msr6JTp80uk](https://youtu.be/msr6JTp80uk)**, também registrado em `docs/fase7/link_video.txt` (e o roteiro detalhado encontra-se em `docs/fase7/roteiro_apresentacao.md`).
 
 ### Estrutura da Apresentação (Até 5 minutos)
 
