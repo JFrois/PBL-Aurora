@@ -41,6 +41,10 @@ features:
     title: "SCIC: Hardware & ML (Fase 6)"
     details: "Dimensionamento via Lei de Ohm, previsão de latência com scikit-learn, fila de prioridade com Heap binário e busca em O(m) com Trie."
     link: "/fases/fase-6-scic"
+  - icon: "🌱"
+    title: "SIFSM: Futuro Sustentável (Fase 7)"
+    details: "Banco SQLite com CRUD, circuito lógico, 4 estruturas de dados, integração por Trapézios, regressão temporal, agentes com guardrails e governança ESG."
+    link: "/fases/fase-7-sifsm"
 ---
 
 <div class="hud-telemetry-banner">
@@ -128,6 +132,7 @@ Antes de autorizar a ignição ou iniciar a máquina de estados, confirme os seg
 | [Fase 4: Infraestrutura & Redes](/fases/fase-4-infraestrutura) | Grafo da colônia, matriz de adjacência e latência | Teoria dos Grafos |
 | [Fase 5: Núcleo Cognitivo](/fases/fase-5-cognitivo) | Leis de De Morgan, persistência JSON e LLMs | Lógica & IA |
 | [Fase 6: Sistema Integrado SCIC](/fases/fase-6-scic) | Hardware, scikit-learn, Max-Heap e Trie | ML & Algoritmos |
+| [Fase 7: Futuro Sustentável SIFSM](/fases/fase-7-sifsm) | SQLite, circuito digital, Trapézios, agentes e ESG | Sistema Integrado & Governança |
 | [Práticas de Engenharia](/engineering-practices) | Git Flow, Conventional Commits e pytest | Qualidade & QA |
 | [Deploy & CI/CD](/deployment) | Workflow do GitHub Actions para GitHub Pages | DevOps & Entrega |
 

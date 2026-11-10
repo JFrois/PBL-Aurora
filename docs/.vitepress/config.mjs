@@ -50,6 +50,7 @@ export default withMermaid(
             { text: 'Fase 4: SIGIC - Infraestrutura & Grafos', link: '/fases/fase-4-infraestrutura' },
             { text: 'Fase 5: NCAS - Núcleo Cognitivo', link: '/fases/fase-5-cognitivo' },
             { text: 'Fase 6: SCIC - Hardware & ML', link: '/fases/fase-6-scic' },
+            { text: 'Fase 7: SIFSM - Futuro Sustentável', link: '/fases/fase-7-sifsm' },
           ],
         },
         { text: 'Práticas de Engenharia', link: '/engineering-practices' },
@@ -65,7 +66,7 @@ export default withMermaid(
           ],
         },
         {
-          text: '🔴 Fases da Missão (1 a 6)',
+          text: '🔴 Fases da Missão (1 a 7)',
           items: [
             { text: 'Fase 1: Telemetria & Lançamento', link: '/fases/fase-1-telemetria' },
             { text: 'Fase 2: MGPEB - Pouso Marciano', link: '/fases/fase-2-pouso' },
@@ -73,6 +74,7 @@ export default withMermaid(
             { text: 'Fase 4: SIGIC - Infraestrutura & Redes', link: '/fases/fase-4-infraestrutura' },
             { text: 'Fase 5: NCAS - Núcleo Cognitivo', link: '/fases/fase-5-cognitivo' },
             { text: 'Fase 6: SCIC - Hardware, ML & Estruturas', link: '/fases/fase-6-scic' },
+            { text: 'Fase 7: SIFSM - Futuro Sustentável', link: '/fases/fase-7-sifsm' },
           ],
         },
         {

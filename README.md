@@ -11,9 +11,8 @@ gerenciamento de pouso, inteligência operacional, modelagem de infraestrutura, 
 
 ## Visão Geral
 
-O projeto evolui em seis fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente da base, passando pelo núcleo cognitivo e pelo sistema computacional integrado (SCIC). 
-Ao longo do sistema, são aplicados conceitos de lógica, estruturas de dados, algoritmos, modelagem matemática, lógica booleana, engenharia de prompts, análise numérica,
-aprendizado de máquina e otimização computacional para representar desafios reais de automação e tomada de decisão em ambiente crítico.
+O projeto evolui em sete fases integradas, cobrindo desde a validação inicial da missão até a operação inteligente e sustentável da base, passando pelo núcleo cognitivo (NCAS), pelo sistema computacional integrado (SCIC) e consolidando-se na **Fase 7 com o SIFSM (Sistema Integrado de Futuro Sustentável em Marte)**. 
+Ao longo do sistema, são aplicados conceitos de banco de dados relacional (SQLite/CRUD), lógica booleana e circuitos digitais, estruturas de dados clássicas e avançadas, modelagem matemática, integração numérica, aprendizado de máquina, sistemas multiagentes com guardrails, arquitetura computacional e governança socioambiental (ESG) para representar desafios reais de automação e tomada de decisão em ambiente crítico.
 
 
 
@@ -1268,7 +1267,7 @@ A solução utiliza dados sintéticos e mantém supervisão humana nas decisões
 
 **Entrada principal:** `codigo_fonte.py`.
 
-**Documentação técnica:** [Relatório da Fase 7](docs/fase7/relatorio_tecnico.md).
+**Documentação técnica:** [Relatório da Fase 7](docs/fase7/relatorio_tecnico.md) · **Vídeo Pitch:** [https://youtu.be/msr6JTp80uk](https://youtu.be/msr6JTp80uk) ([`docs/fase7/link_video.txt`](docs/fase7/link_video.txt)).
 
 ## Objetivos da Fase
 
@@ -1461,32 +1460,25 @@ As ferramentas consultam e calculam; não alteram registros nem controlam equipa
 
 ## Arquitetura Computacional
 
-A análise relaciona o protótipo a:
+A análise técnica (opção `11` do menu e seção 8 do relatório) relaciona o protótipo a:
 
-- Execução local em CPU.
-- Diferenças entre CPU, GPU, NPU e TPU.
-- Paralelismo em cenários independentes.
-- Computação heterogênea.
-- Hierarquia de memória, largura de banda e movimentação de dados.
-- Chiplets e arquiteturas modernas.
-- Reutilização de modelos e redução de processamento desnecessário.
+- **Pipeline fim a fim do SIFSM:** aquisição IoT simulada (`0x1A`–`0x8B`), persistência SQLite (`aurora_siger.db`), regras booleanas e estruturas em memória (`FilaChamados`, `PilhaHistorico`, `TabelaSensores`, `HeapAlertas`), integração numérica por trapézios, regressão linear e assistente multiagente determinístico.
+- **Balanceamento Edge vs. Servidor Central em Marte:** diante da latência Terra-Marte (4 a 24 minutos), a validação de sensor e a regra booleana (`ALERTA = A ∧ B ∧ C`, `BLOQUEIO = ¬C`) operam conceitualmente na borda (*Edge* do módulo) com baixíssimo consumo, enquanto o SQLite, a simulação de 24h/48h e a regressão executam no núcleo local da colônia (`MOD-03` / `MOD-07`).
+- **Papel de CPU, GPU, NPU e TPU:** execução atual 100% em CPU para as 120 leituras; análise de paralelismo em múltiplos núcleos de CPU, vetorização massiva em GPU (simulações de Monte Carlo / dinâmica térmica), inferência embarcada de baixo consumo em NPU e aceleradores tensoriais em TPU, incluindo sobrecarga de transferência de barramento (Lei de Amdahl) e arquiteturas com *chiplets*.
+- **Hierarquia de memória e eficiência computacional:** caminho SSD → RAM → Caches L1/L2/L3 → Registradores, limites explícitos de memória na sessão (`PilhaHistorico` = 50, `Sessao.historico` = 20, `Sessao.trilha` = 100) e oportunidade de *caching* do modelo linear para evitar retreinamentos redundantes a cada consulta do assistente.
 
-O projeto não implementa aceleração especializada nem apresenta medições que comprovem ganhos com esse hardware.
+O projeto não implementa aceleração especializada em GPU/NPU/TPU nem declara benchmarks físicos que comprovem ganhos com esse hardware na amostra didática.
 
 ## Sustentabilidade e Cidadania Digital
 
-A discussão aborda:
+A análise socioambiental e de governança (opção `12` do menu e seção 9 do relatório) conecta quatro dimensões críticas diretamente ao código do SIFSM:
 
-- Uso responsável dos recursos e prevenção de desperdícios.
-- Integração das camadas física simulada, de controle e analítica.
-- Armazenamento, contingência e resiliência.
-- Privacidade e transparência no uso dos dados.
-- Riscos de vigilância e discriminação.
-- Impactos ambientais da computação e da IA.
-- Inclusão, acessibilidade e supervisão humana.
-- Princípios ambientais, sociais e de governança.
+- **Privacidade vs. vigilância da tripulação:** modelagem estritamente ambiental (Zero-PII) vinculada apenas a `modulo_id` e `codigo_sensor` sem dados biométricos ou pessoais, além de descarte de entradas rejeitadas e retenção limitada em RAM.
+- **Pegada energética e térmica da computação local:** monitoramento do próprio módulo `MOD-07 (Armazenamento de Dados)` (que atinge pico de alerta de `6.932,96 W`), prevenção de desperdícios via simulação em cópias de memória (economia hipotética de `28,76 kWh` / `4,92%` ao reduzir 15% dos módulos não essenciais) e sobriedade digital sem chamadas obrigatórias a LLMs externos.
+- **Supervisão humana (*Human-in-the-Loop*):** bloqueio automático de decisão sobre sensor inválido (`BLOQUEIO = NOT C`), ferramentas dos agentes restritas a leitura/cálculo (sem permissão de escrita no banco ou atuação física) e dupla camada de *guardrails*.
+- **Transparência, explicabilidade, inclusão e ESG:** auditoria aberta da equação linear e da tabela-verdade, comunicação transparente de que a regressão não superou o baseline da média em MAE (`589,07 W` vs. `555,51 W`), bloqueio de extrapolação e mensagens acessíveis sem depender apenas de cores.
 
-A economia simulada da colônia não mede a energia consumida pelo computador. O protótipo não comprova redução de emissões ou certificação ESG.
+A economia simulada da colônia não mede a energia consumida pelo computador. O protótipo não comprova redução física de emissões nem certificação ESG.
 
 ## Execução e Documentação
 
@@ -1503,9 +1495,9 @@ Execute a suíte a partir da raiz:
 .\venv\Scripts\python.exe -m pytest -q
 ```
 
-Na revisão de 6 de novembro de 2026, a suíte existente apresentou **43 testes aprovados**.
+Na revisão final da entrega, a suíte automatizada apresenta **43 testes aprovados** (`43 passed`).
 
-Os testes verificam operações de banco, validações, lógica booleana, estruturas, integração numérica, bateria, regressão e parte do fluxo dos agentes. Após alterações, execute novamente a suíte.
+Os testes verificam operações de banco, validações, proteção contra SQL injection, lógica booleana, estruturas de dados, integração numérica, bateria, regressão e fluxo dos agentes. Após alterações, execute novamente a suíte.
 
 ## Arquivos e Evidências
 
@@ -1515,11 +1507,14 @@ Os testes verificam operações de banco, validações, lógica booleana, estrut
 | `simulacao_computacional.py` | Execução independente da simulação |
 | `src/fase7_sifsm/` | Módulos do SIFSM |
 | `data/fase7/script_banco.sql` | Esquema do banco |
-| `data/fase7/dados_aurora_siger.csv` | Base simulada original |
-| `docs/fase7/relatorio_tecnico.md` | Relatório técnico |
-| `docs/fase7/graficos_ou_imagens/` | Gráficos e evidências |
-| `docs/fase7/tinkercad/` | Guia e código do circuito |
-| `tests/test_fase7_*.py` | Testes da Fase 7 |
+| `data/fase7/dados_aurora_siger.csv` | Base simulada original (120 leituras) |
+| `docs/fase7/relatorio_tecnico.md` | Relatório técnico completo |
+| `docs/fase7/roteiro_apresentacao.md` | Roteiro detalhado para o vídeo pitch |
+| `docs/fase7/link_video.txt` | Link do vídeo de apresentação (YouTube Não listado) |
+| `docs/fase7/link_tinkercad.txt` | Referência/link da simulação do circuito lógico |
+| `docs/fase7/graficos_ou_imagens/` | Gráficos gerados, diagrama do circuito e evidências |
+| `docs/fase7/tinkercad/` | Guia de montagem e código Arduino (`sifsm_alerta.ino`) |
+| `tests/test_fase7_*.py` | Testes automatizados da Fase 7 |
 
 O sistema reutiliza componentes de `src/fases_anteriores/fase6_scic/`. Essa dependência deve ser preservada.
 
@@ -1683,15 +1678,15 @@ PBL-Aurora/
 ├── main.py                                    # Orquestrador das fases anteriores                             
 │
 ├── data/
-│   └── processed/                               # Dados processados e persistidos
-│       ├── dados_aurora_siger.csv               # Base de telemetria (Fase 6)
-│       ├── dados_aurora_siger_com_previsao.csv  # Base com previsões do modelo (Fase 6)
-│       ├── dados_colonia.json                   # Dados estruturados do NCAS (Fase 5)
-│       └── registros_colonia.txt                # Logs operacionais do NCAS (Fase 5)
-│       └── fase7/│
-│           ├── script_banco.sql
-│           ├── dados_aurora_siger.csv           # Base original de 120 leituras
-│           └── aurora_siger.db                  # Gerado em execução; ignorado pelo Git
+│   ├── processed/                               # Dados processados e persistidos (Fases 5 e 6)
+│   │   ├── dados_aurora_siger.csv               # Base de telemetria (Fase 6)
+│   │   ├── dados_aurora_siger_com_previsao.csv  # Base com previsões do modelo (Fase 6)
+│   │   ├── dados_colonia.json                   # Dados estruturados do NCAS (Fase 5)
+│   │   └── registros_colonia.txt                # Logs operacionais do NCAS (Fase 5)
+│   └── fase7/
+│       ├── script_banco.sql                     # Esquema SQLite (5 tabelas)
+│       ├── dados_aurora_siger.csv               # Base original de 120 leituras
+│       └── aurora_siger.db                      # Gerado em execução; ignorado pelo Git
 │    
 ├── docs/                                         # Relatórios técnicos e diagramas formais
 │   ├── fase4/
@@ -1711,6 +1706,9 @@ PBL-Aurora/
 │   │   └── graficos_ou_imagens/               # avaliacao_modelo_scic.png, erro_relativo_por_modulo.png
 │   └── fase7/
 │       ├── relatorio_tecnico.md
+│       ├── roteiro_apresentacao.md
+│       ├── link_video.txt
+│       ├── link_tinkercad.txt
 │       ├── graficos_ou_imagens/
 │       │   ├── circuito_logico.png
 │       │   ├── consumo_cenarios.png
@@ -1726,6 +1724,7 @@ PBL-Aurora/
 │
 ├── src/
 │   ├── core/                                  # Utilitários compartilhados
+│   │   ├── ia.py                              # Integração opcional com Gemini e fallback
 │   │   └── utils.py                           # Funções auxiliares de terminal e cabeçalho
 │   ├── fases_anteriores/                      # Módulos operacionais das Fases 1 a 5
 │   │   ├── fase1.py                           # Validação de telemetria e pré-lançamento
@@ -1749,7 +1748,7 @@ PBL-Aurora/
 │       ├── simulacao.py            # Consumo, integração e bateria
 │       ├── modelo_linear.py        # Preparação, regressão e avaliação
 │       ├── agentes.py              # Assistente determinístico
-│       └── apresentacao.py         # Circuito, arquitetura e sustentabilidade│
+│       └── apresentacao.py         # Circuito, arquitetura e sustentabilidade
 │
 └── tests/
     ├── test_estruturas.py
