@@ -396,97 +396,120 @@ para alterar regras, dados ou equipamentos. O funcionamento básico continuaria 
 
 ## 8. Arquitetura computacional, processamento e aceleração (Integrante 3) | **Requisito 5.7**
 
-### 8.1 Execução local e escolha de processamento
+### 8.1 Pipeline de processamento do SIFSM e execução local
 
-Para 120 leituras, uma CPU convencional é suficiente para consultas SQLite, regras, estruturas de dados,
-simulação, regressão e agentes por regras. O armazenamento local evita serviço remoto obrigatório.
-Não foram realizados benchmarks para demonstrar consumo energético, latência ou superioridade de hardware.
+O SIFSM estrutura seu fluxo computacional em cinco estágios determinísticos desacoplados, projetados para operar localmente sem dependência obrigatória de serviços remotos:
 
-| Unidade | Relação com o SIFSM |
-|---|---|
-| CPU | Executa o fluxo geral, consultas, validações e cálculos da demonstração. |
-| GPU | Poderia beneficiar cálculos matriciais e grandes lotes paralelos em escala maior, dependendo da carga. |
-| NPU | Poderia atender inferência local de modelos compatíveis, caso uma evolução adotasse esse recurso. |
-| TPU | Acelerador especializado para cargas tensoriais compatíveis; não necessário nem utilizado no protótipo. |
+```mermaid
+flowchart LR
+    subgraph Camada Física / IoT Simulada
+        S["Sensores Modulares (0x1A..0x8B)<br/>Dados Sintéticos CSV"]
+    end
+    subgraph Camada de Persistência e Regras
+        DB[("SQLite Local<br/>aurora_siger.db")]
+        LOG["Motor Booleano (logica.py)<br/>ALERTA = A ∧ B ∧ C<br/>BLOQUEIO = ¬C"]
+        ED["Estruturas em RAM<br/>Fila, Pilha, Hash O(1), Heap O(log n)"]
+    end
+    subgraph Camada Analítica e Numérica
+        SIM["Simulação Energética (simulacao.py)<br/>Integração por Trapézios & SoC"]
+        ML["Regressão Linear (modelo_linear.py)<br/>Treino/Teste Temporal 80/20"]
+    end
+    subgraph Camada Cognitiva e Supervisão
+        AG["Sistema Multiagente (agentes.py)<br/>Guardrails + Triador + Tools"]
+        HUM["Operador Humano<br/>(Human-in-the-Loop)"]
+    end
 
-Não se justifica exigir aceleradores para esta amostra sem medir benefício. Em escala maior, uma arquitetura
-heterogênea poderia manter consultas e regras na CPU e encaminhar operações paralelizáveis à unidade adequada.
-Isso exigiria analisar compatibilidade, transferências, custo de inicialização e utilização real do dispositivo.
+    S -->|"Ingestão / Validação"| DB
+    DB -->|"Leituras Parametrizadas"| LOG
+    DB -->|"Indexação"| ED
+    DB -->|"Séries Temporais"| SIM
+    DB -->|"DataFrame Higienizado"| ML
+    LOG -->|"ferramenta_classificar_risco"| AG
+    ML -->|"ferramenta_prever_consumo"| AG
+    DB -->|"ferramenta_consultar_leituras"| AG
+    SIM -->|"Relatório de Déficit/SoC"| HUM
+    AG -->|"Recomendação Auditável"| HUM
+```
 
-### 8.2 Memória, dados e sustentabilidade computacional
+1. **Aquisição IoT simulada e validação (`dados_simulados.py` / `banco.py`):** Os 16 sensores distribuídos nos 8 módulos (`MOD-01` a `MOD-08`) geram leituras de potência (`consumo_w`), temperatura (`temperatura_c`), umidade (`umidade_pct`), carga de bateria (`carga_bateria_pct`) e status a cada ciclo de 6 h. Antes da gravação, `validar_leitura()` higieniza tipos, verifica finitude (`math.isfinite`) e impõe limites físicos.
+2. **Persistência transacional (`sqlite3`):** O banco embarcado `aurora_siger.db` armazena os registros em disco local sem exigir servidor dedicado. Índices compostos (`idx_leituras_modulo_data`, `idx_alertas_modulo`) aceleram filtros por módulo e ordenação temporal.
+3. **Avaliação lógica e estruturas em memória (`logica.py` / `estruturas.py`):** A regra booleana classifica cada leitura em $O(1)$. Em RAM, chamados operam em fila FIFO (`deque`, $O(1)$), histórico de ações do CRUD em pilha LIFO ($O(1)$ no topo), busca de sensores em tabela hash com encadeamento ($O(1)$ médio) e priorização de alertas em Max-Heap binário ($O(\log n)$).
+4. **Simulação numérica e modelagem estatística (`simulacao.py` / `modelo_linear.py`):** Séries temporais são integradas pela Regra dos Trapézios ($O(n)$) e o estado de carga (SoC) da bateria é atualizado em passos discretos $\Delta t = 0,5\text{ h}$. Em paralelo, o `scikit-learn` ajusta por Mínimos Quadrados Ordinários (OLS) a regressão linear com separação temporal 80/20.
+5. **Orquestração multiagente determinística (`agentes.py`):** Filtra entradas e saídas via guardrails heurísticos, encaminha solicitações no `agente_triador` e invoca ferramentas determinísticas mantendo estado de sessão (`Sessao`) e trilha de auditoria (`tracing`).
 
-O caminho armazenamento → RAM → processamento envolve custo de acesso e movimentação. Caches reduzem
-acessos repetidos à RAM, mas bases maiores podem exigir consultas por período, seleção de colunas e processamento
-em lotes. A consulta sem limite é adequada à pequena base didática; não representa a estratégia ideal para
-uma base de produção crescente.
+### 8.2 Balanceamento Edge Computing vs. Servidor Central na colônia marciana
 
-Repetir treino a cada pedido do assistente é simples para demonstrar o fluxo, mas pode ser ineficiente em escala.
-Uma evolução manteria um modelo validado em memória e o atualizaria quando os dados mudassem, com controle
-de versão. Paralelizar tarefas muito pequenas ou copiar matrizes entre CPU e GPU pode custar mais que o cálculo.
+Em uma missão em Marte, o atraso de comunicação com a Terra varia entre 4 e 24 minutos (somente ida), impossibilitando depender de nuvem terrestre para decisões críticas em tempo real. Conceitualmente, a arquitetura da colônia Aurora Siger divide-se em dois níveis:
 
-Chiplets permitem compor unidades em um mesmo encapsulamento, mas sua presença não garante benefício ao SIFSM.
-O critério seria medir tempo, memória, energia e custo para a carga real. Reduzir cópias, chamadas remotas e
-processamento desnecessário é uma orientação de projeto; não há redução ambiental medida no protótipo.
+| Camada Computacional | Localização Conceitual na Colônia | Tarefas Alocadas no SIFSM | Perfil Operacional e Consumo |
+|---|---|---|---|
+| **Edge Computing (Borda / Nó do Módulo)** | Microcontroladores locais em cada módulo (`MOD-01` a `MOD-08`, representados no protótipo pelo circuito digital / Arduino Uno do Tinkercad) | • Leitura dos registradores hexadecimais (`0x1A`–`0x8B`)<br/>• Verificação imediata de validade (`sensor_valido()`)<br/>• Disparo local da regra booleana (`ALERTA = A ∧ B ∧ C` e `BLOQUEIO = ¬C`) | **Baixíssimo consumo (mW a poucos W)** e latência em microssegundos, garantindo resposta local mesmo se a rede interna da colônia sofrer falha. |
+| **Servidor Central Local (Núcleo da Base)** | Processamento centralizado nos módulos `MOD-03` (Controle de Missão) e `MOD-07` (Armazenamento de Dados) | • Persistência consolidada no SQLite (`aurora_siger.db`)<br/>• Filas globais de chamados e Heap de alertas<br/>• Simulação energética de 24h/48h, regressão linear e assistente multiagente | **Consumo moderado (dezenas a centenas de W)**, executado sob demanda ou em lotes (*batch*) para apoiar o planejamento da equipe. |
+
+### 8.3 Paralelismo, computação heterogênea e aceleradores (CPU, GPU, NPU e TPU)
+
+Para a base didática original de **120 leituras**, uma **CPU convencional** executa todo o fluxo (SQLite, regras, estruturas, integração numérica, regressão e agentes) em poucos milissegundos. **Não foram realizados benchmarks físicos no protótipo para comprovar ganho de velocidade ou redução de consumo energético em GPU, NPU ou TPU.** Entretanto, em uma evolução da colônia para milhões de leituras contínuas, cada unidade teria papel específico:
+
+| Unidade | Arquitetura e Vocação | Aplicação no SIFSM (Atual vs. Evolução em Escala) |
+|---|---|---|
+| **CPU (Multicore)** | Propósito geral (MIMD), baixa latência sequencial e controle de desvios condicionais (*branching*). | **Em uso no protótipo.** Executa o menu CLI, transações SQLite, regras booleanas, estruturas de dados, simulação, regressão e agentes. Em escala, múltiplos núcleos de CPU poderiam paralelizar cenários independentes de consumo ou treinar modelos separados por módulo. |
+| **GPU** | Paralelismo massivo de dados (SIMD/SIMT) voltado a álgebra linear densa e matrizes grandes. | **Conceitual (não utilizada).** Justificar-se-ia caso a simulação evoluísse para milhares de cenários de Monte Carlo simultâneos ou dinâmica de fluidos e transferência térmica (CFD) entre domos da colônia. |
+| **NPU** | Acelerador embarcado especializado em inferência neural de baixa precisão (`INT8`/`FP16`) com alta eficiência por watt. | **Conceitual (não utilizada).** Poderia ser integrada aos nós de borda dos módulos caso o sistema passasse a executar redes neurais locais para detecção de anomalias acústicas ou visão computacional na Estufa (`MOD-06`). |
+| **TPU** | Acelerador baseado em arranjos sistólicos para multiplicação massiva de tensores em *Deep Learning*. | **Conceitual (não necessária).** A regressão linear atual possui apenas 2 variáveis explicativas ($95 \times 2$) e os agentes são funções por regras. Uma TPU só faria sentido para hospedar modelos fundacionais/LLMs de grande porte localmente. |
+
+**Custo de transferência e Lei de Amdahl:** Em amostras pequenas como 120 registros, o custo de criação de processos paralelos e a latência de copiar matrizes da memória RAM principal para a memória dedicada de um acelerador (via barramento PCIe) superam o tempo do cálculo em si. Além disso, arquiteturas modernas baseadas em **chiplets** e memórias unificadas/HBM aproximam unidades de processamento e dados em um mesmo encapsulamento para reduzir essa movimentação, mas sua presença não traz benefício automático sem carga massivamente paralelizável.
+
+### 8.4 Hierarquia de memória, movimentação de dados e eficiência computacional
+
+O caminho **armazenamento persistente (CSV / SQLite em SSD) → memória principal (listas e DataFrames em RAM) → caches L1/L2/L3 → registradores da CPU** envolve custos crescentes de latência e energia por bit transferido:
+
+* **Controle do *footprint* de memória no protótipo:** Para evitar crescimento indefinido do uso de RAM durante uma sessão contínua, as estruturas em memória possuem limites explícitos: `PilhaHistorico` mantém no máximo **50 ações**, `Sessao.historico` retém até **20 interações** e `Sessao.trilha` armazena até **100 eventos**. Na base maior de produção, consultas como `listar_leituras(limite=None)` deveriam ser substituídas por janelas temporais paginadas, projeção restrita de colunas e processamento em lotes (*chunks*).
+* **Gargalo arquitetural identificado no código atual:** Na função `ferramenta_prever_consumo()` (`src/fase7_sifsm/agentes.py`), cada pedido de estimativa de consumo consulta todas as leituras do banco, monta um `DataFrame` e chama `treinar_regressao(df)` novamente. Embora rápido para 120 linhas, reajustar o modelo a cada consulta desperdiça ciclos de CPU. Uma melhoria direta seria manter o modelo validado em cache na memória e só recalibrá-lo quando operações de escrita do CRUD alterarem o banco.
+* **Eficiência energética computacional (Joules por análise):** Em Marte — onde a simulação de bateria evidenciou um déficit de **153,90 kWh** em 48 h sob geração em 80% da demanda — o custo energético do próprio software precisa ser considerado. Avaliar regras booleanas e aplicar uma equação linear de 2 variáveis na CPU local exige uma fração mínima de energia (escala de microjoules a milijoules por consulta), enquanto acionar um LLM generativo externo ou em servidor dedicado consome ordens de grandeza mais energia elétrica e refrigeração por resposta. Contudo, ressalta-se que o protótipo **não mediu fisicamente o consumo elétrico do computador nem emissões de carbono**, e a economia simulada na colônia não representa medição de eficiência do hardware de execução.
 
 
 
 ## 9. Sustentabilidade, cidadania digital e impacto socioambiental (Integrante 3) | **Requisito 5.8**
 
-### 9.1 Uso responsável dos recursos
+Esta seção analisa o SIFSM sob os pilares de Sustentabilidade, Cidadania Digital, Ética de Dados e Governança (ESG), conectando quatro dimensões críticas diretamente ao funcionamento real implementado nos módulos do projeto.
 
-Banco, regra e simulação relacionam registros de potência, condição dos módulos e energia acumulada.
-O cenário de redução atua apenas sobre cópias dos dados dos módulos não essenciais. A classificação de risco
-preserva critérios explícitos para módulos essenciais e suspende decisões sobre sensores inválidos.
-A indicação não essencial deve ser revista por humanos antes de qualquer intervenção real.
+### 9.1 Privacidade vs. vigilância da tripulação e minimização de dados
 
-### 9.2 Prevenção de desperdícios por simulação
+Em uma colônia isolada como a Aurora Siger, cruzar telemetria de consumo e ambiente da `Habitação Alfa (MOD-01)` ou do `Suporte Médico (MOD-05)` com a identidade ou dados biométricos dos tripulantes permitiria inferir rotinas íntimas, horários de sono, estado de saúde e desempenho individual, convertendo um sistema de gestão ambiental em ferramenta de vigilância e discriminação.
 
-Comparar cenários permite discutir alternativas antes de implantar alterações físicas. O resultado em Wh
-quantifica uma hipótese, sem confundi-la com economia realizada. Dados de falha e lacunas limitam a confiança;
-validar medições é parte do uso responsável da informação.
+**Conexão com o sistema implementado:**
+* **Telemetria estritamente modular (sem dados pessoais):** O esquema em `data/fase7/script_banco.sql` e a base `dados_aurora_siger.csv` seguem o princípio de minimização de dados: todas as leituras, alertas e chamados são vinculados apenas a `modulo_id` (`MOD-01` a `MOD-08`) e `codigo_sensor` (`0x1A` a `0x8B`), sem coletar nomes, credenciais ou biometria da tripulação.
+* **Proteção na sessão dos agentes:** Em `src/fase7_sifsm/agentes.py`, solicitações bloqueadas pelo `guardrail_entrada()` (incluindo menções a `"senha"`, `"credencial"` ou `"chave de api"`) **não são salvas em `Sessao.historico`**, e o `registrar_evento()` grava apenas o rótulo técnico da etapa na trilha de auditoria, sem registrar o texto livre do usuário. Ainda assim, em uma implantação real, o SQLite local precisaria ser complementado por controle de acesso, criptografia em repouso e política formal de retenção.
 
-### 9.3 Armazenamento, resiliência e autonomia
+### 9.2 Pegada energética e hídrica da computação local e prevenção de desperdícios
 
-Carga e déficit da bateria permitem discutir insuficiência de geração e necessidade de contingência.
-Uma colônia real precisaria considerar redes inteligentes, redundância, prioridades e armazenamento com perdas.
-Esses elementos são perspectivas de evolução; o protótipo não implementa uma rede elétrica inteligente.
+Infraestruturas digitais e *data centers* consomem energia elétrica contínua e exigem dissipação térmica (que em ambientes terrestres frequentemente demanda alto consumo hídrico e, em um habitat fechado em Marte, sobrecarrega os trocadores de calor e o suporte à vida).
 
-### 9.4 Cidadania digital, privacidade e transparência
+**Conexão com o sistema implementado:**
+* **Monitoramento do módulo de dados (`MOD-07`):** Na própria base do SIFSM, o módulo `MOD-07 (Armazenamento de Dados)` opera com limite de 6.300 W e registra um pico de alerta de **6.932,96 W** (`2026-10-04 06:00`), demonstrando que a infraestrutura computacional da colônia é, ela própria, uma carga relevante da microrrede.
+* **Prevenção de desperdícios por simulação antes da atuação:** A Opção 8 (`simulacao.py`) testa em cópias em memória uma redução hipotética de **15% apenas nos módulos não essenciais** (`MOD-04 Laboratório`, `MOD-06 Estufa` e `MOD-07 Armazenamento de Dados`), estimando uma economia potencial de **28,76 kWh em 24 h (4,92% do total de 584,74 kWh)** e preservando integralmente os módulos essenciais (`essencial = 1`).
+* **Sobriedade digital da arquitetura:** Ao executar o assistente por regras determinísticas locais sem chamadas obrigatórias a LLMs remotos e ao apontar a necessidade de evitar retreinamentos repetidos da regressão a cada consulta, o projeto aplica boas práticas de *Green Software*. Não se declara, porém, impacto ambiental zero nem certificação ESG, pois toda infraestrutura física consome materiais e energia.
 
-A demonstração utiliza dados simulados, sem necessidade de informações pessoais da tripulação. Histórico
-limitado e limpeza de sessão reduzem retenção. Regras, métricas e tracing tornam o fluxo explicável.
-Uma versão real exigiria controle de acesso, políticas de retenção e revisão dos registros exibidos no vídeo.
-O SQLite local, sozinho, não garante confidencialidade ou autorização.
+### 9.3 Supervisão humana (*Human-in-the-Loop*) e limites decisórios em sistemas críticos
 
-### 9.5 Economia dos dados e risco de uso indevido
+Automatizar cortes de carga ou manutenção sem supervisão humana em Marte criaria risco direto à vida: uma leitura corrompida de sensor ou um erro de previsão estatística jamais pode desligar autonomamente a `Produção de Oxigênio (MOD-08)` ou o `Suporte Médico (MOD-05)`.
 
-Dados de consumo e solicitações poderiam permitir inferir presença, rotina ou condições de pessoas caso
-fossem associados a identidades. Reutilizá-los para vigilância, discriminação ou finalidade não informada
-seria um risco. Uma evolução deve minimizar identificação, definir finalidade e limitar compartilhamento,
-especialmente ao considerar envio a serviços de IA.
+**Conexão com o sistema implementado:**
+* **Suspensão de decisão diante de falha de sensor (`BLOQUEIO = NOT C`):** Quando um sensor apresenta `status_operacional = 'falha'` (como ocorre no registro de `MOD-06` em `2026-10-03 12:00`) ou valores fora da faixa física plausível, `logica.classificar_risco()` retorna `"bloqueado"`, impedindo que o sistema tome decisões operacionais sobre dados inválidos e priorizando a inspeção técnica do sensor na fila da Opção A.
+* **Isolamento estrutural das ferramentas dos agentes:** Em `src/fase7_sifsm/agentes.py`, os especialistas só possuem acesso a ferramentas de leitura e cálculo (`ferramenta_consultar_leituras`, `ferramenta_classificar_risco`, `ferramenta_prever_consumo`). Nenhuma função de escrita no banco ou acionamento de hardware está conectada aos agentes.
+* **Guardrails de entrada e saída:** O `guardrail_entrada()` bloqueia comandos de alteração ou desligamento (`"desligue"`, `"desative"`, `"exclua"`, `"altere"`), e o `guardrail_saida()` rejeita respostas que afirmem ter executado ações ou que omitam o aviso obrigatório: *"Recomendações exigem validação humana. Nenhuma alteração foi executada."*
 
-### 9.6 Impacto ambiental de IA e processamento
+### 9.4 Transparência, explicabilidade, diversidade e governança (ESG)
 
-O funcionamento sem LLM remoto evita chamadas externas obrigatórias e facilita execução local. Isso não
-significa impacto zero nem comprova menor emissão: equipamentos locais e data centers consomem energia
-e recursos. Uma integração com Gemini deveria considerar volume, necessidade, retenção de dados e custos.
-Treinar repetidamente um modelo sem mudança nos dados também deve ser evitado em escala.
+Em decisões que afetam recursos coletivos de sobrevivência, modelos "caixa-preta" dificultam auditorias e podem ocultar vieses ou falhas graves de generalização.
 
-### 9.7 Benefícios, riscos e inovação responsável
-
-A principal contribuição é integrar conceitos e tornar as limitações visíveis. A regressão que não supera
-a referência pela média mostra por que inovação exige avaliação, e não apenas uma previsão numérica.
-Separar cálculo, explicação e autorização reduz a chance de transformar uma resposta textual em ação crítica.
-Não se declara que os guardrails garantem segurança ou que o sistema é apto para operação real.
-
-### 9.8 Diversidade, inclusão e responsabilidade social
-
-Atalhos guiados e exemplos de códigos de módulos podem reduzir a dificuldade de uso do assistente.
-Mensagens devem evitar jargões e não depender apenas de cores. O menu textual ainda precisa ser avaliado
-com leitores de tela, diferentes níveis de experiência e necessidades de acessibilidade.
-Priorização de chamados e decisões de recurso devem ser transparentes e revisáveis, sem discriminação.
-Uma fila FIFO organiza ordem de chegada; urgências exigem critérios próprios de prioridade, sem presumir
-que ordem de chegada seja suficiente para todas as situações.
+**Conexão com o sistema implementado:**
+* **Explicabilidade matemática e comunicação honesta das limitações:** A escolha da Regressão Linear (`modelo_linear.py`) e da lógica booleana explícita (`logica.py`) permite auditar exatamente a equação ($\text{Consumo} = -1491,83 + 228,35 \times \text{Temperatura} - 16,41 \times \text{Umidade}$) e a tabela-verdade de 8 combinações. Mais importante: quando a avaliação no conjunto de teste revela que o modelo linear ($\text{MAE} = 589,07\text{ W}$, $R^2 = 0,355$) **não superou a referência simples pela média do treino ($\text{MAE} = 555,51\text{ W}$)**, o sistema e o `agente_energia` informam abertamente essa limitação e desaconselham seu uso para controle operacional, além de bloquear extrapolações fora da faixa de treinamento.
+* **Acessibilidade, inclusão e justiça no atendimento:** As saídas textuais do terminal e do assistente utilizam rótulos descritivos, unidades explícitas (`W`, `Wh`, `kWh`, `°C`, `%`) e atalhos numerados guiados (opções `1` a 7 no assistente), sem depender exclusivamente de cores para transmitir risco (`baixo`, `medio`, `alto`, `bloqueado`). Na gestão de chamados da tripulação, a `FilaChamados` (FIFO) garante transparência na ordem de chegada, enquanto o `HeapAlertas` e a fila de revisão da Opção A utilizam critérios técnicos explícitos e auditáveis para priorizar emergências, evitando critérios arbitrários ou discriminatórios.
+* **Síntese ESG aplicada ao protótipo:**
+  * **Ambiental (*Environmental*):** Monitoramento de potência por módulo, simulação de cenários de eficiência energética e análise de déficit de armazenamento em bateria.
+  * **Social (*Social*):** Preservação estrita dos módulos essenciais de suporte à vida, proteção da privacidade da tripulação (ausência de dados pessoais) e interface clara voltada à segurança humana.
+  * **Governança (*Governance*):** Rastreabilidade completa por trilha de eventos (*tracing*), separação estrita entre consulta/explicação e execução, validação de dados em dupla camada (Python + `CHECK`/`FOREIGN KEY` no SQLite) e exigência inegociável de supervisão humana.
 
 
 ## 10. Limitações e melhorias 
@@ -939,10 +962,19 @@ automatizados nem a execução das funcionalidades.
 
 
 
-## 13. vídeo
+## 13. Vídeo Pitch e Roteiro de Apresentação
 
-O vídeo pitch da Fase 7 apresenta o funcionamento do SIFSM, as principais decisões técnicas e os resultados obtidos. 
-Está disponível no YouTube, na modalidade “Não listado”, pelo link **[inserir link do vídeo]**, também registrado no arquivo `link_video.txt`.
+O vídeo pitch da Fase 7 apresenta o funcionamento completo do SIFSM, as principais decisões técnicas e os resultados obtidos. Está disponível no YouTube, na modalidade “Não listado”, pelo link registrado em `docs/fase7/link_video.txt` (e o roteiro detalhado para condução da demonstração encontra-se em `docs/fase7/roteiro_apresentacao.md`).
+
+### Estrutura da Apresentação (Até 5 minutos)
+
+| Bloco | Tempo Sugerido | Responsável | Demonstração no Terminal / Evidência |
+|---|---|---|---|
+| **1. Abertura, Banco SQLite e CRUD** | `0:00 – 1:00` | Integrante 1 | Execução de `python codigo_fonte.py`, esquema `script_banco.sql` (5 tabelas), opções `1` a `4` (validação `ErroBanco`, queries parametrizadas) e opção `U` (desfazer com `PilhaHistorico`). |
+| **2. Regra Booleana, Circuito e Estruturas** | `1:00 – 1:50` | Integrante 1 | Opção `5` (tabela-verdade `ALERTA = A ∧ B ∧ C`, `BLOQUEIO = ¬C` e De Morgan), opção `6` (`circuito_logico.png` / Tinkercad) e opção `7` (`FilaChamados` FIFO, `PilhaHistorico` LIFO, `TabelaSensores` Hash e `HeapAlertas`). |
+| **3. Simulação Energética e Modelo Linear** | `1:50 – 3:00` | Integrante 2 | Opção `8` (Regra dos Trapézios: `584,74 kWh`, economia hipotética de `28,76 kWh` / `4,92%`, SoC e déficit de `153,90 kWh` da bateria) e opção `9` (AED, separação temporal 80/20, `MAE = 589,07 W` vs. `MAE_baseline = 555,51 W`, bloqueio de extrapolação). |
+| **4. Assistente Multiagente Determinístico** | `3:00 – 3:50` | Integrante 2 | Opção `10` (guardrails de entrada/saída, `Triador` → *handoff* → especialistas `Energia`, `Manutenção` e `Dados`, memória de sessão e trilha de auditoria). |
+| **5. Arquitetura, Sustentabilidade e Fluxo Integrado** | `3:50 – 5:00` | Integrante 3 | Opções `11` e `12` (CPU vs. GPU/NPU/TPU, hierarquia de memória, privacidade Zero-PII, *Human-in-the-Loop*, explicabilidade e ESG), fechando com a opção `A` (**Analisar sustentabilidade da colônia**) e `pytest -q` (`43 passed`). |
 
 
 

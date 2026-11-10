@@ -1,0 +1,1 @@
+Montagem documentada em docs/fase7/tinkercad/README.md e código Arduino em docs/fase7/tinkercad/sifsm_alerta.ino (diagrama gerado em docs/fase7/graficos_ou_imagens/circuito_logico.png)
