@@ -22,12 +22,12 @@ O Monitor Serial mostra A, B, C, ALERTA e BLOQUEIO.
 
 ## Teste (deve bater com a tabela-verdade do sistema, opção 5 do menu)
 | A | B | C | ALERTA | BLOQUEIO |
-|---|---|---|--------|----------|
+|---|---|---|---|----------|
 | 1 | 1 | 1 | 1 | 0 |
 | 1 | 1 | 0 | 0 | 1 |
 | 1 | 0 | 1 | 0 | 0 |
 | 0 | 1 | 1 | 0 | 0 |
 
 ## Entrega
-Quando o circuito estiver pronto no Tinkercad, copie o link de compartilhamento para o arquivo
-`docs/fase7/link_tinkercad.txt` (e/ou use o `circuito_logico.png`). O menu (opção 6) mostra ambos.
+- **Link público do circuito no Tinkercad:** https://www.tinkercad.com/things/bkMxj8NXuey-pbl-aurora?sharecode=InHNCE2bFzLj8GL7LeSYVL-GG1HIpvzjk1I8TMIFpYY
+- O link também está registrado em `docs/fase7/link_tinkercad.txt` (junto ao diagrama `docs/fase7/graficos_ou_imagens/circuito_logico.png`). O menu (opção 6) exibe ambos.

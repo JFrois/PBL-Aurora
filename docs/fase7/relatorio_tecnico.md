@@ -101,7 +101,7 @@ e é usada pelo cadastro, pela listagem, pelo heap de alertas e pelos módulos d
 **Circuito.** `docs/fase7/graficos_ou_imagens/circuito_logico.png`: duas portas AND em cascata (A, B -> AND; saída e C -> AND) ligadas
 ao LED vermelho de ALERTA, e um inversor ligado ao LED amarelo de BLOQUEIO. A montagem no Tinkercad (portas
 74HC08/74HC04 ou Arduino Uno, com o código `docs/fase7/tinkercad/sifsm_alerta.ino`) está descrita em
-`docs/fase7/tinkercad/README.md`. A tabela de teste do circuito é a mesma do sistema (opção 5 do menu).
+`docs/fase7/tinkercad/README.md` e disponível na simulação pública: **[Tinkercad - PBL Aurora (SIFSM)](https://www.tinkercad.com/things/bkMxj8NXuey-pbl-aurora?sharecode=InHNCE2bFzLj8GL7LeSYVL-GG1HIpvzjk1I8TMIFpYY)** (registrada também em `docs/fase7/link_tinkercad.txt`). A tabela de teste do circuito é a mesma do sistema (opção 5 do menu).
 
 
 

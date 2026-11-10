@@ -1341,7 +1341,7 @@ A regra gera as classificações `baixo`, `medio`, `alto` e `bloqueado`.
 
 O circuito representa o alerta com portas AND e o bloqueio com uma porta NOT. O projeto inclui diagrama, código Arduino e instruções de montagem.
 
-- [Diagrama do circuito](docs/fase7/graficos_ou_imagens/circuito_logico.png)
+- [Diagrama do circuito](docs/fase7/graficos_ou_imagens/circuito_logico.png) · [Simulação pública no Tinkercad](https://www.tinkercad.com/things/bkMxj8NXuey-pbl-aurora?sharecode=InHNCE2bFzLj8GL7LeSYVL-GG1HIpvzjk1I8TMIFpYY) ([`docs/fase7/link_tinkercad.txt`](docs/fase7/link_tinkercad.txt))
 - [Guia de montagem](docs/fase7/tinkercad/README.md)
 - [Código Arduino](docs/fase7/tinkercad/sifsm_alerta.ino)
 

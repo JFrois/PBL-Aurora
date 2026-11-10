@@ -36,7 +36,7 @@ flowchart LR
   $$\text{ALERTA} = A \land B \land C$$
   $$\text{BLOQUEIO} = \neg C$$
   $$\neg \text{ALERTA} = \neg A \lor \neg B \lor \neg C \quad \text{(Lei de De Morgan)}$$
-- **Circuito Digital**: Duas portas `AND` (`74HC08`) em cascata e um inversor `NOT` (`74HC04`) — ou montagem equivalente em Arduino Uno (`docs/fase7/tinkercad/sifsm_alerta.ino`).
+- **Circuito Digital**: Duas portas `AND` (`74HC08`) em cascata e um inversor `NOT` (`74HC04`) — ou montagem equivalente em Arduino Uno (`docs/fase7/tinkercad/sifsm_alerta.ino`). Simulação interativa disponível no [Tinkercad (PBL Aurora)](https://www.tinkercad.com/things/bkMxj8NXuey-pbl-aurora?sharecode=InHNCE2bFzLj8GL7LeSYVL-GG1HIpvzjk1I8TMIFpYY).
 
 ### 2.3 Estruturas de Dados (`estruturas.py`)
 | Estrutura | Classe / Função | Complexidade | Aplicação Operacional |
